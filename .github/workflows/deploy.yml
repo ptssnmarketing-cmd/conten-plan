@@ -1,22 +1,103 @@
-name: Deploy ke Firebase Hosting
+# Deploy otomatis ke Firebase setiap kali ada perubahan di branch main.
+#
+# Yang perlu disiapkan sekali di GitHub:
+#   Settings -> Secrets and variables -> Actions -> New repository secret
+#     Name  : FIREBASE_SERVICE_ACCOUNT
+#     Secret: SELURUH isi berkas JSON kunci service account (tempel utuh)
+#
+# Kalau Project ID bukan "konten-plan", tambahkan juga di tab Variables:
+#     Name  : FIREBASE_PROJECT_ID
+#     Value : project-id-kamu
+#
+# Cara membuat service account itu ada di tutorial deploy, bagian GitHub.
+# Jangan pernah menaruh isi JSON-nya di berkas ini — berkas ini ikut masuk repo.
+
+name: Deploy ke Firebase
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [main]
+    # Perubahan yang tidak memengaruhi hasil deploy tidak perlu menyalakan
+    # runner: hemat kuota Actions, dan log-nya tidak penuh deploy kosong.
+    paths-ignore:
+      - '**.md'
+      - 'apps-script/**'
+      - '.gitignore'
+  workflow_dispatch:        # tombol "Run workflow" manual di tab Actions
+
+# Dua push beruntun: yang lama dibatalkan, jadi yang terbit selalu yang terbaru.
+concurrency:
+  group: deploy-firebase
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
       - name: Ambil kode
         uses: actions/checkout@v4
 
-      - name: Deploy ke Firebase Hosting (konten-plan)
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Pasang Node
+        uses: actions/setup-node@v4
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: konten-plan
-          channelId: live
+          node-version: '22'
+
+      # Versi dikunci di mayor 15 supaya patch tetap masuk, tapi perubahan
+      # besar tidak tiba-tiba mematahkan deploy.
+      - name: Pasang Firebase CLI
+        run: npm install -g firebase-tools@^15
+
+      # Berhenti lebih awal dengan pesan yang jelas kalau confignya kosong.
+      # Tanpa ini, deploy "berhasil" tapi aplikasinya blank putih di browser.
+      - name: Periksa firebase-config.js
+        run: |
+          if grep -q 'GANTI_' firebase-config.js; then
+            echo "::error::firebase-config.js masih berisi contoh (GANTI_...). Isi dengan config Firebase asli, commit, lalu push lagi."
+            exit 1
+          fi
+          node --check firebase-config.js
+          echo "firebase-config.js terisi."
+
+      # printf lewat variabel, bukan echo langsung di dalam YAML: isi JSON
+      # mengandung tanda kutip dan newline yang akan merusak baris perintah.
+      - name: Siapkan kunci service account
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$SA" ]; then
+            echo "::error::Secret FIREBASE_SERVICE_ACCOUNT belum diisi di Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+          printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
+          chmod 600 "$RUNNER_TEMP/sa.json"
+
+      # Hosting lebih dulu dan berdiri sendiri: kalau izin service account
+      # untuk rules ternyata kurang, websitenya sudah terbit duluan dan yang
+      # merah hanya langkah berikutnya — bukan seluruh deploy.
+      - name: Deploy website
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+        run: |
+          firebase deploy --only hosting \
+            --project "${{ vars.FIREBASE_PROJECT_ID || 'konten-plan' }}" \
+            --non-interactive
+
+      # Sengaja dibiarkan merah kalau gagal, bukan dilewati diam-diam:
+      # aturan keamanan yang dikira terkirim padahal tidak adalah kegagalan
+      # yang paling berbahaya dan paling lama ketahuan.
+      - name: Deploy aturan keamanan Firestore
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+        run: |
+          if ! firebase deploy --only firestore:rules \
+                 --project "${{ vars.FIREBASE_PROJECT_ID || 'konten-plan' }}" \
+                 --non-interactive; then
+            echo "::error::Website sudah terbit, tapi firestore.rules GAGAL dikirim. Biasanya service account kurang izin: buka Google Cloud Console -> IAM, cari service account deploy-nya, tambahkan role 'Firebase Rules Admin'. Sampai itu dibereskan, aturan keamanan di Firebase masih yang lama."
+            exit 1
+          fi
+
+      - name: Buang kunci
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json"

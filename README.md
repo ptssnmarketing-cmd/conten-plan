@@ -50,6 +50,7 @@ Web app perencanaan, approval, dan pelaporan konten dua brand. Firebase (Auth + 
 | 42 | Jam sepi & rekomendasi program | Penjualan per jam dan per produk dibaca dari ESB, lalu jam buka/tutup, jam sepi, dan jam ramai disimpulkan dari datanya sendiri. Dari situ lahir empat rekomendasi program yang berbeda untuk Storypie (pie — dijual sebagai jeda) dan Gumik (mie pangsit — dijual sebagai alasan harga), lengkap dengan produk jangkar, perkiraan dampak, dan jam tayang kontennya |
 | 43 | Jalur laporan ESB dicari sendiri | Jalur laporan per jam dan per produk berbeda antar akun ESB. Apps Script mencoba semua calon berbarengan, memakai yang menjawab dengan baris masuk akal, lalu mengingatnya di `ESB_PATH_JAM` / `ESB_PATH_ITEM`. Tombol **Periksa Laporan ESB** di Admin menampilkan kode dan field tiap jalur |
 | 45 | Autentikasi ESB dicari sendiri | Akun ESB bisa memakai API key (`ESB_API_KEY`) atau username/password (`ESB_USER`/`ESB_PASS`), dan pesan error ESB tidak membedakan keduanya. Apps Script mencoba enam bentuk header kunci lalu login, mengingat yang berhasil di `ESB_AUTH_MODE`. `tesEsbAuth()` melaporkan jawaban ESB per cara |
+| 48 | Deploy lewat GitHub Actions | `.github/workflows/deploy.yml` mengirim hosting **dan** `firestore.rules` tiap push ke `main`, pakai service account yang disimpan sebagai secret `FIREBASE_SERVICE_ACCOUNT`. `concurrency` membatalkan deploy lama kalau ada push beruntun; `paths-ignore` melewati perubahan yang tidak memengaruhi hasil; satu langkah berhenti lebih awal kalau `firebase-config.js` masih berisi contoh, supaya tidak menerbitkan halaman blank |
 | 47 | Penanda versi Apps Script | `VERSI_KODE` di `Code.gs` dibalas lewat aksi `versi`, dan panel Admin membandingkannya dengan `VERSI_APPS_SCRIPT` di aplikasi. Menjawab kasus paling membingungkan: fungsi tes berhasil di editor tapi aplikasi gagal, karena deployment web app masih memakai kode lama |
 | 46 | Outlet dinamis dari ESB | Outlet tidak lagi tiga yang ditulis tangan. Daftarnya ditarik dari ESB dengan brand dan region apa adanya, dikelompokkan brand → region di Transaksi Harian, Dashboard, dan Excel. Kunci outlet = `branchCode`, jadi target menempel pada kode. Brand/region yang tidak dikirim ESB diturunkan dari nama dan bisa dikoreksi di Admin |
 | 44 | Tampilan modern minimalis | Menu di dua tempat: baris atas berisi kelompok (Dashboard, Konten, Performa, Program, Laporan, Admin) dengan submenu, dan rail ikon di kiri berisi semua modul yang melebar jadi berlabel saat disentuh. Kartu putih di atas latar netral, tema bawaan **Mint** (hijau = aksi, biru = Storypie, kuning = Gumik). Tema lama tersedia sebagai **Biru** di pemilih tema |
@@ -495,6 +496,32 @@ Panel Admin punya kolom **Catatan Brand** per brand yang ikut dikirim di setiap 
 ### Yang dilarang di prompt
 
 Prompt secara eksplisit melarang model mengarang harga, diskon, angka, tanggal, alamat, dan klaim kesehatan, serta melarang gaya iklan lama ("kualitas terbaik", "jangan sampai ketinggalan"). Hasilnya tetap berstatus Draft dan tetap lewat approval Supervisor dan Manager seperti biasa.
+
+## Deploy lewat GitHub
+
+`.github/workflows/deploy.yml` menerbitkan hosting dan `firestore.rules` setiap kali ada push ke `main`. Penyiapannya sekali, langkah demi langkah ada di tutorial deploy bagian 9.
+
+### Yang perlu disiapkan di GitHub
+
+| Jenis | Nama | Isi |
+|---|---|---|
+| Secret | `FIREBASE_SERVICE_ACCOUNT` | seluruh isi JSON kunci service account |
+| Variable | `FIREBASE_PROJECT_ID` | Project ID, hanya kalau bukan `konten-plan` |
+
+Service account perlu tiga role: **Firebase Hosting Admin**, **Firebase Rules Admin**, dan **Service Usage Consumer**. Kalau ditolak karena izin, **Firebase Admin** mencakup ketiganya.
+
+### Keputusan di dalam workflow
+
+- **Kunci ditulis lewat `printf` dari variabel env**, bukan `echo` langsung di YAML — isi JSON mengandung tanda kutip dan newline yang akan merusak baris perintahnya.
+- **`firebase-config.js` ikut repo, bukan jadi secret.** Isinya memang dikirim Firebase ke browser setiap pengunjung, jadi bukan rahasia; yang menjaga data adalah `firestore.rules`. Menjadikannya secret hanya menambah satu cara deploy bisa gagal diam-diam.
+- **Ada langkah yang memeriksa `firebase-config.js` masih berisi `GANTI_` atau tidak**, dan menggagalkan deploy kalau iya. Tanpa itu, deploy "berhasil" tapi aplikasinya blank putih di browser — kegagalan yang paling lama ketahuan.
+- **`concurrency` dengan `cancel-in-progress`** supaya dua push beruntun tidak berlomba, dan yang terbit selalu yang terakhir.
+- **Versi `firebase-tools` dikunci di mayor `^15`** — patch tetap masuk, perubahan besar tidak tiba-tiba mematahkan deploy.
+- **`.github` tidak ikut terdeploy** karena pola `**/.*` sudah ada di `ignore` pada `firebase.json`.
+
+### Yang tidak diurus GitHub
+
+Apps Script. Setelah `Code.gs` berubah, deployment-nya tetap perlu diperbarui tangan lewat **Manage deployments → New version**. Penanda versi (`VERSI_KODE` / aksi `versi`) ada supaya kelalaian itu kelihatan di panel Admin.
 
 ## Sumber data ESB
 

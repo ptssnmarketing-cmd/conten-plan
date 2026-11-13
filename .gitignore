@@ -1,4 +1,41 @@
+# ===== JANGAN PERNAH MASUK REPO =====
+# Berkas ini berisi kunci service account Google Cloud dan token Fonnte.
+# Sekali ter-push, anggap bocor dan harus diganti semua.
+apps-script/Code-RAHASIA.gs
+apps-script/*RAHASIA*
+*service-account*.json
+*serviceaccount*.json
+*-key.json
+sa.json
+.env
+.env.*
+
+# ===== Sampah Firebase CLI =====
 .firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+database-debug.log*
+
+# ===== Sampah Node =====
 node_modules/
-*.log
+npm-debug.log*
+
+# ===== Sampah sistem =====
 .DS_Store
+Thumbs.db
+desktop.ini
+*~
+*.swp
+
+# ===== Jebakan Notepad =====
+# Notepad diam-diam menambahkan .txt saat menyimpan. Berkas hasilnya tidak
+# berguna buat Firebase dan tidak perlu ikut ke repo.
+*.json.txt
+*.rules.txt
+.firebaserc.txt
+
+# Catatan: firebase-config.js SENGAJA ikut repo.
+# Isinya memang dibagikan Firebase ke browser setiap pengunjung, jadi bukan
+# rahasia — yang menjaga data adalah firestore.rules. Tanpa berkas itu di
+# repo, hasil deploy-nya blank putih.

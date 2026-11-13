@@ -27,6 +27,11 @@
   --safe-b:env(safe-area-inset-bottom,0px);
 }
 [data-theme="biru"]{--brand:#2347CE;--brand-deep:#152C6B;--brand-soft:#E8EDFC;--storypie:#3B6FE0;--gumik:#12A150;--bg:#F4F6FA;--surface:#FAFBFD;--surface-2:#EEF2F8;--hover:#F2F5FA;--line:#E3E8F0;--track:#EDF1F7;--chip-bg:#EEF2F8;--chip-fg:#5A6476;--info:#2347CE;--ok:#12A150}
+/* Pink dipilih di rentang gelap (#BE185D), bukan pink terang seperti #FF69B4:
+   teks putih di atas pink terang hanya mencapai kontras ~2:1 dan tidak terbaca
+   di tombol. Yang ini 6,04:1. Storypie tetap biru dan Gumik tetap kuning supaya
+   di grafik tidak tertukar dengan warna aksi. */
+[data-theme="pink"]{--brand:#BE185D;--brand-deep:#6D0F37;--brand-soft:#FCE7F2;--storypie:#3B6FE0;--gumik:#E0890F;--bg:#FBF4F7;--surface:#FEFAFC;--surface-2:#F7EBF1;--hover:#FAF1F5;--line:#EFDCE5;--track:#F4E6EC;--chip-bg:#F7EBF1;--chip-fg:#6B5560;--info:#BE185D;--ok:#17A05B}
 [data-theme="indigo"]{--brand:#4338CA;--brand-deep:#1E1B58;--brand-soft:#E8E6FB;--storypie:#6366F1;--bg:#F5F5FB;--surface:#FAFAFE;--surface-2:#EEEDF9;--hover:#F3F2FB;--line:#E4E2F2;--track:#EDECF7;--info:#4338CA}
 [data-theme="teal"]{--brand:#0E8C87;--brand-deep:#0A4F4C;--brand-soft:#DCF2F0;--storypie:#14A8A1;--bg:#F2F9F9;--surface:#F9FDFD;--surface-2:#E6F3F2;--hover:#F0F8F8;--line:#D8E9E8;--track:#E4F0EF;--info:#0E8C87}
 [data-theme="hijau"]{--brand:#12803C;--brand-deep:#0B4A23;--brand-soft:#DDF3E4;--storypie:#2FA35A;--gumik:#C2850C;--bg:#F3F9F5;--surface:#FAFDFB;--surface-2:#E7F3EB;--hover:#F1F8F3;--line:#DAE9DF;--track:#E6F0E9;--info:#12803C}
@@ -7899,6 +7904,7 @@ const TEMA_BAKU = 'mint';
 const THEMES = {
   mint:     {nama:'Mint',     sub:'Bawaan',          sw:['#17A05B','#F2F5F3','#3B6FE0']},
   biru:     {nama:'Biru',     sub:'Tampilan lama',   sw:['#2347CE','#F4F6FA','#12A150']},
+  pink:     {nama:'Pink',     sub:'Hangat',          sw:['#BE185D','#FBF4F7','#3B6FE0']},
   indigo:   {nama:'Indigo',   sub:'Lebih pekat',     sw:['#4338CA','#F5F5FB','#6366F1']},
   teal:     {nama:'Teal',     sub:'Biru kehijauan',  sw:['#0E8C87','#F2F9F9','#14A8A1']},
   hijau:    {nama:'Hijau Tua', sub:'Lebih pekat',    sw:['#12803C','#F3F9F5','#2FA35A']},

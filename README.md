@@ -4,56 +4,16 @@ Web app perencanaan, approval, dan pelaporan konten dua brand. Firebase (Auth + 
 
 ## Yang baru di versi ini
 
-| # | Permintaan | Hasil |
-|---|---|---|
-| 1 | Mobile friendly | Layout dirombak: menu bawah (bottom nav), sidebar geser, tabel berubah jadi kartu di HP, form jadi bottom sheet, semua tombol ≥ 32px, input font 16px biar iOS tidak auto-zoom |
-| 2 | Header & footer tidak ikut scroll | Shell `position:fixed`. Header atas dan menu bawah diam, hanya area isi (`.main`) dan isi drawer yang bisa di-scroll. Header tabel juga sticky |
-| 3 | Notes revisi | Setiap konten punya thread catatan: tipe **Minta Revisi** / **Catatan biasa**, penulis, role, waktu, dan status **Terbuka / Selesai**. Muncul juga sebagai badge di tabel & kartu |
-| 4 | Input engagement IG & TikTok | Form khusus per konten: reach, views, likes, komentar, shares, saves per platform + link post + tanggal ambil data + catatan performa. ER dihitung otomatis |
-| 5 | Sortir hari, bulan, tahun | Filter Tahun / Bulan / Tanggal + urutan tanggal naik-turun, di halaman Content Plan dan Engagement |
-| 6 | Download report Excel | Tombol **⬇️ Excel** menghasilkan `.xlsx` 4 sheet: Ringkasan, Content Plan, Engagement, Notes Revisi — mengikuti filter yang sedang aktif |
-| 7 | Ganti tema warna | 8 tema (Maroon, Rose, Amber, Forest, Ocean, Plum, Dark, Midnight) lewat tombol 🎨 di header. Tersimpan di perangkat **dan** di akun, jadi ikut saat login di HP lain |
-| 8 | Report task harian ke WA per role | Menu **Report Harian**: daftar tugas sudah/belum dikerjakan sesuai role + tombol kirim WhatsApp. Ada dua cara: klik manual (gratis tanpa batas) atau otomatis tiap pagi lewat Google Apps Script + Fonnte |
-| 9 | Grafik pencapaian bulanan | Bar chart 12 bulan (direncanakan vs tayang) + garis rata-rata ER, bisa difilter per brand & tahun. SVG buatan sendiri, tanpa library berbayar |
-| 10 | Menu Rekomendasi | Analisis otomatis dari data sendiri: pillar/format/hari posting paling efektif, daftar hal yang perlu ditindaklanjuti, dan saran untuk bulan depan |
-| 11 | Marking konten pakai warna | 7 tanda warna (Urgent, Perlu dicek, Menunggu aset, Siap tayang, Ide baru, Campaign, Ditunda). Muncul sebagai garis kiri di baris tabel, garis + label di kartu HP, bisa difilter, dan ikut terekspor ke Excel |
-| 12 | Jenis Konten jadi dropdown | Pilihan baku: **Awareness**, **Value Brand**, **Soft Promo**. Nilai lama tetap tersimpan dan ditandai "(lama)" di dropdown |
-| 13 | Pencatatan KPI otomatis | Jejak waktu direkam sendiri saat status berubah: brief selesai, design selesai, dan waktu upload. Tidak ada input manual |
-| 14 | Ontime upload (tanggal + jam) | Field **Jam Postingan** baru. Ontime dihitung dari `postedAt` vs `tanggalPosting + jamPosting`, toleransi 60 menit |
-| 15 | Ontime pembuatan content plan | Field **Deadline Brief** baru. Ontime dihitung dari `briefSelesaiAt` vs akhir hari deadline brief |
-| 16 | Engagement dipisah platform & brand | 4 kartu ringkasan (Storypie IG, Storypie TikTok, Gumik IG, Gumik TikTok) + segmented filter platform + sheet Excel "Per Platform" |
-| 17 | KPI bulanan per tim | Tab **Per Tim**: capaian Copywriter, Designer, Content Creator — level tim sekaligus per orang lewat field PIC |
-| 18 | Custom KPI | Tab **Custom KPI**: buat KPI sendiri, target, satuan, arah target, sumber nilai otomatis (8 metrik) atau input manual per bulan |
-| 19 | Tampilan lebih modern | Segmented control menggantikan tumpukan dropdown, kartu gauge dengan progress bar, sudut lebih membulat, spasi & tap target lebih lega |
-| 20 | Modul UGC & KOL | Menu baru untuk mencatat kolaborasi UGC, Influencer, dan KOL per bulan: produk yang diberikan, nominal rupiah, outlet yang dikunjungi, tanggal visit, tanggal upload, plus engagement IG & TikTok |
-| 21 | Menu digabung jadi dropdown | Plan Storypie + Plan Gumik jadi satu menu **Content Plan** dengan dropdown brand. UGC & KOL memakai pola yang sama |
-| 22 | Panel kirim WA otomatis di menu Admin | URL Apps Script Web App, jam kirim, nomor/ID grup tujuan, dan token keamanan bisa diatur langsung dari aplikasi, lengkap dengan tombol Kirim tes dan Terapkan jadwal |
-| 23 | Report Ads Meta & TikTok | Menu baru: campaign iklan per platform & brand, budget vs spend, impresi, klik, CTR, CPC, CPM, hasil, CPA, omset, dan ROAS — semua metrik turunan dihitung otomatis |
-| 24 | Transaksi harian per outlet | Menu baru untuk Storypie Pekanbaru, Storypie Medan, dan Gumik: target diinput sekali untuk sebulan, actual diisi harian, lengkap dengan pace terhadap hari berjalan, proyeksi akhir bulan, dan grafik kumulatif |
-| 25 | Timeline program (Gantt) | Menu baru: program dengan tahapan, PIC, warna, progress otomatis dari tahapan yang selesai; tampilan Bulan / Kuartal / Tahun dengan garis penanda hari ini |
-| 26 | Tampilan kalender di Content Plan | Tombol geser Daftar / Kalender. Kalender bulanan menampilkan konten per tanggal dengan warna status dan tanda; di HP jadi titik warna yang bisa diketuk |
-| 27 | Report Budget | Menu baru yang menggabungkan pengeluaran iklan dan UGC & KOL: budget per pos, donat proporsi, hasil yang didapat, dan grafik budget vs realisasi 12 bulan |
-| 28 | Grafik target vs actual harian | Di Transaksi Harian: batang per tanggal (hijau kalau mencapai target harian, merah kalau di bawah), grafik kumulatif, dan perbandingan ketiga outlet |
-| 29 | Form konten jadi bagian yang bisa dilipat | Brief & Jadwal, Produksi & Status, Penanggung Jawab, File, Notes Revisi, Approval, Engagement — masing-masing bisa dibuka-tutup, dengan ringkasan di judulnya |
-| 30 | Backup seluruh data | Panel di menu **Admin**: **Backup Excel** (16 sheet berisi semua modul) dan **Backup JSON** (data mentah untuk dipulihkan). Ada juga **Pulihkan dari Backup JSON** dengan konfirmasi ketik `PULIHKAN` |
-| 31 | Kontak pengelola event | Menu baru **Kontak Event**: buku kontak per kota (Pekanbaru / Medan / Lainnya) berisi nama, peran, instansi, WhatsApp, telepon, email, catatan. Ada tombol chat WhatsApp langsung, salin kontak, pencarian, filter peran, dan export Excel |
-| 32 | Perbaikan input transaksi harian | `simpanHarian()` dulu memanggil `set({harian:{}}, {merge:true})` sebelum `update()`. Map kosong pada set-merge ditulis sebagai nilai, sehingga seluruh map `harian` tertimpa dan hanya sel terakhir yang tersisa. Sekarang satu kali `set` dengan map bersarang `{harian:{[hh]:{[field]:nilai}}}` + `{merge:true}`. Ditambah: id stabil per input, patch baris & TOTAL tanpa render ulang, penundaan render selama kursor masih di tabel, dan Enter untuk lompat ke tanggal berikutnya |
-| 33 | Ringkasan bulanan di 4 modul | Engagement, Report Ads, Report Budget, dan Transaksi Harian masing-masing mendapat kartu **Ringkasan Bulanan**: satu paragraf narasi + 8 angka kunci, dihitung dari data yang sudah diinput tim. Ada badge status (Efisien / Sedikit tertinggal / Perlu tindakan / Belum ada data) |
-| 34 | Rekomendasi yang dijalankan | Kartu kedua di tiap modul berisi rekomendasi yang diurutkan menurut prioritas, masing-masing dengan **Kenapa** (alasan berbasis angka), **Target dampak** (perkiraan hasil dalam rupiah atau unit), dan **Aktivitas** (langkah konkret). Contoh di Transaksi Harian: gap antara target omset dan proyeksi diterjemahkan jadi kebutuhan rupiah per hari, jumlah transaksi per hari, dan daftar program yang bisa dijalankan |
-| 35 | Perbaikan kolom kalender | Header hari (Min–Sab) dan sel tanggal memakai dua grid terpisah. Sel tanggal memakai `1fr` yang minimumnya `auto`, sehingga judul konten panjang (URL Instagram, kalimat tanpa jeda) melebarkan kolomnya sendiri — grid jadi lebih lebar dari header dan tanggal terlihat bergeser dari nama harinya. Diperbaiki dengan `minmax(0,1fr)` pada kedua grid plus `min-width:0` dan `overflow:hidden` pada `.kal-sel`. Perhitungan hari (`new Date(y, m-1, 1).getDay()`) sendiri tidak pernah salah |
-| 36 | Generator content plan dari nama campaign | Tombol **✨ Buat Otomatis** di Content Plan. Dari nama campaign, rentang tanggal, dan frekuensi posting, aplikasi menyusun rangkaian konten satu periode penuh dalam empat fase: Teaser → Peluncuran → Penguatan → Penutup. Tiap konten sudah punya judul, brief, jenis konten, jenis design, pillar, CTA, jam posting, dan deadline brief/design/take/editing. Semua dibuat berstatus **Draft** |
-| 37 | Perbaikan zona waktu (WIB) | `toISOString()` mengubah waktu ke UTC. Di WIB (UTC+7) itu membuat `new Date(y,m,1)` selalu jatuh ke bulan sebelumnya — navigasi bulan di Kalender, Report Budget, dan Timeline Program meleset satu bulan — dan membuat `todayISO()` mengembalikan tanggal kemarin setiap pukul 00:00–06:59. Semua perhitungan tanggal sekarang lewat `isoLokal()` / `bulanLokal()` (komponen lokal) dan `keUtc()` (aritmetika ISO bebas zona waktu) |
-| 38 | Penulis AI untuk generator | Opsional, memakai **Google AI Studio** (paket gratis, tanpa kartu kredit). Tombol **✨ Perhalus AI** di pratinjau generator menulis ulang judul, brief, dan menambah draf caption. Dua mode koneksi: **Langsung** dari browser (mudah, kunci terbaca user yang login) atau **Lewat Apps Script** (kunci tersimpan di Script Properties, tidak pernah sampai ke browser). Kerangka fase, tanggal, dan deadline tetap dihitung aturan lokal — kalau AI gagal, draf aturan tetap utuh dan tetap bisa disimpan |
-| 39 | Urutan tanggal tabel harian | Pilihan **Tanggal 1 di atas** / **Tanggal terbaru di atas** di Transaksi Harian, disimpan di `localStorage` (`trxUrut`). `trxEnter()` ikut arah yang dipilih, jadi Enter selalu pindah ke baris berikutnya yang terlihat, bukan selalu tanggal +1 |
-| 40 | Sumber data ESB (omset otomatis) | Omset & jumlah transaksi harian ditarik dari **ESB Core API** lewat proksi Apps Script. Kredensial ESB hidup di Script Properties (`ESB_USER`, `ESB_PASS`) — tidak pernah sampai ke browser |
-| 41 | ESB mode langsung — tidak disimpan | Data ESB tidak lagi ditulis ke Firestore sama sekali. Ditarik saat halaman Transaksi Harian dibuka, hidup di memori halaman, hilang saat tab ditutup. Yang tersimpan tinggal target bulanan dan angka yang diketik tim. `trxDoc()` menggabungkan keduanya dengan urutan menang: koreksi manual → ESB → sisa simpanan lama. Tombol **pakai ESB** per tanggal membuang koreksi manual |
-| 42 | Jam sepi & rekomendasi program | Penjualan per jam dan per produk dibaca dari ESB, lalu jam buka/tutup, jam sepi, dan jam ramai disimpulkan dari datanya sendiri. Dari situ lahir empat rekomendasi program yang berbeda untuk Storypie (pie — dijual sebagai jeda) dan Gumik (mie pangsit — dijual sebagai alasan harga), lengkap dengan produk jangkar, perkiraan dampak, dan jam tayang kontennya |
-| 43 | Jalur laporan ESB dicari sendiri | Jalur laporan per jam dan per produk berbeda antar akun ESB. Apps Script mencoba semua calon berbarengan, memakai yang menjawab dengan baris masuk akal, lalu mengingatnya di `ESB_PATH_JAM` / `ESB_PATH_ITEM`. Tombol **Periksa Laporan ESB** di Admin menampilkan kode dan field tiap jalur |
-| 45 | Autentikasi ESB dicari sendiri | Akun ESB bisa memakai API key (`ESB_API_KEY`) atau username/password (`ESB_USER`/`ESB_PASS`), dan pesan error ESB tidak membedakan keduanya. Apps Script mencoba enam bentuk header kunci lalu login, mengingat yang berhasil di `ESB_AUTH_MODE`. `tesEsbAuth()` melaporkan jawaban ESB per cara |
-| 48 | Deploy lewat GitHub Actions | `.github/workflows/deploy.yml` mengirim hosting **dan** `firestore.rules` tiap push ke `main`, pakai service account yang disimpan sebagai secret `FIREBASE_SERVICE_ACCOUNT`. `concurrency` membatalkan deploy lama kalau ada push beruntun; `paths-ignore` melewati perubahan yang tidak memengaruhi hasil; satu langkah berhenti lebih awal kalau `firebase-config.js` masih berisi contoh, supaya tidak menerbitkan halaman blank |
-| 47 | Penanda versi Apps Script | `VERSI_KODE` di `Code.gs` dibalas lewat aksi `versi`, dan panel Admin membandingkannya dengan `VERSI_APPS_SCRIPT` di aplikasi. Menjawab kasus paling membingungkan: fungsi tes berhasil di editor tapi aplikasi gagal, karena deployment web app masih memakai kode lama |
-| 46 | Outlet dinamis dari ESB | Outlet tidak lagi tiga yang ditulis tangan. Daftarnya ditarik dari ESB dengan brand dan region apa adanya, dikelompokkan brand → region di Transaksi Harian, Dashboard, dan Excel. Kunci outlet = `branchCode`, jadi target menempel pada kode. Brand/region yang tidak dikirim ESB diturunkan dari nama dan bisa dikoreksi di Admin |
-| 44 | Tampilan modern minimalis | Menu di dua tempat: baris atas berisi kelompok (Dashboard, Konten, Performa, Program, Laporan, Admin) dengan submenu, dan rail ikon di kiri berisi semua modul yang melebar jadi berlabel saat disentuh. Kartu putih di atas latar netral, tema bawaan **Mint** (hijau = aksi, biru = Storypie, kuning = Gumik). Tema lama tersedia sebagai **Biru** di pemilih tema |
+**Modul Transaksi Harian dihapus**, berikut semua yang menempel padanya: integrasi ESB, analisa jam sepi, rekomendasi produk, panel Sumber Data ESB di Admin, dan dua sheet Excel-nya.
+
+Yang **tidak** ikut dihapus:
+
+- **Data `transaksiHarian` di Firestore** — tetap utuh, tidak disentuh. Aturan keamanannya juga dibiarkan.
+- **Backup** — koleksi itu masih ikut di berkas backup JSON dan masih dipulihkan oleh Restore. Dibaca sekali saat login lewat `.get()` tanpa listener, jadi tidak menambah beban.
+- **Pemeriksa versi Apps Script** — pindah dari panel ESB ke panel Kirim Otomatis, karena sama bergunanya untuk WhatsApp dan AI.
+- **Kode ESB di `apps-script/Code.gs`** — dibiarkan apa adanya. Tidak ada yang memanggilnya lagi, jadi tidak perlu deploy ulang Apps Script. Kalau mau benar-benar bersih, hapus Script Properties `ESB_API_KEY`, `ESB_USER`, `ESB_PASS`, `ESB_AUTH_MODE`.
+
+Pemulihan: modul ini dihapus dalam satu commit, jadi `git revert` mengembalikan semuanya sekaligus, dan datanya masih di tempatnya.
 
 ## Fitur lengkap
 
@@ -251,19 +211,6 @@ ROAS = omset ÷ spend
 
 Warna ROAS: hijau ≥ 3x, kuning 1–3x, abu < 1x.
 
-## Rumus transaksi harian
-
-```
-target harian   = target bulanan ÷ jumlah hari dalam bulan
-pencapaian      = actual bulan berjalan ÷ target bulanan × 100%
-pace            = actual ÷ (target harian × hari berjalan) × 100%
-proyeksi        = (actual ÷ hari terisi) × jumlah hari
-```
-
-Pace adalah angka terpenting di tengah bulan: 100% berarti sedang tepat di jalur target.
-
-Daftar outlet ada di konstanta `OUTLETS` dalam `index.html` — tambah atau ubah outlet di situ.
-
 ## Arti tanda warna
 
 | Warna | Label baku | Dipakai untuk |
@@ -301,7 +248,9 @@ Dua format, keduanya dibuat di browser tanpa server:
 | **Backup Excel** | `BackupLengkap_ContentPlanHub_YYYYMMDD_HHMM.xlsx` | 16 sheet | dibaca manusia, diarsipkan, dianalisa di Excel / Google Sheets |
 | **Backup JSON** | `BackupLengkap_ContentPlanHub_YYYYMMDD_HHMM.json` | data mentah + metadata | dipulihkan kembali ke aplikasi |
 
-Sheet di berkas Excel: Ringkasan Backup, Content Plan, Notes Revisi, Engagement Konten, UGC & KOL, Report Ads, Transaksi Harian, Target Transaksi, Timeline Program, Tahapan Program, Kontak Event, Budget, Campaign, User, Undangan, Custom KPI.
+Sheet di berkas Excel: Ringkasan Backup, Content Plan, Notes Revisi, Engagement Konten, UGC & KOL, Report Ads, Timeline Program, Tahapan Program, Kontak Event, Budget, Campaign, User, Undangan, Custom KPI.
+
+Data `transaksiHarian` tidak lagi punya sheet Excel karena modulnya sudah dihapus, tapi **tetap ikut di berkas backup JSON**: dibaca sekali saat login lewat `.get()` tanpa listener, dan ikut dipulihkan oleh Restore. Jadi kalau modulnya dikembalikan, datanya masih utuh.
 
 Koleksi yang ikut dalam JSON: `contentPlans`, `ugcKol`, `ads`, `programTimeline`, `kontakEvent`, `campaigns`, `users`, `userRoles`, `kpiCustom`, `transaksiHarian`, plus `pengaturan` (jadwal WA & budget UGC).
 
@@ -321,7 +270,7 @@ Saran ritme: backup JSON + Excel minimal sebulan sekali, simpan di Google Drive 
 
 ## Ringkasan bulanan & rekomendasi
 
-Empat modul — **Engagement**, **Report Ads**, **Report Budget**, dan **Transaksi Harian** — menampilkan dua kartu tambahan di bawah kartu angka: **Ringkasan Bulanan** dan **Rekomendasi yang Dijalankan**.
+Tiga modul — **Engagement**, **Report Ads**, dan **Report Budget** — menampilkan dua kartu tambahan di bawah kartu angka: **Ringkasan Bulanan** dan **Rekomendasi yang Dijalankan**.
 
 Semuanya dihitung di browser dari data yang sudah diinput tim. Tidak ada API, tidak ada model bahasa, tidak ada biaya — hanya aturan yang dituliskan eksplisit di kode, jadi hasilnya bisa ditelusuri dan diperdebatkan.
 
@@ -522,176 +471,6 @@ Service account perlu tiga role: **Firebase Hosting Admin**, **Firebase Rules Ad
 ### Yang tidak diurus GitHub
 
 Apps Script. Setelah `Code.gs` berubah, deployment-nya tetap perlu diperbarui tangan lewat **Manage deployments → New version**. Penanda versi (`VERSI_KODE` / aksi `versi`) ada supaya kelalaian itu kelihatan di panel Admin.
-
-## Sumber data ESB
-
-Omset, jumlah transaksi, penjualan per jam dan per produk berasal dari **ESB Core API v2.0.0** (`https://services.esb.co.id/core`).
-
-### Mode langsung: tidak ada data ESB yang disimpan
-
-Sejak v27 tidak ada satu angka ESB pun yang masuk Firestore. Alurnya satu arah:
-
-```
-browser  ->  Apps Script  ->  ESB
-                            <-  JSON
-browser  <-  JSON  (hanya hidup di memori halaman)
-```
-
-Yang tersimpan di `transaksiHarian` tinggal dua hal: **target bulanan** dan **angka yang diketik tim**. Sisanya dibaca ulang tiap kali halaman Transaksi Harian dibuka.
-
-Konsekuensi yang perlu disadari:
-
-- Halaman Transaksi tidak bisa dibaca saat ESB atau Apps Script sedang mati — yang muncul hanya koreksi manual dan sisa data versi lama.
-- Tidak ada riwayat ESB di luar apa yang ESB sendiri simpan. Kalau butuh arsip, ekspor ke Excel.
-- Sebagai gantinya: tidak ada data yang basi, tidak ada trigger yang diam-diam menulis, dan kuota Firestore tidak terpakai untuk angka yang bukan milik aplikasi ini.
-
-Cache hanya ada di `sessionStorage` dengan umur 10 menit, supaya pindah menu lalu kembali tidak menarik ulang. Tombol **Perbarui dari ESB** selalu memaksa segar.
-
-### Urutan menang di satu tanggal
-
-`trxDoc(outlet, bulan)` menggabungkan dua sumber, dan semua yang membaca transaksi lewat sana — rekap, grafik, Excel, rekomendasi:
-
-1. **Koreksi manual** (`manual:true` di Firestore) — selalu menang.
-2. **Angka ESB hari ini** — dasar untuk tanggal yang belum dikoreksi.
-3. **Sisa simpanan versi lama** — hanya kalau ESB tidak punya tanggal itu, ditandai `Tersimpan`.
-
-Tombol kecil **pakai ESB** di kolom Status menghapus koreksi manual satu tanggal (`FieldValue.delete()` pada `harian.DD`) sehingga angka ESB dipakai lagi.
-
-### Endpoint yang dipakai
-
-| Panggilan | Guna |
-|---|---|
-| `POST /auth/login` `{username,password}` | → `result.accessToken`, dipakai sebagai `Authorization: Bearer`. Di-cache 40 menit di `CacheService` |
-| `GET /branch?flagActive=1` | daftar `branchCode` / `branchName` untuk pemetaan outlet |
-| `GET /report/sales-payment-summary?salesDate=&branchCode=` | → `result[].payments[]` dengan `paymentAmount` dan `paymentCount` |
-| laporan per jam | jalur dicari otomatis, lihat di bawah |
-| laporan per produk | jalur dicari otomatis, lihat di bawah |
-
-Omset = jumlah seluruh `paymentAmount`. Transaksi = jumlah seluruh `paymentCount`.
-
-**Keterbatasan yang diketahui:** `paymentCount` menghitung pembayaran, bukan struk. Satu bill yang dibayar dua metode terhitung dua. ESB Core tidak menyediakan hitungan struk di API-nya, jadi angka ini dipakai apa adanya dan diberi tanda di aplikasi.
-
-### Jalur laporan per jam dan per produk dicari sendiri
-
-Jalur untuk kedua laporan ini tidak sama tersedianya di tiap akun ESB, dan spesifikasinya tidak bisa dipastikan dari luar. Jadi Apps Script mencobanya satu per satu:
-
-1. Semua calon di `ESB_CALON_JAM` / `ESB_CALON_ITEM` dipanggil berbarengan untuk satu tanggal.
-2. Yang dianggap hidup: HTTP 200, ada barisnya, dan baris pertama memuat angka **dan** penanda yang dicari (jam, atau nama item).
-3. Jalur pertama yang lolos disimpan di Script Properties `ESB_PATH_JAM` / `ESB_PATH_ITEM`, jadi penjajakan hanya terjadi sekali.
-
-Kalau jalur yang benar sudah diketahui, isi saja kedua properti itu sendiri dan langkah pencarian dilewati. `lupakanJalurEsb()` menghapusnya supaya dicari ulang.
-
-Pembacaan jawabannya sengaja tidak rewel soal nama field: `esbAngka_` dan `esbTeks_` mencoba beberapa nama yang lazim (`paymentAmount`, `netSales`, `grandTotal`, …) dan memakai yang pertama berisi. Kalau tidak ada yang cocok hasilnya `null`, bukan `0` — supaya "tidak terbaca" tidak tersamar jadi "tidak ada penjualan". `esbBaris_` mencari array berisi objek di mana pun letaknya dalam jawaban (`result`, `data`, `rows`, …).
-
-Parameter tanggal juga dikirim dengan beberapa nama sekaligus (`salesDate`, `startDate`/`endDate`, `dateFrom`/`dateTo`); yang tidak dikenal diabaikan server.
-
-### Autentikasi: dua kemungkinan, dicari sendiri
-
-Akun ESB memakai salah satu dari dua cara, dan tidak ada cara memastikannya dari luar:
-
-| Cara | Script Property | Yang dikirim |
-|---|---|---|
-| Login | `ESB_USER` + `ESB_PASS` | `POST /auth/login` → `accessToken` → `Authorization: Bearer` |
-| API key | `ESB_API_KEY` | satu kunci di header tiap permintaan |
-
-Kunci API yang dipakai sebagai password menghasilkan persis `400 Invalid username or password`, dan sebaliknya — sehingga pesan errornya tidak membedakan keduanya. Jadi `esbHeader_()` mencoba enam bentuk header kunci (`Authorization: Bearer`, `x-api-key`, `apikey`, `api-key`, `Authorization` mentah, `X-ESB-API-KEY`) lalu login username/password, dan menyimpan yang berhasil di `ESB_AUTH_MODE`. Panggilan berikutnya langsung memakai cara itu; `401`/`403` memicu pencarian ulang sekali.
-
-`tesEsbAuth()` menjalankan semuanya dan menuliskan jawaban ESB per cara di Execution log — dipakai saat ESB menolak, supaya tidak perlu menebak mana yang salah. `lupakanAuthEsb()` menghapus cara yang tersimpan.
-
-### Kenapa lewat Apps Script
-
-Firebase paket Spark tidak punya Cloud Functions, jadi tidak ada tempat di sisi aplikasi untuk menyimpan kredensial. Panggilan dari browser akan membocorkan kredensial ESB ke setiap user yang login, dan API bisnis seperti ini umumnya juga menolak panggilan lintas-origin. Apps Script sudah terpasang untuk report WA dan Penulis AI, jadi tidak ada layanan baru yang perlu ditambah.
-
-Pemetaan outlet → `branchCode` dikirim aplikasi di tiap permintaan, jadi Apps Script tidak lagi perlu membaca Firestore sama sekali untuk ESB — tidak ada service-account JWT di jalur ini.
-
-### Satu bulan, satu panggilan
-
-Menarik sebulan untuk tiga outlet berarti sekitar 90 permintaan ke ESB. Satu per satu akan menabrak batas 6 menit Apps Script, jadi `esbGetBanyak_` menjalankannya berbarengan lewat `UrlFetchApp.fetchAll` per rombongan 25. Token basi di tengah jalan ditangani sekali: yang kena 401/403 diulang dengan token baru.
-
-### Fungsi di Code.gs
-
-| Fungsi | Guna |
-|---|---|
-| `esbHeader_(paksaBaru)` | header siap pakai; mencari cara masuk kalau belum terbukti, cache 40 menit |
-| `esbGetBanyak_(daftar)` | banyak GET berbarengan, dengan login ulang sekali |
-| `esbDaftarCabang_()` | `{cabang:[{kode,nama,brand,region}], field:[...]}` — `field` = nama field apa adanya dari ESB |
-| `tesEsbAuth()` | coba semua cara masuk, laporkan jawaban ESB satu per satu |
-| `lupakanAuthEsb()` | hapus cara masuk tersimpan |
-| `esbLive(dari, sampai, cabang)` | omset & transaksi per tanggal per outlet, dikirim balik apa adanya |
-| `esbJam(dari, sampai, cabang)` | penjualan per jam, dijumlahkan sebulan |
-| `esbProduk(dari, sampai, cabang, batas)` | penjualan per item, diurutkan |
-| `esbJelajah(tanggal, branchCode)` | coba semua calon jalur, laporkan kode & field tiap jawaban |
-| `esbCariJalur_(jenis, …)` | cari jalur hidup lalu ingat di Script Properties |
-| `tesEsb()` | tes dari editor: login → cabang → satu hari |
-| `tesEsbLaporan()` | jalankan sekali; log-nya menunjukkan jalur mana yang hidup |
-| `lupakanJalurEsb()` | hapus jalur tersimpan |
-| `copotTriggerEsb()` | copot trigger harian lama yang dulu menulis ke Firestore |
-
-Aksi `doPost`: `esb_cabang`, `esb_live`, `esb_jam`, `esb_produk`, `esb_jelajah`.
-
-## Daftar outlet
-
-Outlet tidak lagi ditulis tangan di kode. Daftarnya datang dari ESB, dengan brand dan region apa adanya, dan tim hanya mengisi target.
-
-### Kunci outlet = branchCode
-
-`OUTLETS` adalah `let`, dibangun ulang oleh `terapkanOutlet()` setiap kali `pengaturan/esb` berubah. Kuncinya adalah `branchCode` ESB, jadi target dan koreksi manual menempel pada kode itu — bukan pada nama, yang bisa berubah di ESB.
-
-`OUTLET_BAWAAN` menyimpan tiga outlet versi lama dengan kunci lamanya (`storypie_pekanbaru`, `storypie_medan`, `gumik`). Dipakai sebelum ESB pernah tersambung dan sebagai cadangan, sehingga data lama tidak kehilangan rumahnya.
-
-### Yang disimpan dan yang tidak
-
-| | Disimpan di Firestore | Alasan |
-|---|---|---|
-| Daftar outlet (kode, nama, brand, region, aktif) | ya, di `pengaturan/esb.outlets` | ini pengaturan, bukan data transaksi: target menempel padanya, dan tanpa itu halaman Transaksi kosong saat ESB mati |
-| Target transaksi & omset | ya, di `transaksiHarian` | diisi tim, bukan dari ESB |
-| Omset & jumlah transaksi harian | **tidak** | ditarik langsung tiap halaman dibuka |
-| Penjualan per jam & per produk | **tidak** | sama |
-
-### Brand dan region
-
-Nama field untuk brand dan region berbeda antar akun ESB, jadi `esbDaftarCabang_()` mencoba beberapa nama yang lazim (`brandName`, `companyName`, …; `regionName`, `areaName`, `cityName`, …) dan memakai yang pertama berisi. Jawaban ESB juga membawa `field` — daftar nama field apa adanya — sehingga kalau tebakan ini meleset, yang sebenarnya dikirim ESB terlihat di panel Admin.
-
-Kalau ESB tidak mengirimnya, aplikasi menurunkan sendiri:
-
-- `tebakBrand()` — `gumik` / `storypie` dari nama; nama lain memakai kata pertamanya sebagai brand sendiri, bukan dipaksa jadi salah satu dari dua brand yang ada.
-- `tebakRegion()` — sisa nama setelah brand dibuang.
-
-Keduanya bisa dikoreksi tangan di tabel panel Admin, dan koreksinya bertahan saat daftar ditarik ulang (dicocokkan per `kode`).
-
-### Pengurutan
-
-`outletTerurut()` mengurutkan brand → region → nama; `outletBergrup()` menyusunnya jadi `{brand: {region: [...]}}` untuk `<optgroup>`. `<select>` hanya mengenal satu tingkat optgroup, jadi tingkat keduanya ditulis di labelnya (`Storypie · Riau`); dengan satu brand saja, labelnya cukup region.
-
-Brand di modul konten (Content Plan, Engagement, Ads, UGC) tetap dua — `storypie` dan `gumik`. Yang dinamis hanya outlet, karena di sanalah ESB jadi sumbernya.
-
-## Jam sepi & rekomendasi program
-
-Panel di bawah halaman Transaksi Harian, semuanya dihitung di browser dari data ESB yang baru ditarik.
-
-### Jam buka dibaca dari datanya sendiri
-
-Tidak ada pengaturan jam operasional yang perlu diisi — jam yang omsetnya di bawah 2% puncak dianggap belum buka atau sudah tutup, dan rentang di antara jam hidup pertama dan terakhir itulah jam operasional. Dari rentang itu:
-
-- **Jam sepi** — omsetnya di bawah 55% rata-rata jam operasional.
-- **Jam ramai** — dua jam tertinggi.
-
-Jam yang berurutan digabung jadi satu blok (`14, 15, 16` → `14.00–17.00`) supaya terbaca sebagai rentang, bukan daftar angka.
-
-### Perkiraan dampaknya
-
-Potensi tambahan dihitung konservatif: seandainya tiap jam sepi naik sampai **75% rata-rata jam operasional**, berapa selisihnya. Angka itu dibagi jumlah hari data untuk mendapat angka per hari. Di layar ditulis apa adanya sebagai hitungan kasar, bukan janji — ini perkiraan dari pola, bukan hasil uji.
-
-### Kerangka program per brand
-
-`PROGRAM_BRAND` memisahkan Storypie dan Gumik karena cara orang membelinya beda: pie dibeli santai dan sering untuk orang lain, mie pangsit dibeli karena lapar. Jadi jam sepi di Storypie dijual sebagai *jeda*, di Gumik sebagai *alasan harga*. Isi angkanya tetap dari ESB; yang dibedakan hanya nama program, bentuk tawaran, dan daftar aktivitasnya.
-
-Empat rekomendasi yang keluar:
-
-1. **Program jam sepi** (prioritas tinggi) — blok jamnya, tawarannya, produk jangkarnya, perkiraan dampak, dan aktivitas konten dengan jam tayang yang menempel ke jam sepi.
-2. **Jaga jam ramai** (sedang) — jangan didiskon, margin jam penuh tidak perlu dipotong.
-3. **Produk lambat** (sedang) — diukur dari porsi terjual, bukan rupiah, dan yang sudah masuk daftar terlaris dikecualikan.
-4. **Pemanfaatan lain jam sepi** (rendah) — hampers untuk Storypie, uji menu untuk Gumik.
 
 ## Catatan teknis
 

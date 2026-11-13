@@ -345,9 +345,6 @@ td .clip{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;ov
 .rek-act{margin:0;padding-left:17px}
 .rek-act li{margin-bottom:4px}
 .rek-act li:last-child{margin-bottom:0}
-.trx-in.trx-simpan{border-color:var(--brand);box-shadow:0 0 0 2px color-mix(in srgb,var(--brand) 18%,transparent)}
-.trx-in.trx-tersimpan{border-color:#2F9E63;box-shadow:0 0 0 2px rgba(47,158,99,.18)}
-.trx-in.trx-gagal{border-color:#E5484D;background:color-mix(in srgb,#E5484D 8%,transparent)}
 .kontak-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;padding:14px}
 .kontak-kartu{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:0 1px 4px rgba(43,35,32,.05);display:flex;flex-direction:column}
 .kk-atas{display:flex;gap:10px;align-items:flex-start}
@@ -403,38 +400,14 @@ td .clip{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;ov
 .dot.meta{background:linear-gradient(135deg,#0866FF,#7B4BFF)}
 
 /* ===== Transaksi Harian ===== */
-.trx-in{width:96px;padding:7px 9px;border:1px solid var(--line);border-radius:var(--radius-ctl);background:var(--paper);color:var(--ink);font-family:'JetBrains Mono',monospace;font-size:12.5px;text-align:right}
-.trx-in.wide{width:126px}
 .lnk-kecil{background:none;border:none;color:var(--muted);font-size:10.5px;font-weight:600;text-decoration:underline;padding:0 0 0 5px}
 .lnk-kecil:hover{color:var(--brand)}
-/* ===== kabar sumber data ESB ===== */
-.esb-kabar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;padding:9px 13px;
+/* ===== baris kabar (status Apps Script, dll) ===== */
+.kabar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;padding:9px 13px;
   border-radius:var(--radius-ctl);border:1px solid var(--line);background:var(--surface);color:var(--ink-2)}
-.esb-kabar.ok{border-color:color-mix(in srgb,var(--ok) 32%,var(--line));background:color-mix(in srgb,var(--ok) 7%,var(--paper));color:var(--ink-2)}
-.esb-kabar.bad{border-color:color-mix(in srgb,var(--bad) 32%,var(--line));background:color-mix(in srgb,var(--bad) 7%,var(--paper));color:var(--bad)}
-.esb-kabar.jalan{border-color:color-mix(in srgb,var(--brand) 32%,var(--line));background:color-mix(in srgb,var(--brand) 6%,var(--paper))}
-.spin{width:13px;height:13px;flex:none;border:2px solid color-mix(in srgb,var(--brand) 30%,transparent);
-  border-top-color:var(--brand);border-radius:50%;animation:spinput .7s linear infinite}
-@keyframes spinput{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.spin{animation-duration:2s}}
-/* ===== jam sepi ===== */
-.jam-grid{display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:3px;align-items:end;margin-top:4px}
-.jam-bat{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
-.jam-bat .bar{width:100%;border-radius:4px 4px 2px 2px;min-height:3px;transition:height .2s;
-  background:color-mix(in srgb,var(--brand) 42%,var(--track))}
-.jam-bat.sepi .bar{background:color-mix(in srgb,var(--bad) 55%,var(--track))}
-.jam-bat.puncak .bar{background:var(--brand)}
-.jam-bat .lb{font-size:8.5px;color:var(--muted);font-family:'JetBrains Mono',monospace;line-height:1}
-.jam-bat.sepi .lb{color:var(--bad);font-weight:700}
-.jam-legenda{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:10px}
-.jam-legenda i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-.prod-baris{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
-.prod-baris:last-child{border-bottom:none}
-.prod-baris .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.prod-baris .qt{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);flex:none}
-.prod-baris .om{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;flex:none;min-width:84px;text-align:right}
-.trx-in:focus{outline:2px solid var(--brand);border-color:var(--brand)}
-.trx-in:disabled{opacity:.55}
+.kabar.ok{border-color:color-mix(in srgb,var(--ok) 32%,var(--line));background:color-mix(in srgb,var(--ok) 7%,var(--paper));color:var(--ink-2)}
+.kabar.bad{border-color:color-mix(in srgb,var(--bad) 32%,var(--line));background:color-mix(in srgb,var(--bad) 7%,var(--paper));color:var(--bad)}
+.kabar.jalan{border-color:color-mix(in srgb,var(--brand) 32%,var(--line));background:color-mix(in srgb,var(--brand) 6%,var(--paper))}
 tr.trx-hariini td{background:color-mix(in srgb,var(--brand) 9%,var(--paper))}
 tbody tr.trx-hariini:hover td{background:color-mix(in srgb,var(--brand) 13%,var(--paper))}
 tfoot td{padding:12px;border-top:1px solid var(--line);font-size:12.5px;background:var(--surface-2)}
@@ -684,8 +657,6 @@ details.fold .sum-note{font-weight:600;text-transform:none;letter-spacing:0;colo
   .gt-body{max-height:none}
   .nav-periode{width:100%;justify-content:space-between}
   .nav-periode b{flex:1}
-  .trx-in{width:74px}
-  .trx-in.wide{width:96px}
   .toolbar{align-items:stretch;gap:8px}
   .toolbar .seg{width:100%;justify-content:stretch}
   .toolbar .seg button{flex:1;padding:9px 8px;font-size:12px}
@@ -1017,7 +988,7 @@ auth.onAuthStateChanged(async user => {
   if(!user){
     profile = null;
     if(unsubPlans){unsubPlans();unsubPlans=null;}
-    plansCache=[]; campaignsCache=[]; usersCache=[]; invitesCache=[]; kpiCustomCache=[]; ugcCache=[]; waSetting={}; aiSetting={}; esbSetting={}; esbCabang=[]; ugcBudget={}; adsCache=[]; trxCache={}; prgCache=[]; kontakCache=[];
+    plansCache=[]; campaignsCache=[]; usersCache=[]; invitesCache=[]; kpiCustomCache=[]; ugcCache=[]; waSetting={}; aiSetting={}; ugcBudget={}; adsCache=[]; trxArsip={}; prgCache=[]; kontakCache=[];
     closeDrawer(); closeSidebar();
     $('appScreen').classList.remove('on');
     $('loginScreen').style.display='flex';
@@ -1038,12 +1009,6 @@ function subscribeData(){
     ugcBudget = (d.exists && d.data().budget) ? d.data().budget : {};
     if(['ugc','budget','dashboard'].includes(activePage)) renderPage();
   }, err=>console.error(err));
-  db.collection('pengaturan').doc('esb').onSnapshot(d=>{
-    esbSetting = d.exists ? d.data() : {};
-    // daftar outlet ikut di dokumen ini, jadi OUTLETS dibangun ulang di sini
-    terapkanOutlet(esbSetting.outlets);
-    renderPage();
-  }, err=>console.error(err));
   db.collection('pengaturan').doc('ai').onSnapshot(d=>{
     aiSetting = d.exists ? d.data() : {};
     if(activePage==='admin') renderPage();
@@ -1060,15 +1025,12 @@ function subscribeData(){
     adsCache = snap.docs.map(d=>({id:d.id, ...d.data()}));
     if(['ads','dashboard','kpi','budget'].includes(activePage)) renderPage();
   }, err=>console.error(err));
-  db.collection('transaksiHarian').onSnapshot(snap=>{
-    trxCache = {}; snap.docs.forEach(d=>{ trxCache[d.id] = d.data(); });
-    if(['transaksi','dashboard','kpi'].includes(activePage)){
-      // kalau kursor masih di dalam tabel input harian, tunda menggambar ulang
-      // supaya angka yang sedang diketik tidak terhapus
-      if(activePage==='transaksi' && sedangIsiHarian()){ trxRenderTertunda = true; return; }
-      renderPage();
-    }
-  }, err=>console.error(err));
+  // Modul Transaksi Harian sudah dihapus, tapi datanya sengaja dibiarkan
+  // utuh di Firestore. Dibaca sekali saja di sini — tanpa listener — supaya
+  // tetap ikut terbawa kalau tim membuat Backup.
+  db.collection('transaksiHarian').get()
+    .then(snap=>{ trxArsip = {}; snap.docs.forEach(d=>{ trxArsip[d.id] = d.data(); }); })
+    .catch(err=>console.error(err));
   db.collection('programTimeline').onSnapshot(snap=>{
     prgCache = snap.docs.map(d=>({id:d.id, ...d.data()}));
     if(['program','dashboard'].includes(activePage)) renderPage();
@@ -1133,7 +1095,6 @@ function navItems(){
     {id:'ugc',       ic:'🤝', label:'UGC & KOL', short:'UGC/KOL'},
     {id:'engagement',ic:'📈', label:'Engagement', short:'Engage'},
     {id:'ads',       ic:'📣', label:'Report Ads', short:'Ads'},
-    {id:'transaksi', ic:'🧾', label:'Transaksi Harian', short:'Transaksi'},
     {id:'program',   ic:'🗺️', label:'Timeline Program', short:'Timeline'},
     {id:'budget',    ic:'💰', label:'Report Budget', short:'Budget'},
     {id:'kontak',    ic:'📇', label:'Kontak Event', short:'Kontak'},
@@ -1150,7 +1111,7 @@ function navItems(){
 const GRUP_NAV = [
   {key:'dash',   label:'Dashboard', isi:['dashboard']},
   {key:'konten', label:'Konten',    isi:['plan','ugc','approval']},
-  {key:'perf',   label:'Performa',  isi:['engagement','ads','transaksi']},
+  {key:'perf',   label:'Performa',  isi:['engagement','ads']},
   {key:'prog',   label:'Program',   isi:['program','budget','kontak']},
   {key:'lap',    label:'Laporan',   isi:['kpi','rekomendasi','laporan']},
   {key:'admin',  label:'Admin',     isi:['admin']}
@@ -1241,7 +1202,6 @@ function renderPage(){
   else if(activePage==='plan') m.innerHTML = viewPlan(planBrand);
   else if(activePage==='ugc') m.innerHTML = viewUgc();
   else if(activePage==='ads') m.innerHTML = viewAds();
-  else if(activePage==='transaksi') m.innerHTML = viewTransaksi();
   else if(activePage==='program') m.innerHTML = viewProgram();
   else if(activePage==='budget') m.innerHTML = viewBudget();
   else if(activePage==='kontak') m.innerHTML = viewKontak();
@@ -1261,9 +1221,6 @@ function renderPage(){
   /* Halaman Transaksi menarik datanya sendiri begitu dibuka. Dijadwalkan
      ke tick berikutnya supaya tidak memanggil renderPage dari dalam
      renderPage; kesegaran datanya dijaga di dalam fungsi masing-masing. */
-  if(activePage==='transaksi' && esbSiap()){
-    setTimeout(()=>{ muatEsbLive(trxBulan); muatAnalisaEsb(trxBulan); }, 0);
-  }
   // sekali per sesi: pastikan Apps Script yang dipanggil memang versi terbaru
   if(activePage==='admin' && versiAppsScript === null && waSetting.webAppUrl){
     setTimeout(()=>cekVersiAppsScript(), 0);
@@ -1439,7 +1396,6 @@ function viewDashboard(){
   </div>
   ${viewChartCard()}
   ${dashUgcCard()}
-  ${dashTrxCard()}
   ${dashAdsCard()}
   ${dashProgramCard()}
   <div class="card" style="margin-top:14px">
@@ -1452,24 +1408,6 @@ function viewDashboard(){
       <div class="k"><div class="lb">Rata-rata ER</div><div class="vl">${avgEr.toFixed(2)}%</div></div>
     </div>
     <div class="hint" style="margin-top:10px">Isi data engagement lewat menu <b>Engagement</b> setelah konten tayang di Instagram / TikTok.</div>
-  </div>`;
-}
-function dashTrxCard(){
-  const bulan = bulanLokal(new Date());
-  const ada = Object.keys(OUTLETS).some(k=>trxRekap(k,bulan).targetTrx || trxRekap(k,bulan).trx);
-  if(!ada) return '';
-  return `<div class="card" style="margin-top:14px">
-    <h3>Transaksi Harian — ${labelBulan(bulan)}</h3>
-    <div class="tbl-wrap"><table class="simple-table">
-      <thead><tr><th>Outlet</th><th>Brand</th><th>Region</th><th>Target</th><th>Actual</th><th>Pencapaian</th><th>Rata-rata/hari</th><th>Proyeksi</th></tr></thead>
-      <tbody>${outletTerurut().map(([k,v])=>{
-        const r = trxRekap(k, bulan);
-        return `<tr><td>${v.ic} ${esc(v.nama)}</td><td>${esc(labelBrand(v.brand))}</td><td>${esc(v.region||'—')}</td>
-          <td class="num">${fmtNum(r.targetTrx)}</td><td class="num"><b>${fmtNum(r.trx)}</b></td>
-          <td class="num"><b class="${r.pctTrx>=100?'tx-ok':r.pctTrx>=85?'tx-warn':'tx-bad'}">${r.targetTrx?r.pctTrx+'%':'—'}</b></td>
-          <td class="num">${fmtNum(r.rataHarian)}</td><td class="num">${fmtNum(r.proyeksi)}</td></tr>`;
-      }).join('')}</tbody>
-    </table></div>
   </div>`;
 }
 function dashAdsCard(){
@@ -2307,7 +2245,6 @@ function viewAdmin(){
     </div>
     <div>
       ${panelBackup()}
-      ${panelEsb()}
       ${panelAi()}
       ${panelWaOtomatis()}
       <div class="card" style="margin-bottom:14px">
@@ -2425,6 +2362,9 @@ function panelWaOtomatis(){
       Skrip membaca Firestore, menyusun pesan, lalu mengirimkannya melalui gateway WhatsApp Fonnte.
       Berkas <span class="mono" style="font-size:11.5px">apps-script/Code.gs</span> beserta panduannya sudah disertakan di dalam paket ini.
     </div>
+
+    <div style="margin-bottom:14px">${kabarVersiHtml()}</div>
+
     <div class="two-col">
       <div class="field"><label>URL Apps Script Web App</label>
         <input id="wa_url" value="${esc(s.webAppUrl||'')}" placeholder="https://script.google.com/macros/s/…/exec" inputmode="url">
@@ -3249,6 +3189,10 @@ const ADS_OBJECTIVE = ['Awareness','Traffic','Engagement','Leads','Conversion','
 const ADS_STATUS = ['Aktif','Dijeda','Selesai'];
 const ADS_ST_CLASS = {'Aktif':'st-posted','Dijeda':'st-design','Selesai':'st-draft'};
 let adsCache = [];
+/* Sisa data modul Transaksi Harian yang sudah dihapus. Tidak ditampilkan
+   di mana pun — hanya dibaca sekali saat login supaya tetap ikut terbawa
+   kalau tim membuat Backup, dan bisa dipulihkan kalau modulnya dikembalikan. */
+let trxArsip = {};
 let adsBrand = 'storypie';
 let adsBulan = bulanLokal(new Date());
 const adsFilter = {platform:'', status:'', q:''};
@@ -3554,704 +3498,6 @@ function exportAdsExcel(){
   });
   XLSX.writeFile(wb, `ReportAds_${nb}_${adsBulan==='__semua'?'semua':adsBulan}_${stamp()}.xlsx`);
   toast('Report Ads diunduh.');
-}
-
-/* ================= MODUL TRANSAKSI HARIAN ================= */
-/* ================= DAFTAR OUTLET =================
-   Outlet tidak lagi ditulis tangan di sini. Daftarnya datang dari ESB
-   dengan brand dan region apa adanya, dan tim cukup mengisi target.
-
-   Yang di bawah hanya cadangan: dipakai sebelum ESB pernah tersambung,
-   dan kalau ESB tidak bisa dihubungi. Kuncinya sengaja dipertahankan
-   sama seperti versi lama supaya target dan koreksi yang sudah tersimpan
-   tidak kehilangan rumahnya.
-
-   Catatan soal penyimpanan: daftar outlet ini DISIMPAN di Firestore,
-   beda dengan omset dan transaksi yang tidak. Alasannya, daftar outlet
-   adalah pengaturan — target menempel padanya, dan tanpa itu halaman
-   Transaksi tidak bisa menampilkan apa pun saat ESB sedang mati. */
-const OUTLET_BAWAAN = {
-  storypie_pekanbaru: {nama:'Storypie Pekanbaru', brand:'storypie', region:'Pekanbaru', ic:'🥧'},
-  storypie_medan:     {nama:'Storypie Medan',     brand:'storypie', region:'Medan',     ic:'🥧'},
-  gumik:              {nama:'Gumik',              brand:'gumik',    region:'Pekanbaru', ic:'🍜'}
-};
-let OUTLETS = JSON.parse(JSON.stringify(OUTLET_BAWAAN));
-
-const IKON_BRAND = {storypie:'🥧', gumik:'🍜'};
-function ikonBrand(b){ return IKON_BRAND[b] || '🏪'; }
-function labelBrand(b){
-  if(b === 'storypie') return 'Storypie';
-  if(b === 'gumik') return 'Gumik';
-  return String(b||'Lainnya').replace(/[-_]+/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
-}
-function slugKan(s){
-  return String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-}
-
-/* Kalau ESB tidak mengirim field brand, diturunkan dari nama outlet.
-   "Storypie Pekanbaru" -> storypie. Nama yang tidak dikenali memakai
-   kata pertamanya sebagai brand sendiri, bukan dipaksa jadi salah satu
-   dari dua brand yang ada. */
-function tebakBrand(nama, dariEsb){
-  if(dariEsb) return slugKan(dariEsb);
-  const n = String(nama||'').toLowerCase();
-  if(n.includes('gumik')) return 'gumik';
-  if(n.includes('storypie') || n.includes('story pie')) return 'storypie';
-  return slugKan(String(nama||'').split(/[\s\-–—,(]+/)[0]) || 'lainnya';
-}
-/* Region dari ESB kalau ada; kalau tidak, sisa nama setelah brand dibuang. */
-function tebakRegion(nama, dariEsb, brand){
-  if(dariEsb) return String(dariEsb).trim();
-  let sisa = String(nama||'').replace(new RegExp(labelBrand(brand), 'ig'), '')
-             .replace(/story\s*pie/ig,'').replace(/[\-–—,()]/g,' ').trim();
-  return sisa || 'Tanpa region';
-}
-
-/* true begitu OUTLETS benar-benar berasal dari ESB, bukan contoh bawaan.
-   Dipakai untuk memberi tahu di halaman Transaksi — tanpa penanda ini,
-   daftar contoh terlihat persis seperti daftar yang sebenarnya. */
-let outletDariEsb = false;
-
-/** Bangun ulang OUTLETS dari daftar yang tersimpan atau baru ditarik. */
-function terapkanOutlet(daftar){
-  if(!Array.isArray(daftar) || !daftar.length){
-    OUTLETS = JSON.parse(JSON.stringify(OUTLET_BAWAAN));
-    outletDariEsb = false;
-    return;
-  }
-  outletDariEsb = true;
-  const baru = {};
-  daftar.forEach(o=>{
-    if(!o || !o.kode || o.aktif === false) return;
-    const brand = o.brand || tebakBrand(o.nama, '');
-    baru[o.kode] = {
-      nama: o.nama || o.kode,
-      brand,
-      region: o.region || 'Tanpa region',
-      ic: ikonBrand(brand),
-      kode: o.kode
-    };
-  });
-  // semua outlet dimatikan centangnya -> kembali ke contoh bawaan, dan
-  // penandanya ikut turun supaya kabarnya tetap jujur
-  if(!Object.keys(baru).length){
-    OUTLETS = JSON.parse(JSON.stringify(OUTLET_BAWAAN));
-    outletDariEsb = false;
-  } else {
-    OUTLETS = baru;
-  }
-  if(!OUTLETS[trxOutlet]) trxOutlet = Object.keys(OUTLETS)[0];
-}
-
-/** Outlet diurutkan: brand dulu, lalu region, lalu nama. */
-function outletTerurut(){
-  return Object.entries(OUTLETS).sort((a,b)=>
-    labelBrand(a[1].brand).localeCompare(labelBrand(b[1].brand)) ||
-    String(a[1].region).localeCompare(String(b[1].region)) ||
-    String(a[1].nama).localeCompare(String(b[1].nama)));
-}
-/** Dikelompokkan jadi {brand: {region: [[kode, outlet], ...]}} untuk optgroup. */
-function outletBergrup(){
-  const g = {};
-  outletTerurut().forEach(([k,o])=>{
-    const b = o.brand || 'lainnya', r = o.region || 'Tanpa region';
-    if(!g[b]) g[b] = {};
-    if(!g[b][r]) g[b][r] = [];
-    g[b][r].push([k,o]);
-  });
-  return g;
-}
-const HARI_PENDEK = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
-let trxCache = {};                 // { 'outlet_2026-09': {..} }
-let trxOutlet = 'storypie_pekanbaru';
-let trxBulan = bulanLokal(new Date());
-/* Urutan tanggal tabel harian. 'turun' menaruh tanggal terbaru di atas —
-   berguna di akhir bulan supaya tidak perlu scroll jauh untuk mengisi hari ini. */
-let trxUrut = (()=>{ try{ return localStorage.getItem('trxUrut') || 'naik'; }catch(e){ return 'naik'; } })();
-function setTrxUrut(v){
-  trxUrut = v === 'turun' ? 'turun' : 'naik';
-  try{ localStorage.setItem('trxUrut', trxUrut); }catch(e){}
-  renderPage();
-}
-function setTrxOutlet(v){ trxOutlet=v; renderPage(); }
-/**
- * Pilihan outlet, dikelompokkan dua tingkat: brand lalu region.
- * <select> hanya mengenal satu tingkat optgroup, jadi tingkat keduanya
- * ditulis di label grupnya — "Storypie · Pekanbaru". Kalau cuma ada satu
- * brand, labelnya cukup regionnya saja supaya tidak berulang-ulang.
- */
-function opsiOutletHtml(terpilih){
-  const g = outletBergrup();
-  const brands = Object.keys(g);
-  return brands.map(b=>Object.keys(g[b]).map(r=>{
-    const judul = brands.length > 1 ? `${labelBrand(b)} · ${r}` : r;
-    return `<optgroup label="${esc(judul)}">${g[b][r].map(([k,o])=>
-      `<option value="${k}" ${terpilih===k?'selected':''}>${o.ic} ${esc(o.nama)}</option>`).join('')}</optgroup>`;
-  }).join('')).join('');
-}
-
-function trxDocId(outlet, bulan){ return outlet + '_' + bulan; }
-/**
- * Satu bulan untuk satu outlet, sudah digabung dari dua sumber.
- *
- * Firestore hanya menyimpan target bulanan dan angka yang DIKETIK tim.
- * Angka dari ESB tidak pernah disimpan — ia ditarik saat halaman dibuka
- * dan hanya hidup di memori. Urutan menangnya:
- *   1. koreksi manual (manual:true)  — selalu menang, berapa pun kata ESB
- *   2. angka ESB hari ini            — dasar untuk tanggal yang belum dikoreksi
- *   3. sisa simpanan versi lama      — hanya kalau ESB tidak punya tanggal itu
- * Semua yang membaca transaksi lewat sini, jadi rekap, grafik, Excel dan
- * rekomendasi otomatis ikut memakai angka gabungan yang sama.
- */
-function trxDoc(outlet, bulan){
-  const asli = trxCache[trxDocId(outlet,bulan)] || {};
-  const live = (esbLiveData[outlet] || {})[bulan];
-  if(!live || !live.harian) return asli;
-
-  const harian = {};
-  Object.keys(live.harian).forEach(hh=>{
-    const v = live.harian[hh] || {};
-    harian[hh] = {trx:n0(v.trx), omset:n0(v.omset), sumber:'esb'};
-  });
-  Object.keys(asli.harian || {}).forEach(hh=>{
-    const v = asli.harian[hh] || {};
-    if(v.manual === true) harian[hh] = {...v, sumber:'manual'};
-    else if(!harian[hh] && (v.trx!==undefined || v.omset!==undefined)) harian[hh] = {...v, sumber:'simpanan'};
-  });
-  return {...asli, harian};
-}
-function jumlahHari(bulan){ const p=bulan.split('-'); return new Date(Number(p[0]), Number(p[1]), 0).getDate(); }
-function trxBulanOptions(){
-  const s=new Set([trxBulan]);
-  Object.keys(trxCache).forEach(k=>{ const b=k.slice(-7); if(/^\d{4}-\d{2}$/.test(b)) s.add(b); });
-  return [...s].sort().reverse();
-}
-function trxHarian(d){ return d.harian || {}; }
-function trxNilai(d, hh, field){ const x = trxHarian(d)[hh]; return x ? n0(x[field]) : 0; }
-function trxAdaIsi(d, hh){ const x = trxHarian(d)[hh]; return !!(x && (x.trx!==undefined || x.omset!==undefined)); }
-function trxRekap(outlet, bulan){
-  const d = trxDoc(outlet, bulan);
-  const hari = jumlahHari(bulan);
-  const targetTrx = n0(d.targetTransaksi), targetOmset = n0(d.targetOmset);
-  let trx=0, omset=0, hariTerisi=0;
-  for(let i=1;i<=hari;i++){
-    const hh = String(i).padStart(2,'0');
-    if(trxAdaIsi(d, hh)) hariTerisi++;
-    trx += trxNilai(d, hh, 'trx');
-    omset += trxNilai(d, hh, 'omset');
-  }
-  const targetHarianTrx = hari ? targetTrx/hari : 0;
-  const targetHarianOmset = hari ? targetOmset/hari : 0;
-  const bulanIni = bulanLokal(new Date())===bulan;
-  const hariBerjalan = bulanIni ? Math.min(hari, new Date().getDate()) : hari;
-  const targetSampaiHariIni = targetHarianTrx * hariBerjalan;
-  return {
-    hari, hariTerisi, hariBerjalan, targetTrx, targetOmset, trx, omset,
-    targetHarianTrx, targetHarianOmset, targetSampaiHariIni,
-    pctTrx: targetTrx ? Math.round(trx/targetTrx*100) : 0,
-    pctOmset: targetOmset ? Math.round(omset/targetOmset*100) : 0,
-    pctPace: targetSampaiHariIni ? Math.round(trx/targetSampaiHariIni*100) : 0,
-    rataHarian: hariTerisi ? Math.round(trx/hariTerisi) : 0,
-    proyeksi: hariTerisi ? Math.round(trx/hariTerisi*hari) : 0,
-    proyeksiOmset: hariTerisi ? Math.round(omset/hariTerisi*hari) : 0
-  };
-}
-async function aturTargetTrx(){
-  const o = OUTLETS[trxOutlet];
-  const d = trxDoc(trxOutlet, trxBulan);
-  const jt = prompt(`Target TRANSAKSI sebulan — ${o.nama}, ${labelBulan(trxBulan)}:`, n0(d.targetTransaksi)||'');
-  if(jt===null) return;
-  const targetTransaksi = Math.max(0, Math.round(Number(String(jt).replace(/[^0-9]/g,''))||0));
-  const jo = prompt(`Target OMSET sebulan (Rp) — ${o.nama}, ${labelBulan(trxBulan)}:\n\nKosongkan kalau tidak dipakai.`, n0(d.targetOmset)||'');
-  const targetOmset = jo===null ? n0(d.targetOmset) : Math.max(0, Math.round(Number(String(jo).replace(/[^0-9]/g,''))||0));
-  try{
-    await db.collection('transaksiHarian').doc(trxDocId(trxOutlet,trxBulan)).set({
-      outlet: trxOutlet, bulan: trxBulan, targetTransaksi, targetOmset,
-      updatedBy: profile.nama, updatedAt: new Date().toISOString()
-    }, {merge:true});
-    toast('Target ' + labelBulan(trxBulan) + ' disimpan.');
-  }catch(e){ toast('Gagal menyimpan target: ' + (e.message||e)); }
-}
-let trxRenderTertunda = false;
-let trxSedangIsi = false;   // true selama kursor masih berada di area input harian
-function trxFokus(){ trxSedangIsi = true; }
-function sedangIsiHarian(){
-  const ae = document.activeElement;
-  // flag-nya penting: saat kursor berpindah antar kolom ada jeda singkat
-  // di mana activeElement = <body>, dan tanpa flag ini halaman akan
-  // tergambar ulang tepat di celah itu lalu angka yang diketik hilang
-  return trxSedangIsi || !!(ae && ae.classList && ae.classList.contains('trx-in'));
-}
-async function simpanHarian(hh, field, nilai, el){
-  const angka = Math.max(0, Math.round(Number(String(nilai).replace(/[^0-9]/g,''))||0));
-  const id = trxDocId(trxOutlet, trxBulan);
-  const outlet = trxOutlet, bulan = trxBulan;
-
-  // 1) simpan dulu ke cache lokal supaya angka tidak pernah hilang dari layar
-  if(!trxCache[id]) trxCache[id] = {outlet, bulan, harian:{}};
-  if(!trxCache[id].harian) trxCache[id].harian = {};
-  if(!trxCache[id].harian[hh]) trxCache[id].harian[hh] = {};
-  trxCache[id].harian[hh][field] = angka;
-  trxCache[id].harian[hh].sumber = 'manual';
-  trxCache[id].harian[hh].manual = true;
-  patchBarisHarian(hh);
-
-  if(el){ el.classList.remove('trx-gagal'); el.classList.add('trx-simpan'); }
-  try{
-    // satu kali tulis, merge bersarang: hanya sel ini yang disentuh,
-    // tanggal lain di dalam map `harian` tetap utuh
-    await db.collection('transaksiHarian').doc(id).set({
-      outlet, bulan, updatedBy: profile.nama, updatedAt: new Date().toISOString(),
-      // manual:true mengunci tanggal ini dari tarikan ESB berikutnya
-      harian: { [hh]: { [field]: angka, sumber:'manual', manual:true } }
-    }, {merge:true});
-    if(el){ el.classList.remove('trx-simpan'); el.classList.add('trx-tersimpan');
-            setTimeout(()=>el.classList.remove('trx-tersimpan'), 1200); }
-  }catch(e){
-    if(el){ el.classList.remove('trx-simpan'); el.classList.add('trx-gagal'); }
-    toast('Gagal menyimpan tanggal ' + Number(hh) + ': ' + (e.message||e));
-  }
-}
-function barisTotalHarian(r){
-  return `<td colspan="2">TOTAL</td>
-    <td class="num">${fmtNum(r.targetTrx)}</td>
-    <td class="num">${fmtNum(r.trx)}</td>
-    <td class="num ${r.trx-r.targetTrx>=0?'tx-ok':'tx-bad'}">${r.targetTrx?(r.trx-r.targetTrx>=0?'+':'')+fmtNum(r.trx-r.targetTrx):'—'}</td>
-    <td class="num">${fmtRp(r.omset)}</td>
-    <td>${r.pctTrx}%</td>`;
-}
-/* memperbarui satu baris + baris TOTAL tanpa menggambar ulang seluruh halaman,
-   supaya sel yang sedang diketik tidak ikut terhapus */
-/* Dari mana angka satu tanggal berasal: tarikan ESB atau diketik tim. */
-function lencanaSumber(d, hh){
-  const s = ((d.harian||{})[hh]||{}).sumber;
-  if(s === 'esb')      return '<span class="pill" style="background:color-mix(in srgb,var(--brand) 14%,transparent);color:var(--brand)">ESB</span>';
-  if(s === 'manual')   return `<span class="pill ok" title="Angka ketikan menang atas ESB">Dikoreksi</span>
-    <button class="lnk-kecil" onclick="hapusKoreksi('${hh}')" title="Buang koreksi, pakai angka ESB lagi">pakai ESB</button>`;
-  if(s === 'simpanan') return '<span class="pill nt" title="Sisa data versi lama yang masih tersimpan di Firestore. ESB tidak punya angka untuk tanggal ini.">Tersimpan</span>';
-  return '<span class="pill ok">Terisi</span>';
-}
-/** Buang koreksi manual satu tanggal supaya angka ESB yang dipakai lagi. */
-async function hapusKoreksi(hh){
-  const id = trxDocId(trxOutlet, trxBulan);
-  try{
-    await db.collection('transaksiHarian').doc(id)
-      .update({['harian.'+hh]: firebase.firestore.FieldValue.delete()});
-    const c = trxCache[id];
-    if(c && c.harian) delete c.harian[hh];
-    renderPage();
-    toast('Koreksi tanggal ' + Number(hh) + ' dibuang. Angka ESB dipakai lagi.');
-  }catch(e){ toast('Gagal membuang koreksi: ' + (e.message||e)); }
-}
-function patchBarisHarian(hh){
-  const d = trxDoc(trxOutlet, trxBulan), r = trxRekap(trxOutlet, trxBulan);
-  const tgt = Math.round(r.targetHarianTrx);
-  const isi = trxAdaIsi(d, hh), selisih = trxNilai(d,hh,'trx') - tgt;
-  const sel = document.getElementById('trxSel_'+hh);
-  if(sel){
-    sel.textContent = isi ? (selisih>=0?'+':'') + fmtNum(selisih) : '—';
-    sel.className = 'num ' + (isi ? (selisih>=0?'tx-ok':'tx-bad') : '');
-  }
-  const st = document.getElementById('trxSt_'+hh);
-  if(st && isi) st.innerHTML = lencanaSumber(d,hh);
-  const tot = document.getElementById('trxTotal');
-  if(tot) tot.innerHTML = barisTotalHarian(r);
-}
-function lepasIsiHarian(){
-  // gambar ulang halaman hanya setelah kursor benar-benar keluar dari tabel input
-  setTimeout(()=>{
-    const ae = document.activeElement;
-    if(ae && ae.classList && ae.classList.contains('trx-in')) return;  // pindah ke kolom lain
-    trxSedangIsi = false;
-    if(trxRenderTertunda){ trxRenderTertunda = false; if(activePage==='transaksi') renderPage(); }
-  }, 180);
-}
-/* Enter = lompat ke tanggal berikutnya di kolom yang sama */
-function trxEnter(e, hh, field){
-  if(e.key!=='Enter') return;
-  e.preventDefault();
-  // "berikutnya" mengikuti yang terlihat di layar, bukan selalu tanggal +1
-  const langkah = trxUrut === 'turun' ? -1 : 1;
-  const n = document.getElementById('trxIn_'+String(Number(hh)+langkah).padStart(2,'0')+'_'+field);
-  if(n){ n.focus(); n.select(); } else e.target.blur();
-}
-function chartTrxKumulatif(outlet, bulan){
-  const d = trxDoc(outlet, bulan), r = trxRekap(outlet, bulan);
-  if(!r.targetTrx && !r.hariTerisi) return '';
-  const W=680,H=220,L=48,R=16,T=14,B=30, iw=W-L-R, ih=H-T-B;
-  const maxY = Math.max(r.targetTrx, r.proyeksi, r.trx, 10);
-  const x = i => L + (r.hari<=1?0:(i/(r.hari-1))*iw);
-  const y = v => T + ih - (v/maxY)*ih;
-  let kum=0; const titik=[];
-  for(let i=1;i<=r.hari;i++){
-    const hh=String(i).padStart(2,'0');
-    if(!trxAdaIsi(d,hh) && i>r.hariBerjalan) break;
-    kum += trxNilai(d,hh,'trx');
-    titik.push({x:x(i-1), y:y(kum), v:kum, h:i});
-  }
-  const garisTarget = `<line x1="${x(0)}" y1="${y(r.targetHarianTrx)}" x2="${x(r.hari-1)}" y2="${y(r.targetTrx)}" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>`;
-  const grid = [0,.5,1].map(f=>{
-    const gy=T+ih-f*ih;
-    return `<line class="gridline" x1="${L}" y1="${gy}" x2="${W-R}" y2="${gy}"/><text class="axis" x="${L-7}" y="${gy+4}" text-anchor="end">${fmtNum(Math.round(maxY*f))}</text>`;
-  }).join('');
-  const label = [1, Math.ceil(r.hari/2), r.hari].map(i=>`<text class="axis" x="${x(i-1)}" y="${H-10}" text-anchor="middle">${i}</text>`).join('');
-  const poly = titik.length>1 ? `<polyline class="er-line" style="stroke:var(--brand)" points="${titik.map(p=>p.x+','+p.y).join(' ')}"/>` : '';
-  const dot = titik.length ? `<circle cx="${titik[titik.length-1].x}" cy="${titik[titik.length-1].y}" r="4" fill="var(--brand)"/>` : '';
-  return `<div class="chart-scroll"><svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Grafik transaksi kumulatif">
-    ${grid}${garisTarget}${poly}${dot}${label}</svg></div>
-  <div class="chart-legend">
-    <span><i style="background:var(--brand)"></i>Actual kumulatif</span>
-    <span><i style="background:var(--muted)"></i>Garis target</span>
-  </div>`;
-}
-function chartTrxHarian(outlet, bulan){
-  const d = trxDoc(outlet, bulan), r = trxRekap(outlet, bulan);
-  if(!r.hariTerisi && !r.targetTrx) return '';
-  const W=680,H=230,L=48,R=16,T=16,B=30, iw=W-L-R, ih=H-T-B;
-  const nilai=[]; for(let i=1;i<=r.hari;i++) nilai.push(trxNilai(d, String(i).padStart(2,'0'), 'trx'));
-  const maxY = Math.max(r.targetHarianTrx*1.35, ...nilai, 10);
-  const step = iw/r.hari, bw = Math.max(3, Math.min(16, step*0.62));
-  const y = v => T + ih - (v/maxY)*ih;
-  const grid = [0,.5,1].map(f=>{
-    const gy=T+ih-f*ih;
-    return `<line class="gridline" x1="${L}" y1="${gy}" x2="${W-R}" y2="${gy}"/>
-      <text class="axis" x="${L-7}" y="${gy+4}" text-anchor="end">${fmtNum(Math.round(maxY*f))}</text>`;
-  }).join('');
-  const batang = nilai.map((v,i)=>{
-    if(!v) return '';
-    const cx = L + step*i + step/2;
-    const hh = Math.max(1,(v/maxY)*ih);
-    const capai = v >= r.targetHarianTrx;
-    return `<rect x="${cx-bw/2}" y="${T+ih-hh}" width="${bw}" height="${hh}" rx="2"
-      fill="${capai?'var(--ok)':'var(--bad)'}" opacity="${capai?'.9':'.75'}"><title>Tgl ${i+1}: ${fmtNum(v)} (target ${fmtNum(Math.round(r.targetHarianTrx))})</title></rect>`;
-  }).join('');
-  const garis = r.targetHarianTrx ? `<line x1="${L}" y1="${y(r.targetHarianTrx)}" x2="${W-R}" y2="${y(r.targetHarianTrx)}"
-      stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 4"/>
-    <text class="axis" x="${W-R}" y="${y(r.targetHarianTrx)-6}" text-anchor="end" style="font-weight:700">target ${fmtNum(Math.round(r.targetHarianTrx))}</text>` : '';
-  const label = [1, Math.ceil(r.hari/4), Math.ceil(r.hari/2), Math.ceil(r.hari*3/4), r.hari]
-    .map(i=>`<text class="axis" x="${L+step*(i-1)+step/2}" y="${H-10}" text-anchor="middle">${i}</text>`).join('');
-  const lewat = nilai.filter((v,i)=>v && v>=r.targetHarianTrx).length;
-  return `<div class="chart-scroll"><svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Grafik transaksi harian terhadap target">
-    ${grid}${batang}${garis}${label}</svg></div>
-  <div class="chart-legend">
-    <span><i style="background:var(--ok)"></i>Mencapai target (${lewat} hari)</span>
-    <span><i style="background:var(--bad)"></i>Di bawah target (${r.hariTerisi-lewat} hari)</span>
-    <span><i style="background:var(--muted)"></i>Target harian</span>
-  </div>`;
-}
-function chartTrxOutlet(bulan){
-  const data = outletTerurut().map(([k,v])=>({nama:v.nama, ic:v.ic, brand:v.brand, region:v.region, ...trxRekap(k,bulan)}));
-  const maxY = Math.max(10, ...data.map(d=>Math.max(d.targetTrx, d.trx)));
-  const W=680,H=210,L=56,R=16,T=16,B=34, iw=W-L-R, ih=H-T-B;
-  const step = iw/data.length, bw = Math.min(46, step*0.3);
-  const grid = [0,.5,1].map(f=>{
-    const gy=T+ih-f*ih;
-    return `<line class="gridline" x1="${L}" y1="${gy}" x2="${W-R}" y2="${gy}"/>
-      <text class="axis" x="${L-7}" y="${gy+4}" text-anchor="end">${fmtNum(Math.round(maxY*f))}</text>`;
-  }).join('');
-  const batang = data.map((d,i)=>{
-    const cx = L + step*i + step/2;
-    const hT = d.targetTrx?Math.max(1,(d.targetTrx/maxY)*ih):0;
-    const hA = d.trx?Math.max(1,(d.trx/maxY)*ih):0;
-    const capai = d.targetTrx && d.trx>=d.targetTrx;
-    return `${hT?`<rect x="${cx-bw-3}" y="${T+ih-hT}" width="${bw}" height="${hT}" rx="3" fill="var(--track)"><title>${d.nama} target: ${fmtNum(d.targetTrx)}</title></rect>`:''}
-      ${hA?`<rect x="${cx+3}" y="${T+ih-hA}" width="${bw}" height="${hA}" rx="3" fill="${capai?'var(--ok)':'var(--brand)'}"><title>${d.nama} actual: ${fmtNum(d.trx)}</title></rect>`:''}
-      <text class="bar-val" x="${cx}" y="${T+ih-Math.max(hT,hA)-6}" text-anchor="middle">${d.targetTrx?d.pctTrx+'%':''}</text>
-      <text class="axis" x="${cx}" y="${H-12}" text-anchor="middle">${d.nama.replace('Storypie ','SP ')}</text>`;
-  }).join('');
-  return `<div class="chart-scroll"><svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Perbandingan target dan actual antar outlet">
-    ${grid}${batang}</svg></div>
-  <div class="chart-legend">
-    <span><i style="background:var(--track)"></i>Target</span>
-    <span><i style="background:var(--brand)"></i>Actual</span>
-    <span><i style="background:var(--ok)"></i>Actual (target tercapai)</span>
-  </div>`;
-}
-function viewTransaksi(){
-  const o = OUTLETS[trxOutlet];
-  const d = trxDoc(trxOutlet, trxBulan);
-  const r = trxRekap(trxOutlet, trxBulan);
-  const bisa = can.editProd();
-  const bulanIni = bulanLokal(new Date())===trxBulan;
-  const hariIni = new Date().getDate();
-  const clsPace = r.pctPace>=100?'ok':r.pctPace>=85?'warn':'bad';
-
-  const baris = [];
-  for(let i=1;i<=r.hari;i++){
-    const hh = String(i).padStart(2,'0');
-    const tgl = new Date(Number(trxBulan.split('-')[0]), Number(trxBulan.split('-')[1])-1, i);
-    const trx = trxNilai(d,hh,'trx'), oms = trxNilai(d,hh,'omset');
-    const selisih = trx - Math.round(r.targetHarianTrx);
-    const isi = trxAdaIsi(d,hh);
-    const lewat = bulanIni && i<hariIni;
-    baris.push(`<tr class="${bulanIni&&i===hariIni?'trx-hariini':''}">
-      <td class="num">${i}</td>
-      <td style="color:${tgl.getDay()===0?'var(--bad)':'var(--muted)'};font-size:12px">${HARI_PENDEK[tgl.getDay()]}</td>
-      <td class="num">${fmtNum(Math.round(r.targetHarianTrx))}</td>
-      <td><input id="trxIn_${hh}_trx" class="trx-in" type="number" min="0" inputmode="numeric" ${bisa?'':'disabled'} value="${isi&&trx?trx:''}" placeholder="0" onchange="simpanHarian('${hh}','trx',this.value,this)" onfocus="trxFokus()" onkeydown="trxEnter(event,'${hh}','trx')" onblur="lepasIsiHarian()"></td>
-      <td id="trxSel_${hh}" class="num ${isi?(selisih>=0?'tx-ok':'tx-bad'):''}">${isi?(selisih>=0?'+':'')+fmtNum(selisih):'—'}</td>
-      <td><input id="trxIn_${hh}_omset" class="trx-in wide" type="number" min="0" inputmode="numeric" ${bisa?'':'disabled'} value="${isi&&oms?oms:''}" placeholder="0" onchange="simpanHarian('${hh}','omset',this.value,this)" onfocus="trxFokus()" onkeydown="trxEnter(event,'${hh}','omset')" onblur="lepasIsiHarian()"></td>
-      <td id="trxSt_${hh}">${isi?lencanaSumber(d,hh):(lewat?'<span class="pill bad">Kosong</span>':'<span class="pill nt">—</span>')}</td>
-    </tr>`);
-  }
-
-  return `
-  <div class="page-head">
-    <div><h2>Transaksi Harian</h2>
-      <div class="desc">${o.nama} • ${labelBulan(trxBulan)} • ${r.hariTerisi} dari ${r.hari} hari terisi</div></div>
-    <div class="head-actions">
-      <button class="btn btn-ghost" onclick="exportTrxExcel()">Excel</button>
-      ${can.manageCampaign()?`<button class="btn btn-primary" onclick="aturTargetTrx()">${r.targetTrx?'Ubah target':'Atur target bulanan'}</button>`:''}
-    </div>
-  </div>
-
-  <div class="filters" style="border:1px solid var(--line);border-radius:var(--radius);margin-bottom:14px">
-    <select class="brand-sel" style="min-width:240px" onchange="setTrxOutlet(this.value)">
-      ${opsiOutletHtml(trxOutlet)}
-    </select>
-    <select onchange="trxBulan=this.value;renderPage()">
-      ${trxBulanOptions().map(b=>`<option value="${b}" ${trxBulan===b?'selected':''}>${labelBulan(b)}</option>`).join('')}
-    </select>
-  </div>
-
-  <div id="esbKabar" style="margin-bottom:14px">${kabarEsbHtml()}</div>
-
-  ${insightTrx(trxOutlet, trxBulan)}
-
-  ${!r.targetTrx ? `<div class="card" style="margin-bottom:14px"><div class="empty">
-      Target ${labelBulan(trxBulan)} untuk ${o.nama} belum diatur.${can.manageCampaign()?' Klik <b>Atur target bulanan</b> di kanan atas.':' Minta Manager atau Admin mengaturnya.'}
-    </div></div>` : `
-  <div class="kpi-grid">
-    ${gauge(r.pctTrx, `${fmtNum(r.trx)} dari ${fmtNum(r.targetTrx)} transaksi`, 'Pencapaian Bulan Ini')}
-    <div class="gauge"><div class="gv ${clsPace==='ok'?'ok':clsPace==='warn'?'warn':'bad'}" style="font-size:28px">${r.pctPace}<small>%</small></div>
-      <div class="gl">Terhadap Hari Berjalan</div>
-      <div class="gbar"><i class="${clsPace}" style="width:${Math.min(100,r.pctPace)}%"></i></div>
-      <div class="gs">target s/d hari ke-${r.hariBerjalan}: ${fmtNum(Math.round(r.targetSampaiHariIni))}</div></div>
-    <div class="gauge"><div class="gv" style="font-size:26px">${fmtNum(r.rataHarian)}</div><div class="gl">Rata-rata Harian</div>
-      <div class="gs">target harian ${fmtNum(Math.round(r.targetHarianTrx))}</div></div>
-    <div class="gauge"><div class="gv ${r.proyeksi>=r.targetTrx?'ok':'bad'}" style="font-size:26px">${fmtNum(r.proyeksi)}</div><div class="gl">Proyeksi Akhir Bulan</div>
-      <div class="gs">${r.targetTrx?(r.proyeksi>=r.targetTrx?'lebih '+fmtNum(r.proyeksi-r.targetTrx):'kurang '+fmtNum(r.targetTrx-r.proyeksi))+' dari target':''}</div></div>
-  </div>
-
-  ${r.targetOmset||r.omset?`<div class="card" style="margin-top:14px">
-    <h3>Omset</h3>
-    <div class="kpi">
-      <div class="k"><div class="lb">Actual</div><div class="vl" style="font-size:15px">${fmtRp(r.omset)}</div></div>
-      <div class="k"><div class="lb">Target</div><div class="vl" style="font-size:15px">${fmtRp(r.targetOmset)}</div></div>
-      <div class="k"><div class="lb">Pencapaian</div><div class="vl ${r.pctOmset>=100?'tx-ok':r.pctOmset>=85?'tx-warn':'tx-bad'}">${r.pctOmset}%</div></div>
-      <div class="k"><div class="lb">Proyeksi</div><div class="vl" style="font-size:15px">${fmtRp(r.proyeksiOmset)}</div></div>
-      <div class="k"><div class="lb">Rata-rata / transaksi</div><div class="vl" style="font-size:15px">${r.trx?fmtRp(Math.round(r.omset/r.trx)):'—'}</div></div>
-    </div>
-  </div>`:''}
-
-  <div class="card" style="margin-top:14px">
-    <h3>Target vs Actual Harian</h3>
-    ${chartTrxHarian(trxOutlet, trxBulan) || '<div class="empty">Belum ada data harian.</div>'}
-  </div>
-
-  <div class="card" style="margin-top:14px">
-    <h3>Grafik Kumulatif</h3>
-    ${chartTrxKumulatif(trxOutlet, trxBulan) || '<div class="empty">Belum ada data harian.</div>'}
-  </div>
-
-  <div class="card" style="margin-top:14px">
-    <h3>Perbandingan Outlet — ${labelBulan(trxBulan)}</h3>
-    ${chartTrxOutlet(trxBulan)}
-  </div>`}
-
-  ${panelJamProduk(trxBulan, trxOutlet)}
-
-  <div class="table-card" style="margin-top:14px">
-    <div class="filters" style="justify-content:space-between">
-      <b style="font-size:13px">Input Harian — ${o.nama}, ${labelBulan(trxBulan)}</b>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <span class="hint">${esbSiap()?'Angka ESB terisi sendiri. Yang kamu ketik menimpanya dan itulah yang tersimpan.':'Angka tersimpan otomatis saat kamu pindah kolom.'}</span>
-        ${esbSiap() ? `<button class="btn btn-ghost" style="min-height:34px;padding:7px 13px;font-size:12.5px"
-            onclick="perbaruiEsb()">Perbarui dari ESB</button>` : ''}
-        <select onchange="setTrxUrut(this.value)" aria-label="Urutan tanggal"
-                style="padding:7px 10px;border:1px solid var(--line);border-radius:var(--radius-ctl);background:var(--paper);color:var(--ink);font-size:12.5px">
-          <option value="naik" ${trxUrut==='naik'?'selected':''}>Tanggal 1 di atas</option>
-          <option value="turun" ${trxUrut==='turun'?'selected':''}>Tanggal terbaru di atas</option>
-        </select>
-      </div>
-    </div>
-    <div class="table-scroll always" style="max-height:calc(100dvh - var(--topbar-h) - 260px)">
-    <table>
-      <thead><tr><th>Tgl</th><th>Hari</th><th>Target</th><th>Actual Transaksi</th><th>Selisih</th><th>Omset (Rp)</th><th>Status</th></tr></thead>
-      <tbody>${(trxUrut==='turun' ? baris.slice().reverse() : baris).join('')}</tbody>
-      <tfoot><tr id="trxTotal" style="position:sticky;bottom:0;background:var(--surface-2);font-weight:800">${barisTotalHarian(r)}</tr></tfoot>
-    </table>
-    </div>
-  </div>`;
-}
-/* ---------- panel Jam Sepi & Produk ---------- */
-function panelJamProduk(bulan, outlet){
-  const o = OUTLETS[outlet] || {};
-  if(!esbSiap()){
-    return `<div class="card" style="margin-top:14px">
-      <div class="ins-head"><h3>Jam Sepi &amp; Produk</h3><span class="pill nt">Butuh ESB</span></div>
-      <div class="empty">Bagian ini membaca penjualan per jam dan per produk langsung dari ESB.
-        Sambungkan dulu di <b>Admin → Sumber Data ESB</b>.</div></div>`;
-  }
-  const st = esbAnalisaStatus[bulan] || {};
-  if(st.jalan){
-    return `<div class="card" style="margin-top:14px">
-      <div class="ins-head"><h3>Jam Sepi &amp; Produk</h3><span class="pill nt">Mengambil…</span></div>
-      <div class="esb-kabar jalan"><span class="spin"></span> Membaca penjualan per jam dan per produk ${labelBulan(bulan)} dari ESB.</div></div>`;
-  }
-
-  const a = analisaJam(bulan, outlet);
-  const produk = produkOutlet(bulan, outlet);
-
-  if(!a && !produk.length){
-    return `<div class="card" style="margin-top:14px">
-      <div class="ins-head"><h3>Jam Sepi &amp; Produk</h3><span class="pill ${st.galat?'bad':'nt'}">${st.galat?'Tidak tersedia':'Belum diambil'}</span></div>
-      ${st.galat
-        ? `<div class="esb-kabar bad" style="margin-bottom:10px">${esc(st.galat)}</div>
-           <p class="hint">Laporan per jam dan per produk tidak sama tersedianya di tiap akun ESB.
-           Buka <b>Admin → Sumber Data ESB → Periksa Laporan ESB</b> untuk melihat jalur mana yang menjawab.</p>`
-        : `<div class="empty">Data per jam dan per produk belum diambil.
-            <button class="lnk-kecil" onclick="muatAnalisaEsb('${bulan}',true)">ambil sekarang</button></div>`}
-    </div>`;
-  }
-
-  /* --- grafik per jam --- */
-  let kartuJam = '';
-  if(a){
-    const maks = Math.max(...a.baris.map(b=>b.omset)) || 1;
-    const jamSepi = new Set(a.sepi.slice(0,4).map(b=>b.jam));
-    const jamPuncak = new Set(a.puncak);
-    kartuJam = `<div class="card" style="margin-top:14px">
-      <div class="ins-head"><h3>Penjualan per Jam — ${esc(o.nama)}</h3>
-        <span class="pill">${jamTeks(a.buka)}–${jamTeks(a.tutup+1)}</span></div>
-      <p class="hint" style="margin:6px 0 12px">Total omset ${labelBulan(bulan)} dipecah per jam. Jam buka dan tutup dibaca dari datanya sendiri, bukan dari pengaturan.</p>
-      <div class="jam-grid">
-        ${a.baris.map(b=>{
-          const t = b.jam < a.buka || b.jam > a.tutup;
-          const kls = t ? '' : jamSepi.has(b.jam) ? 'sepi' : jamPuncak.has(b.jam) ? 'puncak' : '';
-          const tinggi = t ? 2 : Math.max(3, Math.round(b.omset / maks * 120));
-          return `<div class="jam-bat ${kls}" title="${jamTeks(b.jam)} — ${fmtRp(b.omset)} · ${fmtNum(b.trx)} transaksi">
-            <div class="bar" style="height:${tinggi}px;${t?'opacity:.25':''}"></div>
-            <span class="lb">${String(b.jam).padStart(2,'0')}</span></div>`;
-        }).join('')}
-      </div>
-      <div class="jam-legenda">
-        <span><i style="background:var(--brand)"></i>Jam ramai</span>
-        <span><i style="background:color-mix(in srgb,var(--brand) 42%,var(--track))"></i>Normal</span>
-        <span><i style="background:color-mix(in srgb,var(--bad) 55%,var(--track))"></i>Jam sepi</span>
-        <span>Rata-rata jam operasional ${rpR(a.rata)}</span>
-      </div>
-    </div>`;
-  }
-
-  /* --- produk --- */
-  let kartuProduk = '';
-  if(produk.length){
-    const atas = produk.slice(0,6);
-    const namaAtas = new Set(atas.map(p=>p.nama));
-    // yang lambat diukur dari porsi terjual, bukan rupiah — menu mahal yang
-    // jarang laku beda masalahnya dengan menu murah yang tidak dilirik
-    const bawah = produk.filter(p=>p.qty>0 && !namaAtas.has(p.nama))
-      .sort((a,b)=>a.qty-b.qty).slice(0,5);
-    const baris = p => `<div class="prod-baris">
-        <span class="nm">${esc(p.nama)}${p.kategori?` <span class="hint">· ${esc(p.kategori)}</span>`:''}</span>
-        <span class="qt">${fmtNum(p.qty)} porsi</span>
-        <span class="om">${rpR(p.omset)}</span></div>`;
-    kartuProduk = `<div class="card" style="margin-top:14px">
-      <div class="ins-head"><h3>Produk — ${labelBulan(bulan)}</h3>
-        <span class="pill">${produk.length} item terbaca</span></div>
-      <div class="two-col" style="margin-top:10px;gap:22px">
-        <div><div class="hint" style="font-weight:700;margin-bottom:4px">Paling laku</div>${atas.map(baris).join('')}</div>
-        <div><div class="hint" style="font-weight:700;margin-bottom:4px">Paling lambat (yang masih terjual)</div>${bawah.map(baris).join('')}</div>
-      </div>
-    </div>`;
-  }
-
-  /* --- rekomendasi program --- */
-  const rek = rekomendasiJam(bulan, outlet);
-  let kartuRek = '';
-  if(rek.length){
-    kartuRek = `<div class="card" style="margin-top:14px">
-      <div class="ins-head"><h3>Program dari Jam Sepi — ${esc(o.nama)}</h3>
-        <span class="pill">${rek.length} rekomendasi</span></div>
-      <p class="hint" style="margin:6px 0 12px">Disusun dari penjualan per jam dan per produk bulan ini, dan disesuaikan dengan cara orang membeli di ${o.brand==='gumik'?'Gumik':'Storypie'}.</p>
-      <div class="rek-list">
-      ${rek.map((x,i)=>`
-        <div class="rek">
-          <div class="rek-h">
-            <b>${i+1}. ${esc(x.judul)}</b>
-            <span class="rek-pri ${x.prioritas==='tinggi'?'pri-hi':x.prioritas==='sedang'?'pri-mid':'pri-low'}">Prioritas ${x.prioritas}</span>
-          </div>
-          <div class="rek-baris"><span>Kenapa</span><div>${esc(x.kenapa)}</div></div>
-          ${x.tawaran?`<div class="rek-baris"><span>Tawarannya</span><div><b>${esc(x.tawaran)}</b></div></div>`:''}
-          ${x.produk&&x.produk.length?`<div class="rek-baris"><span>Produk</span><div>${x.produk.map(p=>`<span class="tag live">${esc(p)}</span>`).join(' ')}</div></div>`:''}
-          <div class="rek-baris"><span>Target dampak</span><div class="rek-dampak">${esc(x.dampak)}</div></div>
-          ${x.aktivitas&&x.aktivitas.length?`<div class="rek-baris"><span>Aktivitas</span>
-            <ul class="rek-act">${x.aktivitas.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div>`:''}
-        </div>`).join('')}
-      </div>
-      ${st.galat?`<div class="esb-kabar bad" style="margin-top:10px">Sebagian data tidak terbaca: ${esc(st.galat)}</div>`:''}
-    </div>`;
-  }
-
-  return kartuJam + kartuProduk + kartuRek;
-}
-
-function trxSheetRows(outlet, bulan){
-  const d = trxDoc(outlet, bulan), r = trxRekap(outlet, bulan);
-  const out=[];
-  for(let i=1;i<=r.hari;i++){
-    const hh=String(i).padStart(2,'0');
-    const tgl=new Date(Number(bulan.split('-')[0]), Number(bulan.split('-')[1])-1, i);
-    out.push({
-      'Outlet': OUTLETS[outlet].nama, 'Tanggal': bulan+'-'+hh, 'Hari': HARI_PENDEK[tgl.getDay()],
-      'Target Transaksi': Math.round(r.targetHarianTrx),
-      'Actual Transaksi': trxNilai(d,hh,'trx'),
-      'Selisih': trxNilai(d,hh,'trx') - Math.round(r.targetHarianTrx),
-      'Target Omset (Rp)': Math.round(r.targetHarianOmset),
-      'Actual Omset (Rp)': trxNilai(d,hh,'omset'),
-      'Terisi': trxAdaIsi(d,hh)?'Ya':'Tidak'
-    });
-  }
-  return out;
-}
-function exportTrxExcel(){
-  if(!xlsxReady()) return;
-  const r = trxRekap(trxOutlet, trxBulan);
-  const o = OUTLETS[trxOutlet];
-  const ringkas = [
-    {'Keterangan':'Laporan','Nilai':`Transaksi Harian ${o.nama} — ${labelBulan(trxBulan)}`},
-    {'Keterangan':'Digenerate','Nilai':new Date().toLocaleString('id-ID')},
-    {'Keterangan':'Oleh','Nilai':profile?profile.nama:'-'},
-    {'Keterangan':'Jumlah hari','Nilai':r.hari},
-    {'Keterangan':'Hari terisi','Nilai':r.hariTerisi},
-    {'Keterangan':'Target transaksi sebulan','Nilai':r.targetTrx},
-    {'Keterangan':'Target transaksi harian','Nilai':Math.round(r.targetHarianTrx)},
-    {'Keterangan':'Actual transaksi','Nilai':r.trx},
-    {'Keterangan':'Selisih transaksi','Nilai':r.trx-r.targetTrx},
-    {'Keterangan':'Pencapaian transaksi (%)','Nilai':r.pctTrx},
-    {'Keterangan':'Rata-rata harian','Nilai':r.rataHarian},
-    {'Keterangan':'Proyeksi akhir bulan','Nilai':r.proyeksi},
-    {'Keterangan':'Target omset sebulan (Rp)','Nilai':r.targetOmset},
-    {'Keterangan':'Actual omset (Rp)','Nilai':r.omset},
-    {'Keterangan':'Pencapaian omset (%)','Nilai':r.pctOmset},
-    {'Keterangan':'Rata-rata per transaksi (Rp)','Nilai':r.trx?Math.round(r.omset/r.trx):0}
-  ];
-  const wb = XLSX.utils.book_new();
-  addSheet(wb, 'Ringkasan', ringkas);
-  addSheet(wb, 'Ringkasan & Rekomendasi', sheetInsight(dataInsightTrx(trxOutlet, trxBulan), `${o.nama} — ${labelBulan(trxBulan)}`));
-  addSheet(wb, 'Harian', trxSheetRows(trxOutlet, trxBulan));
-  const semua=[];
-  outletTerurut().forEach(([k,ou])=>{
-    const rr = trxRekap(k, trxBulan);
-    semua.push({'Outlet':ou.nama,'Brand':labelBrand(ou.brand),'Region':ou.region||'',
-      'Target Transaksi':rr.targetTrx,'Actual Transaksi':rr.trx,
-      'Pencapaian (%)':rr.pctTrx,'Rata-rata Harian':rr.rataHarian,'Proyeksi':rr.proyeksi,
-      'Target Omset (Rp)':rr.targetOmset,'Actual Omset (Rp)':rr.omset,'Pencapaian Omset (%)':rr.pctOmset});
-  });
-  addSheet(wb, 'Semua Outlet', semua);
-  XLSX.writeFile(wb, `Transaksi_${o.nama.replace(/\s+/g,'')}_${trxBulan}_${stamp()}.xlsx`);
-  toast('Report transaksi diunduh.');
 }
 
 /* ================= MODUL TIMELINE PROGRAM ================= */
@@ -5004,7 +4250,7 @@ function kumpulkanBackup(){
       contentPlans: plansCache.length, ugcKol: ugcCache.length, ads: adsCache.length,
       programTimeline: prgCache.length, kontakEvent: kontakCache.length,
       campaigns: campaignsCache.length, users: usersCache.length,
-      kpiCustom: kpiCustomCache.length, transaksiHarian: Object.keys(trxCache).length
+      kpiCustom: kpiCustomCache.length, transaksiHarian: Object.keys(trxArsip).length
     },
     data: {
       contentPlans: plansCache,
@@ -5016,7 +4262,7 @@ function kumpulkanBackup(){
       users: usersCache,
       userRoles: invitesCache.map(i=>({id:i.email, role:i.role, addedBy:i.addedBy||''})),
       kpiCustom: kpiCustomCache,
-      transaksiHarian: trxCache,
+      transaksiHarian: trxArsip,
       pengaturan: { wa: waSetting, budgetUgc: {budget: ugcBudget} }
     }
   };
@@ -5065,27 +4311,6 @@ function backupExcel(){
   addSheet(wb, 'Engagement Konten', engSheetRows(plansCache.filter(r=>r.status==='Posted'||hasEng(r))));
   addSheet(wb, 'UGC & KOL', ugcSheetRows(ugcCache));
   addSheet(wb, 'Report Ads', adsSheetRows(adsCache));
-
-  // transaksi harian semua outlet, semua bulan
-  const trxRows = [];
-  Object.keys(trxCache).forEach(key=>{
-    const d = trxCache[key];
-    const outlet = d.outlet || key.slice(0, key.lastIndexOf('_'));
-    const bulan  = d.bulan  || key.slice(-7);
-    if(!OUTLETS[outlet] || !/^\d{4}-\d{2}$/.test(bulan)) return;
-    trxSheetRows(outlet, bulan).forEach(r=>trxRows.push(Object.assign({'Bulan':labelBulan(bulan)}, r)));
-  });
-  addSheet(wb, 'Transaksi Harian', trxRows);
-  addSheet(wb, 'Target Transaksi', Object.keys(trxCache).map(key=>{
-    const d = trxCache[key];
-    const outlet = d.outlet || key.slice(0, key.lastIndexOf('_'));
-    const bulan  = d.bulan  || key.slice(-7);
-    if(!OUTLETS[outlet]) return null;
-    const r = trxRekap(outlet, bulan);
-    return {'Outlet':OUTLETS[outlet].nama,'Bulan':labelBulan(bulan),
-      'Target Transaksi':r.targetTrx,'Actual Transaksi':r.trx,'Pencapaian (%)':r.pctTrx,
-      'Target Omset (Rp)':r.targetOmset,'Actual Omset (Rp)':r.omset,'Hari Terisi':r.hariTerisi};
-  }).filter(Boolean));
 
   addSheet(wb, 'Timeline Program', prgCache.map(x=>({
     'Program':x.nama||'', 'Brand':x.brand==='semua'?'Semua':(x.brand==='storypie'?'Storypie':'Gumik'),
@@ -6397,23 +5622,9 @@ async function genSimpan(){
   }
 }
 
-/* ================= SUMBER DATA ESB ================= */
-/* Kredensial ESB tidak pernah ada di browser. Aplikasi hanya memanggil
-   Apps Script (yang sudah dipakai report WA & Penulis AI), dan Apps Script
-   yang memanggil ESB. Jadi token ESB tetap di server Google.            */
+/* ================= APPS SCRIPT (perantara WhatsApp & AI) ================= */
 
-let esbSetting = {};
-let esbCabang = [];          // {kode, nama} hasil tarikan dari ESB
-
-/* Dua keadaan yang berbeda, dan dulu tercampur jadi satu.
-   esbTersambung = Apps Script dan ESB sudah diatur.
-   esbSiap       = itu, DAN outletnya sudah punya kode cabang.
-   Dicampur, hasilnya saling mengunci: outlet baru ada setelah ditarik dari
-   ESB, tapi tarikannya dianggap belum bisa karena outletnya belum ada. */
-function esbTersambung(){ return !!(esbSetting.aktif && waSetting.webAppUrl); }
-function esbSiap(){ return !!(esbTersambung() && Object.keys(petaCabang()).length); }
-
-async function panggilEsb(aksi, data){
+async function panggilAppsScript(aksi, data){
   if(!waSetting.webAppUrl) throw new Error('URL Apps Script belum diisi di panel Kirim Otomatis.');
   const batas = new AbortController();
   const jam = setTimeout(()=>batas.abort(), 180000);   // tarikan sebulan bisa lama
@@ -6433,70 +5644,6 @@ async function panggilEsb(aksi, data){
   }finally{ clearTimeout(jam); }
 }
 
-/* ---------- panel di menu Admin ---------- */
-function panelEsb(){
-  const s = esbSetting;
-  const terpeta = Object.keys(petaCabang()).length;
-  return `<div class="card">
-    <div class="ins-head"><h3>Sumber Data ESB</h3>
-      <span class="pill ${esbSiap()?'ok':'nt'}">${esbSiap()?`${terpeta} outlet tersambung`:'Belum diatur'}</span></div>
-    <p class="hint" style="margin:8px 0 12px;line-height:1.7">
-      Omset, jumlah transaksi, penjualan per jam dan per produk dibaca langsung dari ESB tiap kali halaman
-      Transaksi Harian dibuka. <b>Tidak ada satu angka pun dari ESB yang disimpan ke database ini</b> — yang
-      tersimpan hanya target bulanan dan angka yang diketik tim sendiri. Kredensial ESB ada di Apps Script,
-      tidak pernah sampai ke browser siapa pun.
-    </p>
-
-    <div class="ai-peringatan">
-      <b>Yang perlu disiapkan di Apps Script.</b>
-      Project Settings → Script Properties. Isi sesuai cara masuk yang dipakai akun ESB kamu:
-      <code>ESB_API_KEY</code> kalau ESB memberi satu kunci panjang, atau <code>ESB_USER</code> +
-      <code>ESB_PASS</code> kalau yang diberi username dan password. Kalau tidak yakin, isi yang kamu punya —
-      Apps Script mencoba keduanya dan mengingat mana yang diterima.
-      Lalu Deploy → Manage deployments → pensil → Version: New version → Deploy.
-      Tempel kredensialnya langsung di sana, jangan lewat chat.
-      <br><br>Masih ditolak? Jalankan fungsi <code>tesEsbAuth</code> di editor Apps Script — log-nya
-      menunjukkan jawaban ESB untuk tiap cara masuk, jadi ketahuan mana yang salah.
-      <b>Kalau tes di editor berhasil tapi di sini tetap gagal</b>, deployment-nya yang belum diperbarui —
-      lihat baris versi di bawah.
-    </div>
-
-    <div style="margin-top:10px">${kabarVersiHtml()}</div>
-
-    <div class="two-col" style="margin-top:12px">
-      <div class="field"><label>Status</label>
-        <select id="esb_aktif">
-          <option value="1" ${s.aktif?'selected':''}>Aktif</option>
-          <option value="0" ${!s.aktif?'selected':''}>Nonaktif</option>
-        </select>
-      </div>
-      <div class="field"><label>Cara pengambilan</label>
-        <input value="Langsung saat halaman dibuka, tidak disimpan" disabled>
-        <div class="hint">Tidak ada trigger harian lagi. Kalau dulu sempat dipasang, jalankan
-          <code>copotTriggerEsb</code> sekali di editor Apps Script supaya berhenti menulis ke database.</div>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Daftar outlet</label>
-      <p class="hint" style="margin:0 0 8px">Outlet diambil dari ESB apa adanya. Brand dan region ikut dari ESB kalau
-        tersedia; kalau tidak, diturunkan dari nama outlet dan bisa dikoreksi di sini. Yang disimpan hanya daftar ini
-        dan targetnya — omset dan transaksi tetap tidak disimpan.</p>
-      <button class="btn btn-ghost" id="esb_muat_btn" style="width:100%;margin-bottom:8px" onclick="muatCabangEsb()">Tarik Daftar Outlet dari ESB</button>
-      <div id="esb_cabang_info" class="ai-tes"></div>
-      <div id="esb_peta">${esbOutletHtml()}</div>
-    </div>
-
-    <div class="head-actions" style="justify-content:flex-start;gap:8px;margin-top:12px">
-      <button class="btn btn-primary" onclick="simpanEsbSetting()">Simpan Pengaturan</button>
-      <button class="btn btn-ghost" onclick="periksaLaporanEsb()">Periksa Laporan ESB</button>
-    </div>
-    <p class="hint" style="margin-top:8px"><b>Periksa Laporan ESB</b> mencoba semua kemungkinan jalur laporan
-      per jam dan per produk, lalu menunjukkan mana yang dibuka untuk akun ini. Perlu dijalankan sekali saja —
-      hasilnya diingat Apps Script.</p>
-    <div id="esb_hasil" class="ai-tes"></div>
-  </div>`;
-}
 
 /* ---------- versi Apps Script yang terpasang ----------
    "Jalan waktu dites di editor tapi gagal dari aplikasi" hampir selalu
@@ -6509,7 +5656,7 @@ let versiAppsScript = null;        // null = belum dicek
 async function cekVersiAppsScript(diam){
   if(!waSetting.webAppUrl) return;
   try{
-    const j = await panggilEsb('versi');
+    const j = await panggilAppsScript('versi');
     versiAppsScript = j.versi || '(tidak menjawab versi)';
   }catch(e){
     versiAppsScript = '(gagal dihubungi)';
@@ -6518,14 +5665,14 @@ async function cekVersiAppsScript(diam){
 }
 function kabarVersiHtml(){
   if(versiAppsScript === null){
-    return `<div class="esb-kabar nt">Versi Apps Script belum dicek.
+    return `<div class="kabar nt">Versi Apps Script belum dicek.
       <button class="lnk-kecil" onclick="cekVersiAppsScript()">cek sekarang</button></div>`;
   }
   if(versiAppsScript === VERSI_APPS_SCRIPT){
-    return `<div class="esb-kabar ok">Apps Script terpasang versi <b>${esc(versiAppsScript)}</b> — cocok dengan aplikasi ini.
+    return `<div class="kabar ok">Apps Script terpasang versi <b>${esc(versiAppsScript)}</b> — cocok dengan aplikasi ini.
       <button class="lnk-kecil" onclick="cekVersiAppsScript()">cek ulang</button></div>`;
   }
-  return `<div class="esb-kabar bad">
+  return `<div class="kabar bad">
     <b>Apps Script masih versi ${esc(versiAppsScript)}</b>, sedangkan aplikasi ini butuh ${esc(VERSI_APPS_SCRIPT)}.
     Kode di editor mungkin sudah benar, tapi deployment-nya belum diperbarui — itu sebabnya fungsi tes berhasil
     di editor tapi aplikasi tetap gagal. Buka Apps Script → <b>Deploy → Manage deployments → ikon pensil →
@@ -6534,524 +5681,6 @@ function kabarVersiHtml(){
 }
 
 /* Baris yang sedang ditampilkan di panel Admin. Diisi dari yang tersimpan,
-   lalu diperbarui saat Tarik Daftar Outlet ditekan. */
-let esbOutletDraf = null;
-
-function esbBarisOutlet(){
-  if(esbOutletDraf) return esbOutletDraf;
-  const tersimpan = esbSetting.outlets;
-  if(Array.isArray(tersimpan) && tersimpan.length) return tersimpan;
-  // belum pernah ditarik: tampilkan outlet bawaan beserta kode lamanya
-  const peta = esbSetting.peta || {};
-  return Object.entries(OUTLET_BAWAAN).map(([k,o])=>({
-    kode: peta[k] || '', nama: o.nama, brand: o.brand, region: o.region, aktif: true, kunciLama: k
-  }));
-}
-
-function esbOutletHtml(){
-  const baris = esbBarisOutlet();
-  if(!baris.length){
-    return `<div class="empty">Belum ada outlet. Tekan <b>Tarik Daftar Outlet dari ESB</b> di atas.</div>`;
-  }
-  const sel = 'padding:8px 10px;border:1px solid var(--line);border-radius:var(--radius-ctl);background:var(--paper);color:var(--ink);font-size:12.5px;width:100%';
-  return `<div class="tbl-wrap"><table class="simple-table" style="font-size:12.5px">
-    <thead><tr><th style="width:34px">Aktif</th><th>Outlet</th><th style="width:110px">Kode ESB</th>
-      <th style="width:150px">Brand</th><th style="width:150px">Region</th></tr></thead>
-    <tbody>
-    ${baris.map((o,i)=>`<tr>
-      <td style="text-align:center"><input type="checkbox" id="eso_aktif_${i}" ${o.aktif===false?'':'checked'}></td>
-      <td><input id="eso_nama_${i}" value="${esc(o.nama||'')}" style="${sel}"></td>
-      <td><input id="eso_kode_${i}" value="${esc(o.kode||'')}" placeholder="kode" style="${sel};font-family:'JetBrains Mono',monospace"></td>
-      <td><input id="eso_brand_${i}" value="${esc(o.brand||'')}" placeholder="storypie / gumik" style="${sel}"></td>
-      <td><input id="eso_region_${i}" value="${esc(o.region||'')}" placeholder="Pekanbaru" style="${sel}"></td>
-    </tr>`).join('')}
-    </tbody></table></div>
-  <p class="hint" style="margin-top:8px">Outlet yang dicentang muncul di Transaksi Harian, diurutkan per brand lalu region.
-    Jangan ubah <b>Kode ESB</b> kecuali memang salah — target yang sudah diisi menempel pada kode itu.</p>`;
-}
-
-async function muatCabangEsb(){
-  const info = $('esb_cabang_info'), tbl = $('esb_muat_btn');
-  info.className = 'ai-tes jalan'; info.textContent = 'Menghubungi ESB lewat Apps Script…';
-  if(tbl) tbl.disabled = true;
-  try{
-    const j = await panggilEsb('esb_cabang');
-    esbCabang = j.cabang || [];
-    if(!esbCabang.length) throw new Error('ESB tidak mengembalikan satu cabang pun untuk kredensial ini.');
-
-    // pertahankan koreksi brand/region yang sudah pernah disimpan
-    const lama = {};
-    esbBarisOutlet().forEach(o=>{ if(o.kode) lama[o.kode] = o; });
-    esbOutletDraf = esbCabang.map(c=>{
-      const l = lama[c.kode] || {};
-      const brand = l.brand || tebakBrand(c.nama, c.brand);
-      return {
-        kode: c.kode, nama: c.nama || c.kode, brand,
-        region: l.region || tebakRegion(c.nama, c.region, brand),
-        aktif: l.aktif === false ? false : true
-      };
-    });
-    $('esb_peta').innerHTML = esbOutletHtml();
-
-    const adaBrand = esbCabang.some(c=>c.brand), adaRegion = esbCabang.some(c=>c.region);
-    const catat = [];
-    if(!adaBrand) catat.push('brand');
-    if(!adaRegion) catat.push('region');
-    info.className = 'ai-tes ok';
-    info.innerHTML = `✅ ${esbCabang.length} outlet ditemukan.`
-      + (catat.length
-          ? ` ESB tidak mengirim ${catat.join(' dan ')}, jadi diturunkan dari nama outlet — periksa kolomnya sebelum menyimpan.`
-          : ' Brand dan region ikut dari ESB.')
-      + ` Lalu tekan <b>Simpan Pengaturan</b>.`
-      + (j.field && j.field.length ? `<br><span class="hint">Field dari ESB: ${esc(j.field.join(', '))}</span>` : '');
-  }catch(e){
-    info.className = 'ai-tes galat';
-    info.innerHTML = `❌ ${esc(e.message||e)}<br><span style="opacity:.8">Outlet masih bisa diketik manual di bawah.</span>`;
-  }finally{ if(tbl) tbl.disabled = false; }
-}
-
-async function simpanEsbSetting(){
-  if(!can.manageAdmin()) return toast('Hanya Admin yang boleh mengubah pengaturan ESB.');
-  const baris = esbBarisOutlet();
-  const outlets = [];
-  baris.forEach((o,i)=>{
-    const kode = ($('eso_kode_'+i)||{}).value;
-    if(!kode || !kode.trim()) return;          // tanpa kode, outlet tidak bisa ditarik datanya
-    outlets.push({
-      kode: kode.trim(),
-      nama: (($('eso_nama_'+i)||{}).value || kode).trim(),
-      brand: slugKan(($('eso_brand_'+i)||{}).value) || 'lainnya',
-      region: (($('eso_region_'+i)||{}).value || '').trim() || 'Tanpa region',
-      aktif: !!(($('eso_aktif_'+i)||{}).checked)
-    });
-  });
-  if(!outlets.length) return toast('Isi minimal satu outlet dengan kode ESB.');
-
-  try{
-    await db.collection('pengaturan').doc('esb').set({
-      aktif: $('esb_aktif').value === '1', outlets,
-      diubahOleh: profile.nama, diubahAt: new Date().toISOString()
-    }, {merge:true});
-    esbOutletDraf = null;
-    terapkanOutlet(outlets);
-    toast(`Pengaturan ESB disimpan. ${outlets.filter(o=>o.aktif).length} outlet aktif.`);
-    renderPage();
-  }catch(e){ toast('Gagal menyimpan: ' + (e.message||e)); }
-}
-
-/** {kunci outlet: branchCode} untuk dikirim ke Apps Script. */
-function petaCabang(){
-  const p = {};
-  Object.keys(OUTLETS).forEach(k=>{
-    const kode = OUTLETS[k].kode || (esbSetting.peta || {})[k] || '';
-    if(kode) p[k] = kode;
-  });
-  return p;
-}
-
-/* ---------- memeriksa laporan ESB dari panel Admin ---------- */
-async function periksaLaporanEsb(){
-  const box = $('esb_hasil');
-  const kode = Object.values(petaCabang()).find(Boolean);
-  if(!kode) return toast('Tarik dulu daftar outlet dari ESB, lalu Simpan Pengaturan.');
-  box.className = 'ai-tes jalan';
-  box.textContent = 'Mencoba semua kemungkinan jalur laporan di ESB. Butuh sekitar setengah menit…';
-  try{
-    const j = await panggilEsb('esb_jelajah', {tanggal: geserHari(todayISO(), -1), branchCode: kode});
-    const tabel = (judul, baris) => {
-      const hidup = baris.filter(b=>b.kode===200 && b.baris>0);
-      return `<div style="margin-top:10px"><b>${judul}</b> — ${hidup.length ? `<span style="color:var(--ok)">${hidup.length} jalur menjawab</span>` : '<span style="color:var(--bad)">tidak ada yang menjawab</span>'}
-        <div style="margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.8">
-        ${baris.map(b=>`<div><span style="display:inline-block;width:36px;color:${b.kode===200?'var(--ok)':'var(--muted)'}">${b.kode}</span>
-          ${esc(b.path)}${b.baris?` — ${b.baris} baris · ${esc(b.field.slice(0,8).join(', '))}`:''}</div>`).join('')}
-        </div></div>`;
-    };
-    box.className = 'ai-tes ok';
-    box.innerHTML = `Hasil pemeriksaan tanggal ${fmtDate(geserHari(todayISO(),-1))} di cabang <b>${esc(kode)}</b>:`
-      + tabel('Laporan per jam', j.jam || []) + tabel('Laporan per produk', j.item || [])
-      + `<p class="hint" style="margin-top:10px">Jalur yang menjawab 200 dengan baris terisi akan dipakai otomatis dan diingat.
-         Kalau semuanya 404, laporan itu memang tidak dibuka untuk akun ESB ini — minta ESB mengaktifkannya,
-         atau isi sendiri Script Property <code>ESB_PATH_JAM</code> / <code>ESB_PATH_ITEM</code> kalau jalurnya sudah diketahui.</p>`;
-  }catch(e){
-    box.className = 'ai-tes galat'; box.innerHTML = `❌ ${esc(e.message||e)}`;
-  }
-}
-
-/* ================= ESB MODE LANGSUNG =================
-   Tidak ada satu angka ESB pun yang masuk Firestore. Data ditarik saat
-   halaman Transaksi dibuka, disimpan sebentar di memori halaman, dan
-   hilang begitu tab ditutup. Yang permanen hanya ketikan tim sendiri.
-
-   sessionStorage dipakai supaya pindah menu lalu kembali tidak menarik
-   ulang; umurnya pendek, dan tombol Perbarui selalu bisa memaksa segar. */
-
-let esbLiveData = {};        // {outlet: {bulan: {harian:{dd:{omset,trx}}, at}}}
-let esbLiveStatus = {};      // {bulan: {jalan, at, galat, gagal}}
-let esbJamData = {};         // {bulan: {outlet: {jam: {omset,trx,hari}}}}
-let esbProdukData = {};      // {bulan: {outlet: [{nama,kategori,qty,omset}]}}
-let esbAnalisaStatus = {};   // {bulan: {jalan, galat, at}}
-const ESB_UMUR = 10 * 60 * 1000;    // data dianggap segar 10 menit
-const ESB_SESI = 'cph_esb_live';
-
-function esbMuatSesi(){
-  try{
-    const j = JSON.parse(sessionStorage.getItem(ESB_SESI) || '{}');
-    if(j && j.live) esbLiveData = j.live;
-    if(j && j.jam) esbJamData = j.jam;
-    if(j && j.produk) esbProdukData = j.produk;
-  }catch(e){}
-}
-function esbSimpanSesi(){
-  try{ sessionStorage.setItem(ESB_SESI, JSON.stringify({live:esbLiveData, jam:esbJamData, produk:esbProdukData})); }
-  catch(e){}   // kuota penuh bukan alasan menggagalkan tampilan
-}
-esbMuatSesi();
-
-/** Rentang satu bulan, tidak pernah melewati hari ini. */
-function esbRentangBulan(bulan){
-  const hariIni = todayISO();
-  const akhir = bulan + '-' + String(jumlahHari(bulan)).padStart(2,'0');
-  const dari = bulan + '-01';
-  return {dari, sampai: akhir > hariIni ? hariIni : akhir, lewat: dari > hariIni};
-}
-function esbSegar(bulan){
-  const s = esbLiveStatus[bulan];
-  return !!(s && s.at && (Date.now() - s.at) < ESB_UMUR);
-}
-function esbUmurTeks(bulan){
-  const s = esbLiveStatus[bulan];
-  if(!s || !s.at) return '';
-  const menit = Math.round((Date.now() - s.at) / 60000);
-  return menit < 1 ? 'baru saja' : menit + ' menit lalu';
-}
-
-/**
- * Tarik omset & transaksi sebulan untuk semua outlet yang dipetakan.
- * Satu panggilan untuk semua outlet sekaligus — Apps Script yang
- * membagi dan menjalankannya berbarengan ke ESB.
- */
-async function muatEsbLive(bulan, paksa){
-  if(!esbSiap()) return;
-  if(!paksa && esbSegar(bulan)) return;
-  if((esbLiveStatus[bulan]||{}).jalan) return;
-  const r = esbRentangBulan(bulan);
-  if(r.lewat) return;
-
-  esbLiveStatus[bulan] = {jalan:true};
-  if(activePage==='transaksi') patchKabarEsb();
-  try{
-    const j = await panggilEsb('esb_live', {dari:r.dari, sampai:r.sampai, cabang: petaCabang()});
-    Object.keys(j.data || {}).forEach(o=>{
-      if(!esbLiveData[o]) esbLiveData[o] = {};
-      esbLiveData[o][bulan] = {harian: j.data[o] || {}, at: Date.now()};
-    });
-    esbLiveStatus[bulan] = {at: Date.now(), gagal: j.gagal || []};
-    esbSimpanSesi();
-  }catch(e){
-    esbLiveStatus[bulan] = {at: esbLiveStatus[bulan] && esbLiveStatus[bulan].at, galat: e.message || String(e)};
-  }
-  if(activePage==='transaksi') renderPage();
-}
-
-/** Dipanggil tombol Perbarui di halaman Transaksi. */
-function perbaruiEsb(){
-  if(!esbSiap()) return toast('Sumber data ESB belum diatur. Buka Admin → Sumber Data ESB.');
-  muatEsbLive(trxBulan, true);
-  muatAnalisaEsb(trxBulan, true);
-}
-
-/** Baris kabar di atas tabel: segar, sedang menarik, atau gagal. */
-function kabarEsbHtml(){
-  if(!esbTersambung()){
-    return `<div class="esb-kabar nt">Angka masih diketik manual. Sambungkan ESB di <b>Admin → Sumber Data ESB</b> supaya omset dan transaksi terisi sendiri.</div>`;
-  }
-  // Tersambung tapi outletnya masih contoh — ini keadaan yang paling
-  // membingungkan kalau tidak dikatakan: daftar outletnya terlihat wajar,
-  // padahal bukan outlet yang sebenarnya ada di ESB.
-  if(!outletDariEsb){
-    if(esbTarikOutletJalan){
-      return `<div class="esb-kabar jalan"><span class="spin"></span> Mengambil daftar outlet dari ESB…</div>`;
-    }
-    return `<div class="esb-kabar bad">Daftar outlet di bawah masih <b>contoh bawaan</b>, belum nama store yang sebenarnya di ESB.
-      ${can.manageAdmin()
-        ? `<button class="lnk-kecil" onclick="ambilOutletSekarang()">ambil daftar outlet dari ESB sekarang</button>`
-        : 'Minta Admin membuka <b>Admin → Sumber Data ESB</b> lalu menekan Tarik Daftar Outlet.'}</div>`;
-  }
-  const s = esbLiveStatus[trxBulan] || {};
-  if(s.jalan) return `<div class="esb-kabar jalan"><span class="spin"></span> Mengambil data ${labelBulan(trxBulan)} dari ESB…</div>`;
-  if(s.galat) return `<div class="esb-kabar bad">Gagal mengambil dari ESB: ${esc(s.galat)}
-    <button class="lnk-kecil" onclick="perbaruiEsb()">coba lagi</button></div>`;
-  if(s.at){
-    const g = (s.gagal||[]).length;
-    return `<div class="esb-kabar ok">Data langsung dari ESB — diperbarui ${esbUmurTeks(trxBulan)}. Tidak disimpan ke database.
-      ${g?`<b>${g} tanggal gagal diambil.</b>`:''}
-      <button class="lnk-kecil" onclick="perbaruiEsb()">perbarui</button></div>`;
-  }
-  return `<div class="esb-kabar nt">ESB tersambung. <button class="lnk-kecil" onclick="perbaruiEsb()">ambil data ${labelBulan(trxBulan)}</button></div>`;
-}
-/**
- * Tarik daftar outlet dari ESB lalu simpan, dalam satu klik dari halaman
- * Transaksi. Isinya sama dengan tombol di Admin; yang dihemat di sini
- * adalah perjalanan mencarinya.
- */
-let esbTarikOutletJalan = false;
-async function ambilOutletSekarang(){
-  if(!can.manageAdmin()){
-    return toast('Hanya Admin yang bisa mengubah daftar outlet.');
-  }
-  if(esbTarikOutletJalan) return;
-  esbTarikOutletJalan = true;
-  patchKabarEsb();
-  try{
-    const j = await panggilEsb('esb_cabang');
-    const cab = j.cabang || [];
-    if(!cab.length) throw new Error('ESB tidak mengembalikan satu outlet pun untuk kredensial ini.');
-    const outlets = cab.map(c=>{
-      const brand = tebakBrand(c.nama, c.brand);
-      return {kode:c.kode, nama:c.nama || c.kode, brand,
-              region: tebakRegion(c.nama, c.region, brand), aktif:true};
-    });
-    // onSnapshot pengaturan/esb yang akan memanggil terapkanOutlet + render
-    await db.collection('pengaturan').doc('esb').set({
-      aktif:true, outlets, diubahOleh:profile.nama, diubahAt:new Date().toISOString()
-    }, {merge:true});
-    const adaBrand = cab.some(c=>c.brand), adaRegion = cab.some(c=>c.region);
-    toast(`${outlets.length} outlet diambil dari ESB.` +
-      (adaBrand && adaRegion ? '' : ' Brand/region diturunkan dari nama — periksa di Admin kalau ada yang salah.'));
-  }catch(e){
-    toast('Gagal mengambil daftar outlet: ' + (e.message || e));
-  }finally{
-    esbTarikOutletJalan = false;
-    patchKabarEsb();
-  }
-}
-
-function patchKabarEsb(){
-  const el = $('esbKabar');
-  if(el) el.innerHTML = kabarEsbHtml();
-}
-
-/* ================= JAM SEPI & PRODUK =================
-   Dua laporan tambahan dari ESB: penjualan per jam dan per item,
-   dijumlahkan sebulan. Keduanya juga tidak disimpan ke Firestore.
-   Dari situ lahir rekomendasi program: jam mana yang layak digarap,
-   produk mana yang jadi daya tariknya.                              */
-
-async function muatAnalisaEsb(bulan, paksa){
-  if(!esbSiap()) return;
-  const s = esbAnalisaStatus[bulan] || {};
-  if(s.jalan) return;
-  if(!paksa && s.at && (Date.now() - s.at) < ESB_UMUR) return;
-  const r = esbRentangBulan(bulan);
-  if(r.lewat) return;
-
-  esbAnalisaStatus[bulan] = {jalan:true};
-  if(activePage==='transaksi') renderPage();
-  const cabang = petaCabang();
-  const pesan = [];
-  try{
-    // dua permintaan terpisah supaya satu laporan yang tidak tersedia
-    // tidak ikut menjatuhkan yang satunya
-    const [jam, produk] = await Promise.allSettled([
-      panggilEsb('esb_jam',    {dari:r.dari, sampai:r.sampai, cabang}),
-      panggilEsb('esb_produk', {dari:r.dari, sampai:r.sampai, cabang, batas:40})
-    ]);
-    if(jam.status === 'fulfilled') esbJamData[bulan] = jam.value.data || {};
-    else pesan.push('Per jam: ' + (jam.reason && jam.reason.message || jam.reason));
-    if(produk.status === 'fulfilled') esbProdukData[bulan] = produk.value.data || {};
-    else pesan.push('Per produk: ' + (produk.reason && produk.reason.message || produk.reason));
-    esbAnalisaStatus[bulan] = {at: Date.now(), galat: pesan.join(' · ')};
-    esbSimpanSesi();
-  }catch(e){
-    esbAnalisaStatus[bulan] = {at: Date.now(), galat: e.message || String(e)};
-  }
-  if(activePage==='transaksi') renderPage();
-}
-
-/** Jam-jam satu outlet, sudah dirata-ratakan per hari. */
-function jamOutlet(bulan, outlet){
-  const d = (esbJamData[bulan] || {})[outlet] || {};
-  const baris = [];
-  for(let j=0;j<24;j++){
-    const x = d[j] || d[String(j)] || {};
-    baris.push({jam:j, omset:n0(x.omset), trx:n0(x.trx), hari:n0(x.hari)});
-  }
-  return baris;
-}
-
-/**
- * Jam buka ditebak dari datanya sendiri, bukan diketik di pengaturan:
- * jam dengan omset di bawah 2% puncak dianggap belum buka / sudah tutup,
- * dan yang di antara jam buka pertama sampai terakhir itulah jam operasional.
- * Dari rentang itu, jam "sepi" = di bawah 55% rata-rata jam operasional.
- */
-function analisaJam(bulan, outlet){
-  const baris = jamOutlet(bulan, outlet);
-  const puncakOmset = Math.max(...baris.map(b=>b.omset));
-  if(!puncakOmset) return null;
-
-  const aktif = baris.filter(b=>b.omset >= puncakOmset * 0.02);
-  if(!aktif.length) return null;
-  const buka = aktif[0].jam, tutup = aktif[aktif.length-1].jam;
-  const operasional = baris.filter(b=>b.jam >= buka && b.jam <= tutup);
-  const rata = operasional.reduce((a,b)=>a+b.omset,0) / (operasional.length||1);
-
-  const sepi = operasional.filter(b=>b.omset < rata * 0.55).sort((a,b)=>a.omset-b.omset);
-  const puncak = operasional.slice().sort((a,b)=>b.omset-a.omset).slice(0,2).map(b=>b.jam).sort((a,b)=>a-b);
-
-  return {baris, operasional, buka, tutup, rata, puncakOmset,
-          sepi, puncak, totalOmset: operasional.reduce((a,b)=>a+b.omset,0)};
-}
-
-/** Jam berurutan digabung jadi satu blok: 14,15,16 -> "14.00–17.00". */
-function blokJam(daftar){
-  const j = [...new Set(daftar)].sort((a,b)=>a-b);
-  const blok = [];
-  j.forEach(x=>{
-    const t = blok[blok.length-1];
-    if(t && x === t[1] + 1) t[1] = x; else blok.push([x,x]);
-  });
-  return blok.map(b=>`${String(b[0]).padStart(2,'0')}.00–${String(b[1]+1).padStart(2,'0')}.00`);
-}
-function jamTeks(j){ return String(j).padStart(2,'0') + '.00'; }
-
-function produkOutlet(bulan, outlet){ return ((esbProdukData[bulan] || {})[outlet] || []); }
-
-/* ---------- bahan program per brand ----------
-   Nama program dan bentuk penawarannya berbeda untuk Storypie (pie &
-   hampers, pembelinya sering membeli untuk orang lain) dan Gumik (mie
-   pangsit ayam, makan di tempat, pembelinya untuk diri sendiri). Isi
-   angkanya tetap dari data ESB; yang di bawah hanya kerangkanya. */
-const PROGRAM_BRAND = {
-  storypie: {
-    jamSepi: {
-      nama: 'Teman Sore',
-      tawar: 'satu slice pie + minuman panas dengan harga paket, hanya berlaku di jam ini',
-      alasan: 'Pie dimakan santai, bukan karena lapar. Jam sepi justru cocok dijual sebagai jeda, bukan sebagai makan.',
-      aktivitas: [
-        'Reels 15 detik "jeda sore" — pie dipotong, uap kopi, tanpa hard selling, tayang 1 jam sebelum jam sepi mulai',
-        'Story polling "butuh jeda?" dengan stiker link ke lokasi outlet, tiap hari di jam yang sama',
-        'Tulis harga paket di papan depan outlet dan di bio — jangan hanya di feed',
-        'Brief kasir: tawarkan paket ini ke setiap pembeli yang datang di rentang jam sepi'
-      ]
-    },
-    produkLemah: {
-      nama: 'Rasa Minggu Ini',
-      cara: 'Angkat satu rasa yang jarang terjual jadi bintang mingguan: foto khusus, cerita kenapa rasa itu dibuat, dan beli-2-gratis-1 di jam sepi.'
-    },
-    produkKuat: 'Jadikan ini jangkar paketnya — pembeli datang karena yang sudah dikenal, lalu dikenalkan ke yang lain.',
-    tambahan: 'Jam sepi adalah waktu terbaik menerima pesanan hampers dan kue ulang tahun: dapur sedang longgar, jadi janjikan pengerjaan lebih cepat untuk order yang masuk di jam itu.'
-  },
-  gumik: {
-    jamSepi: {
-      nama: 'Paket Jam Santai',
-      tawar: 'satu porsi mie pangsit + es teh dengan harga paket, hanya di jam ini',
-      alasan: 'Mie pangsit dibeli saat lapar, jadi jam sepi tidak bisa dilawan dengan konten saja — harus ada alasan harga untuk datang di luar jam makan.',
-      aktivitas: [
-        'Reels close-up mie diangkat dari kuah, tayang 45 menit sebelum jam sepi mulai — pemicunya rasa lapar, bukan informasi',
-        'Broadcast WhatsApp ke pelanggan terdekat tepat saat jam sepi dimulai',
-        'Daftarkan paket yang sama di GoFood/GrabFood dengan jam tayang dibatasi, supaya yang tidak bisa datang tetap terjaring',
-        'Tempel harga paket di spanduk depan — pembeli mie banyak yang memutuskan dari jalan'
-      ]
-    },
-    produkLemah: {
-      nama: 'Bundling Pendamping',
-      cara: 'Tempelkan menu yang jarang terjual ke menu terlaris sebagai tambahan murah, bukan dijual sendiri. Pembeli mie jarang mencoba menu baru kalau harus memesan terpisah.'
-    },
-    produkKuat: 'Ini alasan orang datang. Jangan didiskon sendirian — pakai sebagai pintu masuk paket.',
-    tambahan: 'Jam sepi juga waktu paling aman untuk uji menu baru: antrean pendek, jadi dapur sempat menakar ulang dan kasir sempat menanyakan pendapat pembeli.'
-  }
-};
-
-/**
- * Rekomendasi program dari data ESB.
- * Semua angka di sini turunan dari penjualan nyata; yang berupa perkiraan
- * ditulis sebagai perkiraan, tidak dijanjikan.
- */
-function rekomendasiJam(bulan, outlet){
-  const a = analisaJam(bulan, outlet);
-  const produk = produkOutlet(bulan, outlet);
-  const brand = (OUTLETS[outlet]||{}).brand || 'storypie';
-  const B = PROGRAM_BRAND[brand] || PROGRAM_BRAND.storypie;
-  const out = [];
-  if(!a) return out;
-
-  const hariData = Math.max(1, ...a.baris.map(b=>b.hari));
-  const teratas = produk.slice(0, 3);
-  const namaTeratas = new Set(teratas.map(p=>p.nama));
-  const lemah = produk.filter(p=>p.qty > 0 && !namaTeratas.has(p.nama))
-    .sort((a,b)=>a.qty-b.qty).slice(0, 3);
-
-  /* --- 1. program jam sepi --- */
-  if(a.sepi.length){
-    const jamSepi = a.sepi.slice(0, 4).map(b=>b.jam);
-    const blok = blokJam(jamSepi);
-    // perkiraan konservatif: jam sepi naik sampai 75% rata-rata jam operasional
-    const potensi = jamSepi.reduce((t,j)=>{
-      const b = a.baris[j];
-      return t + Math.max(0, a.rata * 0.75 - b.omset);
-    }, 0);
-    const perHari = potensi / hariData;
-    const share = a.totalOmset ? Math.round(jamSepi.reduce((t,j)=>t+a.baris[j].omset,0) / a.totalOmset * 100) : 0;
-
-    out.push({
-      prioritas: 'tinggi',
-      judul: `Program "${B.jamSepi.nama}" untuk jam ${blok.join(' dan ')}`,
-      kenapa: `Outlet buka ${jamTeks(a.buka)}–${jamTeks(a.tutup+1)}. Di rentang ${blok.join(' dan ')} omsetnya hanya ${share}% dari total seharian, padahal biaya sewa dan gaji jalan terus di jam itu. ${B.jamSepi.alasan}`,
-      dampak: `Kalau jam-jam itu naik sampai tiga perempat rata-rata jam lain, tambahannya sekitar ${rpR(perHari)} per hari atau ${rpR(perHari*30)} sebulan. Ini hitungan kasar dari pola ${hariData} hari terakhir, bukan janji.`,
-      tawaran: B.jamSepi.tawar,
-      produk: teratas.slice(0,2).map(p=>p.nama),
-      aktivitas: B.jamSepi.aktivitas,
-      jam: blok
-    });
-  }
-
-  /* --- 2. jangan ganggu jam puncak --- */
-  if(a.puncak.length){
-    out.push({
-      prioritas: 'sedang',
-      judul: `Jaga jam ramai ${blokJam(a.puncak).join(' dan ')} — jangan didiskon`,
-      kenapa: `Jam ini sudah penuh sendiri. Diskon di sini hanya memotong margin dari pembeli yang tetap datang. ${B.produkKuat}`,
-      dampak: 'Margin jam ramai tetap utuh, dan antrean tidak bertambah panjang di jam yang memang sudah padat.',
-      aktivitas: [
-        'Siapkan stok dan tenaga ekstra 30 menit sebelum jam ramai mulai',
-        'Pindahkan semua promo ke luar rentang ini',
-        'Pakai jam ramai untuk mengambil foto dan video antrean — bahan konten paling jujur ada di sini'
-      ],
-      jam: blokJam(a.puncak)
-    });
-  }
-
-  /* --- 3. produk lemah --- */
-  if(lemah.length && teratas.length){
-    out.push({
-      prioritas: 'sedang',
-      judul: `Program "${B.produkLemah.nama}" untuk ${lemah.map(p=>p.nama).slice(0,2).join(' dan ')}`,
-      kenapa: `${lemah.map(p=>`${p.nama} hanya ${fmtNum(p.qty)} porsi`).join(', ')} sebulan ini, sementara ${teratas[0].nama} mencapai ${fmtNum(teratas[0].qty)}. Selisihnya terlalu jauh untuk dibiarkan — menu yang tidak laku tetap memakan bahan dan tempat.`,
-      dampak: `${B.produkLemah.cara}`,
-      produk: lemah.map(p=>p.nama),
-      aktivitas: [
-        `Pasangkan dengan ${teratas[0].nama} sebagai satu paket, jangan dijual terpisah`,
-        'Satu konten khusus per minggu untuk satu menu saja — bergantian, bukan semua sekaligus',
-        'Kalau empat minggu tetap tidak bergerak, pertimbangkan dicoret dari menu'
-      ]
-    });
-  }
-
-  /* --- 4. catatan tambahan per brand --- */
-  out.push({
-    prioritas: 'rendah',
-    judul: 'Pemanfaatan lain dari jam sepi',
-    kenapa: B.tambahan,
-    dampak: 'Tidak menambah biaya, hanya memindahkan pekerjaan ke jam yang memang sedang kosong.',
-    aktivitas: [
-      'Tentukan satu orang penanggung jawab program ini, supaya tidak berhenti di minggu kedua',
-      'Catat hasilnya tiap minggu di menu Timeline Program supaya kelihatan apakah jam sepinya benar-benar naik'
-    ]
-  });
-
-  return out;
-}
 
 /* ================= RINGKASAN BULANAN & REKOMENDASI ================= */
 /* Semua angka di bawah dihitung dari data yang sudah diinput tim.
@@ -7113,7 +5742,6 @@ function renderInsight(d){
   return panelRingkasan(d.narasi, d.fakta, d.status) +
          panelRekomendasi(d.rek, typeof d.kosong==='string' ? d.kosong : 'Belum ada rekomendasi. Lengkapi dulu datanya supaya bisa dianalisa.');
 }
-function insightTrx(o,b){ return renderInsight(dataInsightTrx(o,b)); }
 function insightEng(r,j){ return renderInsight(dataInsightEng(r,j)); }
 function insightAds(r,j,n){ return renderInsight(dataInsightAds(r,j,n)); }
 function insightBudget(br,b){ return renderInsight(dataInsightBudget(br,b)); }
@@ -7146,174 +5774,6 @@ function sheetInsight(d, judul){
   });
   return r;
 }
-/* ---------------- TRANSAKSI HARIAN ---------------- */
-function trxAnalisa(outlet, bulan){
-  const d = trxDoc(outlet, bulan), r = trxRekap(outlet, bulan);
-  const sisaHari = Math.max(0, r.hari - r.hariBerjalan);
-  const aov = r.trx ? r.omset / r.trx : 0;
-  const aovTarget = r.targetTrx ? r.targetOmset / r.targetTrx : 0;
-  const gapOmset = Math.max(0, r.targetOmset - r.proyeksiOmset);
-  const gapTrx = Math.max(0, r.targetTrx - r.proyeksi);
-  const kurangOmset = Math.max(0, r.targetOmset - r.omset);
-  const kurangTrx = Math.max(0, r.targetTrx - r.trx);
-  const butuhOmsetHari = sisaHari ? kurangOmset / sisaHari : 0;
-  const butuhTrxHari = sisaHari ? kurangTrx / sisaHari : 0;
-
-  // per hari dalam seminggu + hari terbaik/terburuk + tren 7 hari
-  const perHari = [0,1,2,3,4,5,6].map(()=>({n:0, trx:0}));
-  let terbaik=null, terburuk=null; const deret=[];
-  for(let i=1;i<=r.hari;i++){
-    const hh = String(i).padStart(2,'0');
-    if(!trxAdaIsi(d,hh)) continue;
-    const v = trxNilai(d,hh,'trx');
-    const w = new Date(Number(bulan.split('-')[0]), Number(bulan.split('-')[1])-1, i).getDay();
-    perHari[w].n++; perHari[w].trx += v;
-    deret.push({i, v});
-    if(!terbaik || v>terbaik.v) terbaik={i,v};
-    if(!terburuk || v<terburuk.v) terburuk={i,v};
-  }
-  const rataHariNama = perHari.map((p,w)=>({w, nama:HARI[w], rata: p.n ? p.trx/p.n : 0, n:p.n})).filter(p=>p.n>0);
-  const lemah = rataHariNama.length ? rataHariNama.slice().sort((a,b)=>a.rata-b.rata)[0] : null;
-  const kuat  = rataHariNama.length ? rataHariNama.slice().sort((a,b)=>b.rata-a.rata)[0] : null;
-  const akhir = deret.slice(-7), awal = deret.slice(-14,-7);
-  const rataAkhir = akhir.length ? akhir.reduce((s,x)=>s+x.v,0)/akhir.length : 0;
-  const rataAwal  = awal.length  ? awal.reduce((s,x)=>s+x.v,0)/awal.length  : 0;
-  const tren = rataAwal ? (rataAkhir-rataAwal)/rataAwal*100 : 0;
-  const hariTercapai = deret.filter(x=>x.v >= r.targetHarianTrx).length;
-
-  return {r, d, sisaHari, aov, aovTarget, gapOmset, gapTrx, kurangOmset, kurangTrx,
-          butuhOmsetHari, butuhTrxHari, terbaik, terburuk, lemah, kuat, tren,
-          rataAkhir, rataAwal, hariTercapai, hariAdaData: deret.length};
-}
-
-function dataInsightTrx(outlet, bulan){
-  const a = trxAnalisa(outlet, bulan), r = a.r;
-  const nama = OUTLETS[outlet].nama;
-  if(!r.targetTrx && !r.hariTerisi){
-    return {narasi: `Belum ada data untuk <b>${esc(nama)}</b> di ${labelBulan(bulan)}. Atur target bulanan lalu isi transaksi harian supaya ringkasan dan rekomendasi bisa muncul.`, fakta: [], status: {teks:'Belum ada data', cls:'nt'}, rek: [], kosong: true};
-  }
-
-  /* ---- ringkasan ---- */
-  const arahTren = a.tren>3 ? `naik ${Math.abs(a.tren).toFixed(0)}%` : a.tren<-3 ? `turun ${Math.abs(a.tren).toFixed(0)}%` : 'relatif datar';
-  const narasi = `Sampai hari ke-${r.hariBerjalan}, <b>${esc(nama)}</b> membukukan <b>${fmtNum(r.trx)} transaksi</b> (${r.pctTrx}% dari target ${fmtNum(r.targetTrx)})` +
-    (r.targetOmset||r.omset ? ` dan omset <b>${fmtRp(r.omset)}</b> (${r.pctOmset}% dari target ${rpR(r.targetOmset)})` : '') +
-    `. Rata-rata ${fmtNum(r.rataHarian)} transaksi per hari, ${a.hariTercapai} dari ${a.hariAdaData} hari mencapai target harian. ` +
-    (a.rataAwal ? `Tujuh hari terakhir ${arahTren} dibanding minggu sebelumnya. ` : '') +
-    (r.targetOmset ? (a.gapOmset > 0
-        ? `Kalau pola ini berlanjut, akhir bulan berhenti di <b>${rpR(r.proyeksiOmset)}</b> — <b class="tx-bad">kurang ${rpR(a.gapOmset)}</b> dari target.`
-        : `Proyeksi akhir bulan <b class="tx-ok">${rpR(r.proyeksiOmset)}</b>, sudah melewati target.`)
-      : `Proyeksi akhir bulan ${fmtNum(r.proyeksi)} transaksi.`);
-
-  const status = r.pctPace>=100 ? {teks:'Di atas target', cls:'ok'}
-               : r.pctPace>=85  ? {teks:'Sedikit tertinggal', cls:'nt'}
-               : {teks:'Perlu tindakan', cls:'bad'};
-
-  const fakta = [
-    {label:'Target omset bulan ini', nilai: rpR(r.targetOmset), ket:'ditetapkan di awal bulan'},
-    {label:'Omset sampai hari ini', nilai: rpR(r.omset), cls: r.pctOmset>=100?'tx-ok':'', ket:`${r.pctOmset}% dari target`},
-    {label:'Proyeksi omset akhir bulan', nilai: rpR(r.proyeksiOmset), cls: a.gapOmset?'tx-bad':'tx-ok',
-     ket: a.gapOmset ? 'kurang '+rpR(a.gapOmset) : 'lebih '+rpR(r.proyeksiOmset-r.targetOmset)},
-    {label:'Sisa hari', nilai: fmtNum(a.sisaHari), ket:`dari ${r.hari} hari`},
-    {label:'Rata-rata per transaksi', nilai: rpR(Math.round(a.aov)), cls: a.aovTarget && a.aov<a.aovTarget?'tx-bad':'tx-ok',
-     ket: a.aovTarget ? 'target '+rpR(Math.round(a.aovTarget)) : ''},
-    {label:'Butuh per hari sisa bulan', nilai: a.sisaHari? rpR(Math.round(a.butuhOmsetHari)) : '—', cls:'tx-warn',
-     ket: a.sisaHari? `≈ ${fmtNum(Math.ceil(a.butuhTrxHari))} transaksi/hari` : 'bulan sudah selesai'},
-    {label:'Hari terbaik', nilai: a.terbaik? `Tgl ${a.terbaik.i}` : '—', ket: a.terbaik? fmtNum(a.terbaik.v)+' transaksi' : ''},
-    {label:'Hari paling lemah', nilai: a.lemah? a.lemah.nama : '—', ket: a.lemah? 'rata-rata '+fmtNum(Math.round(a.lemah.rata)) : ''}
-  ];
-
-  /* ---- rekomendasi ---- */
-  const rek = [];
-  const belumIsi = r.hariBerjalan - r.hariTerisi;
-  if(belumIsi > 0) rek.push({
-    pri: belumIsi>3 ? 'tinggi' : 'sedang',
-    judul: `Lengkapi ${belumIsi} hari yang belum diisi`,
-    kenapa: `Baru ${r.hariTerisi} dari ${r.hariBerjalan} hari berjalan yang terisi. Proyeksi dan semua rekomendasi di bawah dihitung dari data yang ada, jadi selama masih bolong angkanya belum bisa dipercaya penuh.`,
-    dampak: 'Proyeksi akhir bulan jadi akurat',
-    aktivitas: ['Isi transaksi dan omset hari yang kosong di tabel bawah', 'Sepakati siapa yang input setiap tutup toko supaya tidak menumpuk']
-  });
-
-  if(r.targetOmset && a.gapOmset > 0 && a.sisaHari > 0){
-    const tambahanAov = Math.max(0, Math.round((a.kurangOmset / Math.max(1, r.rataHarian * a.sisaHari))));
-    // kenaikan nilai per struk baru realistis kalau tidak lebih dari separuh nilai sekarang
-    const aovMasukAkal = a.aov > 0 && tambahanAov <= a.aov * 0.5;
-    rek.push({
-      pri: r.pctPace < 85 ? 'tinggi' : 'sedang',
-      judul: `Kejar kekurangan omset ${rpR(a.gapOmset)} dalam ${a.sisaHari} hari tersisa`,
-      kenapa: `Target omset <b>${rpR(r.targetOmset)}</b>, proyeksi saat ini <b>${rpR(r.proyeksiOmset)}</b>. Selisih <b>${rpR(a.gapOmset)}</b> harus ditutup dari sisa ${a.sisaHari} hari.`,
-      dampak: `Butuh tambahan <b>${rpR(Math.round(a.butuhOmsetHari))} per hari</b> — setara <b>${fmtNum(Math.ceil(a.butuhTrxHari))} transaksi per hari</b> dengan nilai rata-rata sekarang` +
-        (aovMasukAkal ? `, atau menaikkan nilai per transaksi <b>${rpR(tambahanAov)}</b> tanpa menambah jumlah pembeli.`
-                      : `. Dengan sisa ${a.sisaHari} hari, mengejar seluruh selisih dari harga saja tidak realistis — fokus ke volume dan program jangka pendek.`),
-      aktivitas: [
-        aovMasukAkal ? `Jalankan program upselling di kasir: tawarkan paket/add-on yang menaikkan ${rpR(tambahanAov)} per struk`
-                     : `Jalankan program upselling di kasir — tiap kenaikan ${rpR(Math.round(a.aov*0.1))} per struk menutup ${rpR(Math.round(a.aov*0.1*r.rataHarian*a.sisaHari))} dari selisih`,
-        a.lemah ? `Pasang promo khusus hari <b>${a.lemah.nama}</b> — rata-ratanya cuma ${fmtNum(Math.round(a.lemah.rata))} transaksi, paling rendah dibanding hari lain` : 'Pasang promo di hari yang paling sepi',
-        `Aktifkan gift sale / flash sale ${a.sisaHari>=7?'akhir pekan ini':'dalam 2–3 hari ke depan'} untuk mengejar volume cepat`,
-        `Dorong iklan dan UGC ke arah ${esc(nama)} selama sisa bulan — cek modul Report Ads untuk campaign dengan ROAS terbaik lalu tambah budgetnya`
-      ]
-    });
-  }
-
-  if(a.aovTarget && a.aov && a.aov < a.aovTarget*0.95){
-    const selisih = Math.round(a.aovTarget - a.aov);
-    rek.push({
-      pri:'sedang',
-      judul:`Naikkan nilai per transaksi ${rpR(selisih)}`,
-      kenapa:`Nilai rata-rata per transaksi sekarang <b>${rpR(Math.round(a.aov))}</b>, sedangkan target bulan ini mengasumsikan <b>${rpR(Math.round(a.aovTarget))}</b>. Jumlah pembeli boleh tetap, tapi tiap struk kekecilan ${rpR(selisih)}.`,
-      dampak:`Kalau tertutup, omset naik ${rpR(Math.round(selisih * r.proyeksi))} sebulan tanpa menambah satu pembeli pun`,
-      aktivitas:[
-        'Buat paket bundling yang harganya sedikit di atas rata-rata struk sekarang',
-        'Latih kasir menawarkan satu item tambahan di setiap transaksi',
-        'Taruh item margin tinggi di area kasir dan di menu paling atas'
-      ]
-    });
-  }
-
-  if(a.tren < -8 && a.rataAwal){
-    rek.push({
-      pri:'tinggi',
-      judul:`Tahan penurunan ${Math.abs(a.tren).toFixed(0)}% dalam seminggu terakhir`,
-      kenapa:`Rata-rata 7 hari terakhir <b>${fmtNum(Math.round(a.rataAkhir))}</b> transaksi/hari, turun dari <b>${fmtNum(Math.round(a.rataAwal))}</b> di minggu sebelumnya. Penurunan ini yang menarik proyeksi akhir bulan ke bawah.`,
-      dampak:`Kembali ke level minggu lalu menambah ${fmtNum(Math.round((a.rataAwal-a.rataAkhir)*a.sisaHari))} transaksi sampai akhir bulan`,
-      aktivitas:[
-        'Cek apakah ada program yang baru berakhir minggu lalu — kalau iya, siapkan penggantinya',
-        'Tanya tim outlet: stok kosong, antrean, atau jam operasional berubah?',
-        'Lihat modul Engagement — apakah frekuensi posting ikut turun di periode yang sama?'
-      ]
-    });
-  }
-
-  if(a.kuat && a.lemah && a.kuat.rata > a.lemah.rata*1.4){
-    rek.push({
-      pri:'sedang',
-      judul:`Ratakan jarak hari ${a.kuat.nama} dan ${a.lemah.nama}`,
-      kenapa:`Hari <b>${a.kuat.nama}</b> rata-rata ${fmtNum(Math.round(a.kuat.rata))} transaksi, sedangkan <b>${a.lemah.nama}</b> cuma ${fmtNum(Math.round(a.lemah.rata))} — selisihnya ${Math.round((a.kuat.rata/a.lemah.rata-1)*100)}%.`,
-      dampak:`Menaikkan ${a.lemah.nama} ke setengah jarak itu menambah sekitar ${fmtNum(Math.round((a.kuat.rata-a.lemah.rata)/2 * (a.sisaHari/7||1)))} transaksi sampai akhir bulan`,
-      aktivitas:[
-        `Buat promo yang hanya berlaku hari ${a.lemah.nama}`,
-        `Jadwalkan posting konten paling kuat di H-1 sebelum ${a.lemah.nama}`,
-        `Pertimbangkan geser shift atau jam promo ke ${a.lemah.nama}`
-      ]
-    });
-  }
-
-  if(r.pctPace >= 100 && r.targetOmset){
-    rek.push({
-      pri:'rendah',
-      judul:'Amankan posisi dan siapkan target bulan depan',
-      kenapa:`Pencapaian terhadap hari berjalan <b>${r.pctPace}%</b> dan proyeksi akhir bulan <b>${rpR(r.proyeksiOmset)}</b> sudah melewati target.`,
-      dampak:'Menjaga momentum dan menaikkan basis target berikutnya',
-      aktivitas:[
-        'Catat program apa yang jalan bulan ini supaya bisa diulang',
-        `Pertimbangkan target bulan depan di kisaran ${rpR(Math.round(r.proyeksiOmset*1.05))}`,
-        'Pastikan stok dan jadwal tim siap untuk mempertahankan volume'
-      ]
-    });
-  }
-
-  return {narasi, fakta, status, rek, kosong:'Semua indikator dalam batas wajar. Tidak ada tindakan mendesak bulan ini.'};
-}
-
 /* ---------------- ENGAGEMENT ---------------- */
 function engAnalisa(rows){
   const isi = rows.filter(hasEng);
@@ -7795,22 +6255,10 @@ const AUTO_METRIK = {
   ads_roas: 'Otomatis — ROAS iklan',
   ads_hasil: 'Otomatis — total hasil/konversi iklan',
   ads_ctr: 'Otomatis — CTR iklan (%)',
-  trx_pencapaian: 'Otomatis — pencapaian transaksi semua outlet (%)',
-  trx_total: 'Otomatis — total transaksi semua outlet',
-  omset_total: 'Otomatis — total omset semua outlet (Rp)',
   program_selesai: 'Otomatis — program selesai bulan ini'
 };
 function adsPeriode(bulan, brand){
   return adsCache.filter(a=>adsBulanKey(a)===bulan && (!brand||a.brand===brand));
-}
-function trxSemua(bulan, brand){
-  let t={target:0, actual:0, omset:0};
-  Object.keys(OUTLETS).forEach(k=>{
-    if(brand && OUTLETS[k].brand!==brand) return;
-    const r = trxRekap(k, bulan);
-    t.target += r.targetTrx; t.actual += r.trx; t.omset += r.omset;
-  });
-  return t;
 }
 function ugcPeriode(bulan, brand){
   return ugcCache.filter(u=>ugcBulanKey(u)===bulan && (!brand||u.brand===brand) && u.status!=='Batal');
@@ -7839,9 +6287,6 @@ function nilaiAuto(kpi, bulan){
     case 'ads_roas':  return Number(adsTotal(adsPeriode(bulan, kpi.brand||'')).roas.toFixed(2));
     case 'ads_hasil': return adsTotal(adsPeriode(bulan, kpi.brand||'')).hasil;
     case 'ads_ctr':   return Number(adsTotal(adsPeriode(bulan, kpi.brand||'')).ctr.toFixed(2));
-    case 'trx_pencapaian': { const t=trxSemua(bulan, kpi.brand||''); return t.target?Math.round(t.actual/t.target*100):0; }
-    case 'trx_total': return trxSemua(bulan, kpi.brand||'').actual;
-    case 'omset_total': return trxSemua(bulan, kpi.brand||'').omset;
     case 'program_selesai': return prgCache.filter(x=>x.status==='Selesai' && String(x.tanggalSelesai||'').slice(0,7)===bulan && (!kpi.brand||x.brand===kpi.brand||x.brand==='semua')).length;
     default: return null;
   }

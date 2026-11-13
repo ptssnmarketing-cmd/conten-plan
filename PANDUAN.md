@@ -656,40 +656,6 @@ Tombol geser **Semua platform / Meta / TikTok** menyaring tabelnya. Excel mengha
 
 ---
 
-## 28. Transaksi Harian
-
-Menu **Transaksi Harian** (di HP: ikon 🧾) mencatat jumlah transaksi dan omset harian tiga outlet: **Storypie Pekanbaru**, **Storypie Medan**, dan **Gumik**.
-
-### Mengatur target (Admin & Manager, sekali sebulan)
-
-1. Pilih outlet dan bulan di dropdown.
-2. Klik **Atur target bulanan**.
-3. Isi **target transaksi sebulan** — misalnya 3600.
-4. Isi **target omset sebulan** kalau dipakai, atau kosongkan.
-
-Target harian dihitung otomatis: target bulanan dibagi jumlah hari. Jadi kamu cukup memasukkan satu angka sebulan sekali.
-
-### Mengisi actual harian
-
-Scroll ke tabel **Input Harian**. Ketik jumlah transaksi di kolom **Actual Transaksi** dan omset di kolom **Omset**. Angka tersimpan otomatis begitu kamu pindah kolom — tidak ada tombol simpan.
-
-Kolom **Selisih** langsung menunjukkan kelebihan (hijau) atau kekurangan (merah) dibanding target harian. Baris hari ini disorot, dan hari yang sudah lewat tapi kosong ditandai merah.
-
-### Empat angka di atas
-
-| Kartu | Artinya |
-|---|---|
-| **Pencapaian Bulan Ini** | actual dibanding target sebulan penuh |
-| **Terhadap Hari Berjalan** | yang paling penting di tengah bulan. 100% berarti tepat di jalur; di bawah 85% berarti tertinggal |
-| **Rata-rata Harian** | rata-rata dari hari yang sudah terisi |
-| **Proyeksi Akhir Bulan** | perkiraan hasil akhir kalau ritme sekarang bertahan |
-
-**Grafik Kumulatif** menunjukkan garis actual (berwarna) terhadap garis target (putus-putus). Kalau garis actual di atas garis putus-putus, kamu sedang di depan target.
-
-> Kartu ringkasan ketiga outlet juga muncul di **Dashboard**, jadi tidak perlu bolak-balik ganti outlet untuk melihat gambaran besarnya.
-
----
-
 ## 29. Timeline Program
 
 Menu **Timeline Program** (di HP: ikon 🗺️) menampilkan semua program dalam bentuk bar timeline, supaya kelihatan mana yang tumpang tindih dan mana yang mepet.
@@ -799,37 +765,6 @@ Excel menghasilkan empat sheet: Ringkasan, Per Bulan, Detail Iklan, dan Detail U
 
 ---
 
-## 33. Grafik di Transaksi Harian
-
-Sekarang ada tiga grafik, masing-masing menjawab pertanyaan berbeda.
-
-**Target vs Actual Harian** — batang per tanggal. **Hijau** berarti hari itu mencapai target harian, **merah** berarti di bawah. Garis putus-putus adalah target harian. Keterangan di bawah menghitung berapa hari tercapai dan berapa hari tidak, jadi langsung kelihatan apakah masalahnya merata atau cuma hari tertentu.
-
-**Grafik Kumulatif** — garis actual yang terus naik dibanding garis target. Kalau garis actual di atas garis putus-putus, kamu sedang di depan target.
-
-**Perbandingan Outlet** — batang abu (target) bersebelahan dengan batang berwarna (actual) untuk ketiga outlet sekaligus, dengan persentase di atasnya. Batang actual jadi hijau kalau targetnya tercapai. Ini untuk melihat outlet mana yang perlu perhatian, tanpa harus ganti-ganti dropdown.
-
-### Urutan tanggal
-
-Di kanan atas tabel ada pilihan urutan:
-
-- **Tanggal 1 di atas** — urutan kalender biasa, bawaannya.
-- **Tanggal terbaru di atas** — tanggal 30 di paling atas. Berguna di akhir bulan: hari ini langsung terlihat tanpa perlu scroll jauh.
-
-Pilihannya diingat browser, jadi tidak perlu diatur ulang tiap buka. Tombol **Enter** ikut arah yang terlihat — di mode terbaru-di-atas, Enter turun ke tanggal yang lebih awal, bukan melompat ke bawah layar.
-
-### Cara mengisi tabel harian dengan cepat
-
-Angka tersimpan sendiri begitu kamu pindah kolom — tidak ada tombol Simpan.
-
-- **Enter** langsung melompat ke tanggal berikutnya di kolom yang sama. Jadi untuk mengisi sebulan penuh: klik kolom tanggal 1, ketik angka, Enter, ketik angka, Enter, dan seterusnya sampai akhir bulan.
-- **Tab** pindah ke kolom sebelahnya di baris yang sama.
-- Kotak input berubah **hijau sebentar** kalau angkanya berhasil tersimpan, dan jadi **merah** kalau gagal (biasanya karena internet putus). Kalau merah, perbaiki koneksi lalu ketik ulang angkanya.
-
-Tabel boleh diisi berpindah-pindah tanggal, tidak harus berurutan. Mengisi kolom Omset juga tidak menghapus angka Transaksi di tanggal yang sama.
-
----
-
 ## 34. Kontak Event
 
 Menu **📇 Kontak Event** adalah buku kontak bersama untuk urusan event: pengelola event mall, EO, vendor, venue, sponsor, media, dan komunitas. Tujuannya supaya nomor pengelola event Pekanbaru dan Medan tidak lagi tersimpan di HP satu orang saja.
@@ -884,7 +819,7 @@ Data aplikasi aman di server Firebase, tapi backup sendiri tetap perlu — untuk
 
 ### Dua tombol
 
-**📊 Backup Excel** — satu berkas `.xlsx` berisi **16 sheet**: Ringkasan Backup, Content Plan, Notes Revisi, Engagement Konten, UGC & KOL, Report Ads, Transaksi Harian, Target Transaksi, Timeline Program, Tahapan Program, Kontak Event, Budget, Campaign, User, Undangan, dan Custom KPI. Ini yang dibuka kalau kamu ingin **membaca** atau mengolah datanya.
+**📊 Backup Excel** — satu berkas `.xlsx` berisi **14 sheet**: Ringkasan Backup, Content Plan, Notes Revisi, Engagement Konten, UGC & KOL, Report Ads, Timeline Program, Tahapan Program, Kontak Event, Budget, Campaign, User, Undangan, dan Custom KPI. Ini yang dibuka kalau kamu ingin **membaca** atau mengolah datanya.
 
 **🗃️ Backup JSON** — berkas data mentah. Tidak enak dibaca manusia, tapi **inilah satu-satunya yang bisa dipulihkan kembali** ke aplikasi. Jangan hanya menyimpan yang Excel.
 
@@ -915,7 +850,7 @@ Kalau yang hilang cuma satu dua data, lebih aman diketik ulang manual daripada m
 
 ## 36. Ringkasan Bulanan & Rekomendasi
 
-Empat modul sekarang punya dua kartu tambahan tepat di bawah kartu angka: **📋 Ringkasan Bulanan** dan **💡 Rekomendasi yang Dijalankan**. Keduanya ada di **Engagement**, **Report Ads**, **Report Budget**, dan **Transaksi Harian**.
+Tiga modul sekarang punya dua kartu tambahan tepat di bawah kartu angka: **📋 Ringkasan Bulanan** dan **💡 Rekomendasi yang Dijalankan**. Keduanya ada di **Engagement**, **Report Ads**, dan **Report Budget**.
 
 Isinya dihitung otomatis dari data yang sudah kalian input sendiri. Tidak ada tebakan dari luar — kalau datanya belum lengkap, kartunya akan bilang begitu dan menyuruh melengkapi dulu.
 
@@ -943,20 +878,11 @@ Setiap rekomendasi punya empat bagian:
 
 Rekomendasi hanya muncul kalau kondisinya memang terjadi. Kalau semuanya sehat, kartunya akan bilang tidak ada yang mendesak — itu hasil yang valid, bukan kartu yang rusak.
 
-### Contoh di Transaksi Harian
-
-Ini yang paling sering dipakai. Misalnya target omset sebulan Rp 162 juta, sampai hari ke-29 baru Rp 145 juta, dan proyeksi akhir bulan berhenti di Rp 161,6 juta. Kartunya akan menampilkan:
-
-- **Ringkasan** — target omset, omset sampai hari ini, proyeksi akhir bulan, sisa hari, nilai rata-rata per transaksi (dibandingkan dengan yang diasumsikan target), berapa yang dibutuhkan per hari untuk menutup sisanya, hari terbaik, dan hari paling lemah
-- **Rekomendasi** — "Kejar kekurangan omset Rp 377 rb dalam 1 hari tersisa", dengan penjelasan bahwa itu setara sekian transaksi per hari, lalu daftar aktivitas: upselling di kasir, promo di hari yang terbukti paling sepi, gift sale untuk mengejar volume, dan mendorong iklan ke campaign dengan ROAS terbaik
-
-Kalau sisa harinya terlalu sedikit untuk dikejar lewat kenaikan harga, aplikasi akan mengatakannya terus terang dan mengarahkan ke program volume.
 
 ### Apa yang dilihat masing-masing modul
 
 | Modul | Yang dianalisa |
 |---|---|
-| **Transaksi Harian** | gap target vs proyeksi omset, nilai per transaksi, tren minggu terakhir, hari terkuat vs terlemah, kelengkapan input |
 | **Engagement** | ER per platform dan per brand, jenis konten mana yang paling kuat, konten yang belum diisi engagement-nya |
 | **Report Ads** | ROAS per campaign, campaign yang belum balik modal, CTR rendah, budget yang belum terpakai |
 | **Report Budget** | realisasi vs budget, porsi iklan vs UGC, biaya per hasil, fee visit yang belum dibayar |
@@ -1169,268 +1095,6 @@ Caption yang dihasilkan adalah **draf awal**, bukan caption final. Anggap sepert
 
 ---
 
-## 40. Sumber Data ESB — omset otomatis
-
-Omset dan jumlah transaksi harian bisa ditarik langsung dari ESB, jadi tim tidak perlu mengetik angka tiap hari.
-
-### Cara kerjanya
-
-Aplikasi **tidak** memanggil ESB secara langsung. Kredensial ESB disimpan di Google Apps Script — yang sudah kalian pakai untuk report WhatsApp dan Penulis AI — dan Apps Script itulah yang memanggil ESB, lalu menulis hasilnya ke database aplikasi.
-
-Alasannya sama seperti kunci AI kemarin, tapi lebih penting: kredensial ESB membuka data penjualan. Kalau browser yang memanggil, kredensialnya ikut terkirim ke setiap orang yang login. Lewat Apps Script, kredensial itu tidak pernah meninggalkan server Google.
-
-### Langkah 1 — Simpan kredensial di Apps Script
-
-1. Buka proyek Apps Script kalian.
-2. Pastikan `Code.gs` sudah versi terbaru (ada di paket ini, folder `apps-script`).
-3. **Project Settings → Script Properties → Add script property.**
-
-Isi sesuai yang ESB berikan ke kalian. Ada dua kemungkinan dan **keduanya terlihat mirip**, jadi perhatikan baik-baik:
-
-| Yang ESB berikan | Property yang diisi |
-|---|---|
-| Satu kunci panjang (puluhan karakter acak) | `ESB_API_KEY` |
-| Username dan password terpisah | `ESB_USER` dan `ESB_PASS` |
-
-Kalau tidak yakin yang mana, isi saja yang kalian punya — bisa dua-duanya sekaligus. Apps Script akan mencoba semuanya dan mengingat mana yang diterima ESB.
-
-4. Klik **Save script properties**.
-5. **Deploy → Manage deployments → pensil → Version: New version → Deploy.** Jangan "New deployment", nanti URL-nya berubah.
-
-### Langkah 2 — Tes dari Apps Script
-
-Jalankan fungsi **`tesEsb`** di editor, lalu baca Execution log. Kalau benar akan muncul:
-
-```
-Login ESB: BERHASIL
-Field yang dikirim ESB per cabang: branchCode, branchName, ...
-Cabang (N): [{"kode":"...","nama":"...","brand":"...","region":"..."}]
-Penjualan 2026-11-08 @ ...: {"omset":...,"trx":...}
-```
-
-#### Kalau muncul "Invalid username or password"
-
-Ini pesan yang paling sering muncul, dan artinya **bukan** selalu passwordnya salah. ESB mengirim pesan yang sama untuk dua hal berbeda:
-
-- kredensialnya memang salah, **atau**
-- yang kalian isi adalah kunci API, tapi ditaruh di `ESB_PASS` — padahal kunci API dikirim lewat cara lain
-
-Jalankan **`tesEsbAuth`**. Fungsi ini mencoba semua cara masuk dan menuliskan jawaban ESB untuk masing-masing:
-
-```
-ESB_API_KEY: terisi (60 karakter)
-ESB_USER: SSNT   ESB_PASS: terisi
---- cara API key ---
-  gagal     bearer      -> 401  Unauthorized
-  BERHASIL  x-api-key   -> 200
-  ...
---- cara username/password ---
-  gagal     login -> Login ESB gagal (400): Invalid username or password
-```
-
-Dari log itu ketahuan persis cara mana yang diterima. Kalau **semuanya gagal**, kredensialnya memang belum benar — minta ulang ke ESB, dan sebutkan kalian mengaksesnya lewat API, bukan lewat aplikasi ESB.
-
-#### Berhasil di editor, tapi aplikasi tetap gagal
-
-Kalau `tesEsbAuth` di editor menjawab **BERHASIL** tapi panel Admin masih menampilkan error yang sama, kredensialnya sudah benar — yang belum adalah **deployment-nya**.
-
-Editor menjalankan kode yang baru kalian simpan. Aplikasi memanggil versi yang di-deploy. Dua hal yang berbeda: menempel `Code.gs` dan menekan Ctrl+S **tidak** mengubah apa yang dipanggil aplikasi.
-
-Perbaikannya: **Deploy → Manage deployments → ikon pensil → Version: New version → Deploy.**
-
-Supaya ini tidak perlu ditebak lagi, panel **Admin → Sumber Data ESB** menampilkan versi Apps Script yang benar-benar terpasang:
-
-- *"Apps Script terpasang versi v28 — cocok dengan aplikasi ini"* → aman.
-- *"Apps Script masih versi v11, sedangkan aplikasi ini butuh v28"* → deployment belum diperbarui, lakukan langkah di atas lalu klik **cek ulang**.
-
-### Langkah 3 — Tarik daftar outlet
-
-Menu **Admin** → panel **Sumber Data ESB**:
-
-1. Status: **Aktif**.
-2. Klik **Tarik Daftar Outlet dari ESB**.
-3. Periksa tabelnya, lalu **Simpan Pengaturan**.
-
-Tabelnya berisi semua outlet yang ada di ESB, lengkap dengan **brand** dan **region**. Kalau ESB mengirim kedua informasi itu, kolomnya terisi sendiri. Kalau tidak, aplikasi menebaknya dari nama outlet — pesan di atas tabel akan memberitahu yang mana yang terjadi, jadi periksa dulu sebelum menyimpan.
-
-Yang bisa kalian ubah di tabel itu:
-
-| Kolom | Boleh diubah? |
-|---|---|
-| Aktif | ya — yang tidak dicentang tidak muncul di Transaksi Harian |
-| Outlet | ya, kalau nama di ESB kurang enak dibaca |
-| Kode ESB | **sebaiknya jangan** — target yang sudah diisi menempel pada kode ini |
-| Brand | ya, kalau tebakannya salah |
-| Region | ya |
-
-Koreksi brand dan region yang kalian simpan tidak hilang saat daftar ditarik ulang. Aplikasi mencocokkannya per kode outlet.
-
-### Langkah 4 — Periksa laporan per jam dan per produk
-
-Di panel yang sama, klik **Periksa Laporan ESB** sekali. Butuh sekitar setengah menit.
-
-Aplikasi akan mencoba semua kemungkinan alamat laporan per jam dan per produk di ESB, lalu menampilkan mana yang menjawab. Yang menjawab **200** dengan baris terisi akan dipakai otomatis dan diingat, jadi pemeriksaan ini cukup sekali.
-
-Kalau semuanya **404**, berarti laporan itu memang belum dibuka untuk akun ESB kalian. Hubungi ESB dan minta akses ke laporan penjualan per jam dan per item. Sisa fitur tetap jalan — hanya panel Jam Sepi yang kosong.
-
-Bisa juga dijalankan dari editor Apps Script lewat fungsi **`tesEsbLaporan`**; hasilnya sama, tampil di Execution log.
-
-### Kalau dulu sudah pasang trigger harian
-
-Versi lama menarik data tiap pagi lalu **menyimpannya** ke database. Sekarang tidak lagi. Jalankan **`copotTriggerEsb`** sekali di editor Apps Script supaya trigger lama berhenti menulis.
-
----
-
-## 40b. Data ESB tidak disimpan — apa artinya buat kalian
-
-Ini perubahan yang perlu dipahami, bukan sekadar detail teknis.
-
-**Dulu:** tiap pagi angka ESB disalin ke database aplikasi, lalu yang kalian lihat adalah salinan itu.
-
-**Sekarang:** angka ESB diambil langsung tiap kali halaman **Transaksi Harian** dibuka. Tidak ada salinan yang disimpan di mana pun.
-
-### Yang berubah untuk kalian
-
-| | Dulu | Sekarang |
-|---|---|---|
-| Angka yang muncul | salinan tadi pagi | kondisi ESB saat itu juga |
-| Kalau ESB mati | angka lama tetap kelihatan | halaman kosong, muncul pesan gagal |
-| Yang tersimpan | semua | daftar outlet, target bulanan, dan angka yang kalian ketik |
-| Ingin angka lebih baru | tunggu besok pagi | klik **Perbarui dari ESB** |
-
-Di atas tabel input ada baris kabar yang menyebut kapan terakhir diambil. Datanya dianggap masih segar 10 menit; lewat dari itu, membuka halaman ini akan mengambil ulang sendiri.
-
-### Kalau butuh arsip
-
-Karena tidak ada salinan, tidak ada riwayat selain yang ESB sendiri simpan. Kalau kalian butuh angka satu bulan untuk rapat atau laporan, **ekspor ke Excel** lewat tombol **Excel** di kanan atas. File itu yang jadi arsipnya.
-
-### Tanda sumber di kolom Status
-
-| Tanda | Artinya |
-|---|---|
-| **ESB** | angka langsung dari ESB barusan |
-| **Dikoreksi** | seseorang mengetik angka sendiri untuk tanggal ini |
-| **Tersimpan** | sisa data versi lama yang masih ada di database, dan ESB tidak punya angka untuk tanggal itu |
-| **Terisi** | diisi manual sebelum ESB tersambung |
-
-**Koreksi manual tetap menang.** Begitu kalian mengetik angka di sebuah tanggal, angka itulah yang dipakai — berapa pun kata ESB, sekarang maupun nanti. Ini disengaja: kalau kalian sudah memutuskan angka yang benar, mesin tidak boleh membatalkannya.
-
-Bedanya dengan dulu: sekarang ada tombol kecil **pakai ESB** di sebelah tanda **Dikoreksi**. Klik itu kalau koreksinya ternyata keliru dan kalian ingin kembali memakai angka ESB. Tidak perlu lagi membuka Firebase Console.
-
-### Satu hal yang perlu kalian tahu soal angkanya
-
-ESB Core tidak punya endpoint yang menghitung **struk**. Yang tersedia adalah jumlah **pembayaran** (`paymentCount`). Bedanya: satu struk yang dibayar dua metode — misalnya sebagian tunai sebagian QRIS — terhitung dua.
-
-Artinya angka "transaksi" dari ESB bisa sedikit lebih tinggi daripada jumlah struk sebenarnya, tergantung seberapa sering pembayaran dipecah di outlet kalian. Omsetnya tidak terpengaruh — itu penjumlahan nominal, bukan hitungan.
-
-Saran: bandingkan sekali dengan laporan ESB sendiri untuk satu hari yang ramai. Kalau selisihnya besar dan mengganggu, kabari.
-
----
-
-## 40c. Jam Sepi & Produk — program dari data penjualan
-
-Di bawah halaman **Transaksi Harian**, setelah grafik, ada tiga kartu baru. Semuanya muncul sendiri kalau ESB sudah tersambung dan laporan per jam/per produk tersedia.
-
-### Kartu 1 — Penjualan per Jam
-
-Batang per jam 00 sampai 23, warnanya menandai keadaan:
-
-- **Hijau tua** — jam ramai, dua jam tertinggi.
-- **Hijau muda** — jam normal.
-- **Merah** — jam sepi.
-- **Pudar** — di luar jam buka.
-
-Jam buka dan tutup **tidak diatur di mana pun** — aplikasi membacanya dari datanya sendiri. Jam yang hampir tidak ada penjualannya dianggap belum buka atau sudah tutup. Jadi kalau outlet mengubah jam operasional, grafiknya ikut sendiri tanpa perlu diubah.
-
-Jam disebut **sepi** kalau omsetnya di bawah 55% rata-rata jam operasional. Bukan sekadar "yang paling rendah" — kalau sepanjang hari ramai merata, tidak ada jam yang ditandai sepi, dan itu memang benar.
-
-### Kartu 2 — Produk
-
-Dua kolom: **paling laku** (urut dari omset tertinggi) dan **paling lambat** (urut dari porsi paling sedikit).
-
-Kenapa yang lambat diukur dari porsi, bukan rupiah? Karena menu mahal yang jarang laku beda masalahnya dengan menu murah yang tidak dilirik. Yang kalian cari di kolom kanan adalah menu yang **tidak dipilih orang** — itu soal porsi.
-
-Menu yang sudah masuk kolom kiri tidak akan muncul lagi di kolom kanan.
-
-### Kartu 3 — Program dari Jam Sepi
-
-Empat rekomendasi, disusun ulang tiap kali data berubah. Isinya berbeda untuk Storypie dan Gumik, karena cara orang membelinya memang berbeda:
-
-- **Storypie** — pie dibeli santai, sering untuk orang lain. Jam sepi dijual sebagai **jeda**: paket slice pie + minuman panas, kontennya tenang, tidak jualan keras.
-- **Gumik** — mie pangsit dibeli karena lapar. Jam sepi tidak bisa dilawan dengan konten saja, harus ada **alasan harga**: paket mie + es teh, kontennya memicu lapar, plus broadcast WhatsApp tepat saat jam sepi mulai.
-
-Tiap rekomendasi berisi:
-
-| Bagian | Isinya |
-|---|---|
-| **Kenapa** | jam berapa yang sepi, berapa persen sumbangannya ke omset sehari |
-| **Tawarannya** | bentuk paketnya |
-| **Produk** | menu yang dipakai jadi jangkar, diambil dari yang paling laku |
-| **Target dampak** | perkiraan tambahan omset per hari dan per bulan |
-| **Aktivitas** | langkah konkret, termasuk jam tayang kontennya |
-
-### Soal angka "target dampak"
-
-Angka itu **perkiraan, bukan janji**, dan di layar pun ditulis begitu. Hitungannya: seandainya jam-jam sepi itu naik sampai tiga perempat rata-rata jam lain, berapa selisihnya.
-
-Kenapa tiga perempat, bukan sama rata? Karena jam sepi memang tidak akan pernah seramai jam makan — menyamakannya akan jadi angka yang enak dibaca tapi tidak pernah tercapai. Tiga perempat adalah target yang masih masuk akal untuk dikejar.
-
-Pakai angka itu untuk memutuskan **apakah programnya layak dijalankan**, bukan untuk dijadikan target di KPI.
-
-### Kalau kartunya kosong
-
-Artinya laporan per jam atau per produk belum tersedia untuk akun ESB kalian. Buka **Admin → Sumber Data ESB → Periksa Laporan ESB** untuk memastikan, lalu minta ESB membuka akses laporan itu.
-
----
-
-## 40d. Outlet sekarang ikut ESB
-
-Dulu aplikasi hanya mengenal tiga outlet yang ditulis tangan: Storypie Pekanbaru, Storypie Medan, dan Gumik. Sekarang outletnya **apa adanya dari ESB** — berapa pun jumlahnya, dan bertambah sendiri kalau ESB menambah cabang.
-
-### Yang berubah di Transaksi Harian
-
-Pemilih outlet di kiri atas sekarang berkelompok. Isinya diurutkan **brand dulu, lalu region**:
-
-```
-Gumik · Riau
-   Gumik Jl. Lobak
-   Gumik Panam
-Gumik · Sumut
-   Gumik Medan
-Storypie · Riau
-   Storypie Pekanbaru
-   Storypie Sukajadi
-Storypie · Sumut
-   Storypie Medan
-```
-
-Urutan yang sama dipakai di kartu Transaksi Harian pada Dashboard dan di sheet **Semua Outlet** waktu diekspor ke Excel, lengkap dengan kolom Brand dan Region.
-
-### Yang perlu kalian isi: target saja
-
-Angka omset dan jumlah transaksi datang sendiri dari ESB. Yang tidak bisa ditebak mesin cuma satu: **target**.
-
-1. Pilih outletnya.
-2. Klik **Atur target bulanan** di kanan atas.
-3. Isi target transaksi (dan target omset kalau ada).
-4. Ulangi untuk outlet berikutnya.
-
-Target disimpan per outlet per bulan. Kalau belum diisi, kolom Pencapaian menampilkan `—` dan rekomendasi programnya tetap jalan — hanya bagian "sisa menuju target" yang kosong.
-
-### Outlet bertambah atau berubah di ESB
-
-Buka **Admin → Sumber Data ESB → Tarik Daftar Outlet dari ESB**, lalu **Simpan Pengaturan**. Outlet baru akan masuk, dan koreksi brand/region yang pernah kalian buat untuk outlet lama tetap terjaga.
-
-Outlet yang sudah tutup: hilangkan centang **Aktif**, jangan dihapus. Dengan begitu dia tidak muncul lagi di daftar, tapi target dan catatan bulan-bulan sebelumnya tidak ikut hilang.
-
-### Kalau brand atau regionnya salah
-
-Tidak semua akun ESB mengirim brand dan region. Kalau tidak dikirim, aplikasi menebaknya dari nama outlet — "Storypie Sukajadi" jadi brand `storypie`, region `Sukajadi`. Tebakan itu sering benar, tapi tidak selalu.
-
-Perbaiki langsung di tabel Admin, lalu Simpan. Yang kalian ketik menang atas tebakan, dan tidak akan tertimpa saat daftar ditarik ulang.
-
----
-
 ## 41. Kalau deploy gagal: "Not in a Firebase app directory"
 
 Pesan lengkapnya:
@@ -1521,7 +1185,7 @@ Di sebelah logo ada enam tombol: **Dashboard, Konten, Performa, Program, Laporan
 |---|---|
 | Dashboard | Dashboard |
 | Konten | Content Plan, UGC & KOL, Approval |
-| Performa | Engagement, Report Ads, Transaksi Harian |
+| Performa | Engagement, Report Ads |
 | Program | Timeline Program, Report Budget, Kontak Event |
 | Laporan | KPI, Rekomendasi, Report Harian |
 | Admin | Admin |

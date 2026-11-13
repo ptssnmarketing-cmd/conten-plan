@@ -3607,12 +3607,19 @@ function tebakRegion(nama, dariEsb, brand){
   return sisa || 'Tanpa region';
 }
 
+/* true begitu OUTLETS benar-benar berasal dari ESB, bukan contoh bawaan.
+   Dipakai untuk memberi tahu di halaman Transaksi — tanpa penanda ini,
+   daftar contoh terlihat persis seperti daftar yang sebenarnya. */
+let outletDariEsb = false;
+
 /** Bangun ulang OUTLETS dari daftar yang tersimpan atau baru ditarik. */
 function terapkanOutlet(daftar){
   if(!Array.isArray(daftar) || !daftar.length){
     OUTLETS = JSON.parse(JSON.stringify(OUTLET_BAWAAN));
+    outletDariEsb = false;
     return;
   }
+  outletDariEsb = true;
   const baru = {};
   daftar.forEach(o=>{
     if(!o || !o.kode || o.aktif === false) return;
@@ -3625,7 +3632,14 @@ function terapkanOutlet(daftar){
       kode: o.kode
     };
   });
-  OUTLETS = Object.keys(baru).length ? baru : JSON.parse(JSON.stringify(OUTLET_BAWAAN));
+  // semua outlet dimatikan centangnya -> kembali ke contoh bawaan, dan
+  // penandanya ikut turun supaya kabarnya tetap jujur
+  if(!Object.keys(baru).length){
+    OUTLETS = JSON.parse(JSON.stringify(OUTLET_BAWAAN));
+    outletDariEsb = false;
+  } else {
+    OUTLETS = baru;
+  }
   if(!OUTLETS[trxOutlet]) trxOutlet = Object.keys(OUTLETS)[0];
 }
 
@@ -6391,7 +6405,13 @@ async function genSimpan(){
 let esbSetting = {};
 let esbCabang = [];          // {kode, nama} hasil tarikan dari ESB
 
-function esbSiap(){ return !!(esbSetting.aktif && waSetting.webAppUrl && Object.keys(petaCabang()).length); }
+/* Dua keadaan yang berbeda, dan dulu tercampur jadi satu.
+   esbTersambung = Apps Script dan ESB sudah diatur.
+   esbSiap       = itu, DAN outletnya sudah punya kode cabang.
+   Dicampur, hasilnya saling mengunci: outlet baru ada setelah ditarik dari
+   ESB, tapi tarikannya dianggap belum bisa karena outletnya belum ada. */
+function esbTersambung(){ return !!(esbSetting.aktif && waSetting.webAppUrl); }
+function esbSiap(){ return !!(esbTersambung() && Object.keys(petaCabang()).length); }
 
 async function panggilEsb(aksi, data){
   if(!waSetting.webAppUrl) throw new Error('URL Apps Script belum diisi di panel Kirim Otomatis.');
@@ -6742,8 +6762,20 @@ function perbaruiEsb(){
 
 /** Baris kabar di atas tabel: segar, sedang menarik, atau gagal. */
 function kabarEsbHtml(){
-  if(!esbSiap()){
+  if(!esbTersambung()){
     return `<div class="esb-kabar nt">Angka masih diketik manual. Sambungkan ESB di <b>Admin → Sumber Data ESB</b> supaya omset dan transaksi terisi sendiri.</div>`;
+  }
+  // Tersambung tapi outletnya masih contoh — ini keadaan yang paling
+  // membingungkan kalau tidak dikatakan: daftar outletnya terlihat wajar,
+  // padahal bukan outlet yang sebenarnya ada di ESB.
+  if(!outletDariEsb){
+    if(esbTarikOutletJalan){
+      return `<div class="esb-kabar jalan"><span class="spin"></span> Mengambil daftar outlet dari ESB…</div>`;
+    }
+    return `<div class="esb-kabar bad">Daftar outlet di bawah masih <b>contoh bawaan</b>, belum nama store yang sebenarnya di ESB.
+      ${can.manageAdmin()
+        ? `<button class="lnk-kecil" onclick="ambilOutletSekarang()">ambil daftar outlet dari ESB sekarang</button>`
+        : 'Minta Admin membuka <b>Admin → Sumber Data ESB</b> lalu menekan Tarik Daftar Outlet.'}</div>`;
   }
   const s = esbLiveStatus[trxBulan] || {};
   if(s.jalan) return `<div class="esb-kabar jalan"><span class="spin"></span> Mengambil data ${labelBulan(trxBulan)} dari ESB…</div>`;
@@ -6757,6 +6789,43 @@ function kabarEsbHtml(){
   }
   return `<div class="esb-kabar nt">ESB tersambung. <button class="lnk-kecil" onclick="perbaruiEsb()">ambil data ${labelBulan(trxBulan)}</button></div>`;
 }
+/**
+ * Tarik daftar outlet dari ESB lalu simpan, dalam satu klik dari halaman
+ * Transaksi. Isinya sama dengan tombol di Admin; yang dihemat di sini
+ * adalah perjalanan mencarinya.
+ */
+let esbTarikOutletJalan = false;
+async function ambilOutletSekarang(){
+  if(!can.manageAdmin()){
+    return toast('Hanya Admin yang bisa mengubah daftar outlet.');
+  }
+  if(esbTarikOutletJalan) return;
+  esbTarikOutletJalan = true;
+  patchKabarEsb();
+  try{
+    const j = await panggilEsb('esb_cabang');
+    const cab = j.cabang || [];
+    if(!cab.length) throw new Error('ESB tidak mengembalikan satu outlet pun untuk kredensial ini.');
+    const outlets = cab.map(c=>{
+      const brand = tebakBrand(c.nama, c.brand);
+      return {kode:c.kode, nama:c.nama || c.kode, brand,
+              region: tebakRegion(c.nama, c.region, brand), aktif:true};
+    });
+    // onSnapshot pengaturan/esb yang akan memanggil terapkanOutlet + render
+    await db.collection('pengaturan').doc('esb').set({
+      aktif:true, outlets, diubahOleh:profile.nama, diubahAt:new Date().toISOString()
+    }, {merge:true});
+    const adaBrand = cab.some(c=>c.brand), adaRegion = cab.some(c=>c.region);
+    toast(`${outlets.length} outlet diambil dari ESB.` +
+      (adaBrand && adaRegion ? '' : ' Brand/region diturunkan dari nama — periksa di Admin kalau ada yang salah.'));
+  }catch(e){
+    toast('Gagal mengambil daftar outlet: ' + (e.message || e));
+  }finally{
+    esbTarikOutletJalan = false;
+    patchKabarEsb();
+  }
+}
+
 function patchKabarEsb(){
   const el = $('esbKabar');
   if(el) el.innerHTML = kabarEsbHtml();

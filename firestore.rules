@@ -1,0 +1,147 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function myRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    function isAdmin() { return isSignedIn() && myRole() == 'admin'; }
+    function changedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // ---------- users ----------
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      // user membuat profilnya sendiri saat register, role harus sesuai userRoles
+      allow create: if isSignedIn() && request.auth.uid == uid
+        && request.resource.data.role ==
+           get(/databases/$(database)/documents/userRoles/$(request.resource.data.email)).data.role;
+      // user boleh mengubah preferensi miliknya sendiri (tema & nomor WA), TIDAK boleh role
+      allow update: if isSignedIn() && request.auth.uid == uid
+        && changedKeys().hasOnly(['theme','wa','nama']);
+      // admin boleh mengubah apa pun termasuk role
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- userRoles (email -> role, dibuat admin) ----------
+    match /userRoles/{email} {
+      // calon user perlu baca dokumennya sendiri saat register
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ---------- campaigns ----------
+    match /campaigns/{id} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && myRole() in ['admin', 'manager'];
+    }
+
+    // ---------- ads (report iklan Meta & TikTok) ----------
+    match /ads/{id} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn()
+        && myRole() in ['admin','manager','supervisor','copywriter','content_creator','designer'];
+      allow delete: if isSignedIn() && myRole() in ['copywriter','admin'];
+    }
+
+    // ---------- transaksiHarian (target & actual per outlet) ----------
+    match /transaksiHarian/{id} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn()
+        && myRole() in ['admin','manager','supervisor','copywriter','content_creator','designer']
+        // target bulanan hanya boleh diubah admin & manager
+        && ( !changedKeys().hasAny(['targetTransaksi','targetOmset'])
+             || myRole() in ['admin','manager'] );
+      allow delete: if isSignedIn() && myRole() in ['admin','manager'];
+    }
+
+    // ---------- programTimeline ----------
+    match /programTimeline/{id} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn()
+        && myRole() in ['admin','manager','supervisor','copywriter','content_creator','designer'];
+      allow delete: if isSignedIn() && myRole() in ['admin','manager','copywriter'];
+    }
+
+    // ---------- kontakEvent (kontak pengelola event per kota) ----------
+    match /kontakEvent/{id} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn()
+        && myRole() in ['admin','manager','supervisor','copywriter','content_creator','designer'];
+      allow delete: if isSignedIn() && myRole() in ['admin','manager'];
+    }
+
+    // ---------- pengaturan (mis. penjadwalan WhatsApp) ----------
+    // Dokumen 'ai' menyimpan kunci API Google AI Studio bila memakai mode
+    // Langsung. Kunci itu terbaca oleh SEMUA user yang sudah login — itu
+    // konsekuensi Firebase paket Spark yang tidak punya Cloud Functions.
+    // Pakai mode Lewat Apps Script kalau kunci harus benar-benar tersembunyi.
+    // Pemetaan outlet -> cabang ESB. Tidak berisi kredensial apa pun:
+    // username & password ESB hidup di Script Properties Apps Script.
+    match /pengaturan/esb {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /pengaturan/ai {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    match /pengaturan/{id} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && myRole() in ['admin','manager'];
+    }
+
+    // ---------- ugcKol (UGC / Influencer / KOL) ----------
+    match /ugcKol/{id} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn()
+        && myRole() in ['admin','manager','supervisor','copywriter','content_creator','designer'];
+      allow delete: if isSignedIn() && myRole() in ['copywriter','admin'];
+    }
+
+    // ---------- kpiCustom ----------
+    match /kpiCustom/{id} {
+      allow read: if isSignedIn();
+      // hanya admin & manager yang boleh membuat / mengubah definisi KPI
+      allow create, delete: if isSignedIn() && myRole() in ['admin','manager'];
+      allow update: if isSignedIn() && (
+        myRole() in ['admin','manager']
+        // role lain hanya boleh mengisi angka realisasi bulanan, bukan mengubah target
+        || (myRole() in ['supervisor','copywriter','content_creator','designer']
+            && changedKeys().hasOnly(['nilai']))
+      );
+    }
+
+    // ---------- contentPlans ----------
+    match /contentPlans/{id} {
+      allow read: if isSignedIn();
+
+      // hanya copywriter & admin yang membuat konten baru
+      allow create: if isSignedIn()
+        && myRole() in ['copywriter', 'admin']
+        && request.resource.data.apprSpv == 'pending'
+        && request.resource.data.apprMgr == 'pending';
+
+      // update: semua role internal boleh, TAPI field sensitif dikunci per role
+      allow update: if isSignedIn()
+        && myRole() in ['admin','manager','supervisor','copywriter','content_creator','designer']
+        // field Appr SPV hanya boleh diubah supervisor/admin
+        && ( !changedKeys().hasAny(['apprSpv','apprSpvBy','apprSpvAt'])
+             || myRole() in ['supervisor','admin'] )
+        // field Appr MGR hanya boleh diubah manager/admin
+        && ( !changedKeys().hasAny(['apprMgr','apprMgrBy','apprMgrAt'])
+             || myRole() in ['manager','admin'] )
+        // data engagement tidak boleh diubah designer
+        && ( !changedKeys().hasAny(['engagement'])
+             || myRole() in ['content_creator','copywriter','supervisor','manager','admin'] )
+        // catatan revisi boleh ditambah semua role internal (sudah tercakup di atas),
+        // tapi wajib tetap berbentuk list
+        && ( !changedKeys().hasAny(['revisiNotes'])
+             || request.resource.data.revisiNotes is list );
+
+      allow delete: if isSignedIn() && myRole() in ['copywriter','admin'];
+    }
+  }
+}

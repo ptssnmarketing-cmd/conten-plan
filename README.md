@@ -1,19 +1,12 @@
-# Content Plan Hub — Storypie × Gumik
+# Marketing SSN — Storypie × Gumik
 
 Web app perencanaan, approval, dan pelaporan konten dua brand. Firebase (Auth + Firestore + Storage), satu file `index.html`, tanpa build step.
 
 ## Yang baru di versi ini
 
-**Modul Transaksi Harian dihapus**, berikut semua yang menempel padanya: integrasi ESB, analisa jam sepi, rekomendasi produk, panel Sumber Data ESB di Admin, dan dua sheet Excel-nya.
+**Nama aplikasi menjadi Marketing SSN.** Restore tetap menerima berkas backup lama yang bertuliskan "Content Plan Hub".
 
-Yang **tidak** ikut dihapus:
-
-- **Data `transaksiHarian` di Firestore** — tetap utuh, tidak disentuh. Aturan keamanannya juga dibiarkan.
-- **Backup** — koleksi itu masih ikut di berkas backup JSON dan masih dipulihkan oleh Restore. Dibaca sekali saat login lewat `.get()` tanpa listener, jadi tidak menambah beban.
-- **Pemeriksa versi Apps Script** — pindah dari panel ESB ke panel Kirim Otomatis, karena sama bergunanya untuk WhatsApp dan AI.
-- **Kode ESB di `apps-script/Code.gs`** — dibiarkan apa adanya. Tidak ada yang memanggilnya lagi, jadi tidak perlu deploy ulang Apps Script. Kalau mau benar-benar bersih, hapus Script Properties `ESB_API_KEY`, `ESB_USER`, `ESB_PASS`, `ESB_AUTH_MODE`.
-
-Pemulihan: modul ini dihapus dalam satu commit, jadi `git revert` mengembalikan semuanya sekaligus, dan datanya masih di tempatnya.
+**Modul Sumber Info.** Konsumen mengisi sendiri dari mana mereka tahu tentang Storypie atau Gumik, lewat halaman publik `form.html` tanpa login. Pertanyaan, pilihan jawaban, dan daftar store diatur dari dalam aplikasi — tidak ada yang ditulis di kode, jadi tim bisa mengubahnya tanpa deploy ulang.
 
 ## Fitur lengkap
 
@@ -262,7 +255,7 @@ Sifat pemulihan:
 
 - **Additive.** Dokumen ditulis dengan `set(..., {merge:true})`. Dokumen yang ada di aplikasi tapi tidak ada di berkas **tidak dihapus**.
 - Dokumen dengan ID yang sama akan **ditimpa** oleh isi berkas.
-- Berkas yang bukan backup Content Plan Hub ditolak (dicek lewat field `aplikasi`).
+- Berkas yang bukan backup aplikasi ini ditolak (dicek lewat field `aplikasi`). Nama lama "Content Plan Hub" tetap diterima.
 - Password tidak ikut dibackup — akun Auth tetap harus ada. Koleksi `users` yang dipulihkan hanya mengembalikan nama, role, dan preferensi.
 - Hanya role **admin** yang melihat panel ini.
 
@@ -445,6 +438,63 @@ Panel Admin punya kolom **Catatan Brand** per brand yang ikut dikirim di setiap 
 ### Yang dilarang di prompt
 
 Prompt secara eksplisit melarang model mengarang harga, diskon, angka, tanggal, alamat, dan klaim kesehatan, serta melarang gaya iklan lama ("kualitas terbaik", "jangan sampai ketinggalan"). Hasilnya tetap berstatus Draft dan tetap lewat approval Supervisor dan Manager seperti biasa.
+
+## Sumber Info (survei konsumen)
+
+Satu-satunya bagian aplikasi yang terbuka untuk publik.
+
+### Dua halaman
+
+| Berkas | Siapa | Guna |
+|---|---|---|
+| `form.html` | konsumen, tanpa login | mengisi dari mana mereka tahu tentang kita |
+| menu **Sumber Info** | tim, setelah login | rekap jawaban + mengatur isi form |
+
+`form.html` berdiri sendiri: punya CSS-nya sendiri, hanya memuat Firebase App + Firestore, dan tidak menyentuh `index.html`. Firebase Hosting menyajikan berkas statis sebelum menerapkan rewrite `**` → `/index.html`, jadi tautannya bekerja tanpa perubahan `firebase.json`.
+
+### Tidak ada pertanyaan yang ditulis di kode
+
+Semuanya dibaca dari `pengaturan/survei`:
+
+```js
+{ aktif, judul, sapaan, terimaKasih,
+  outlets:    [{nama, aktif}],
+  pertanyaan: [{teks, tipe:'pilihan'|'teks', wajib, opsi:[]}] }
+```
+
+Jawaban masuk ke `surveiJawaban`: `{outlet, outletNama, jawaban:{<teks pertanyaan>: <jawaban>}, at}`.
+
+**Kunci jawaban adalah teks pertanyaannya, bukan nomor urut.** Kalau tim menambah atau memindahkan pertanyaan, jawaban lama tetap menempel pada pertanyaan yang benar. Dengan nomor urut, menyisipkan satu pertanyaan di tengah akan menggeser seluruh riwayat ke pertanyaan yang salah — diam-diam, tanpa error.
+
+### Menulis tanpa login
+
+Ini satu-satunya tulisan tanpa autentikasi di seluruh basis data, jadi pintunya dibuat sesempit mungkin di `firestore.rules`:
+
+- hanya empat field yang diterima (`hasOnly`), masing-masing dibatasi panjangnya
+- `jawaban` wajib berisi 1–12 kunci
+- `get()` ke `pengaturan/survei` — **create ditolak kalau form sedang dimatikan**, jadi sakelar di menu Sumber Info benar-benar menutup pintunya
+- `update` dikunci mati: jawaban yang masuk tidak bisa diubah siapa pun, termasuk admin. Kalau bisa diedit, angkanya berhenti menjadi bukti.
+- `delete` hanya admin & manager
+
+`pengaturan/survei` sengaja `allow read: if true` karena halaman publik perlu membaca pertanyaannya. Isinya memang untuk dibaca umum dan tidak memuat kredensial apa pun.
+
+**Yang tidak bisa dicegah aturan Firestore:** pengiriman berulang oleh orang yang sama, atau spam. Tidak ada rate limit di sisi aturan pada paket Spark. Penangkalnya adalah sakelar aktif/mati dan hak hapus admin. Untuk survei di meja kasir, risikonya kecil; kalau tautannya disebar luas, pantau jumlah jawaban yang masuk.
+
+### Tautan per store
+
+`form.html?o=<nama store>` melewati pertanyaan "kamu di store mana" dan langsung mengisinya. Ini yang dipakai untuk QR yang ditempel di satu store — konsumen tidak perlu memilih, dan datanya tidak bisa salah store. Tombol **Salin tautan** per store ada di panel pengaturan.
+
+### Pilihan "Lainnya"
+
+Pilihan yang teksnya mengandung kata "lain" memunculkan kotak isian bebas. Yang disimpan adalah **teks yang diketik konsumen**, bukan kata "Lainnya" — jadi jawaban seperti "spanduk di jalan" langsung muncul sebagai barisnya sendiri di rekap, bukan tenggelam di satu kantong "Lainnya". Itu sebabnya `surveiHitung()` menambahkan kunci yang belum ada di daftar opsi, bukan membuangnya.
+
+### Batas 2000
+
+Langganan `surveiJawaban` dibatasi 2000 terbaru. Koleksi ini diisi publik, jadi tidak boleh tumbuh tanpa batas di memori browser. Rekap di luar batas itu tetap bisa diambil lewat ekspor Excel.
+
+### Yang tidak dikumpulkan
+
+Tidak ada nama, nomor telepon, email, cookie, atau pelacak. Yang tersimpan hanya jawaban, nama store, dan waktu kirim. Halaman form mengatakan ini apa adanya ke konsumen, dan `meta robots noindex` menjaganya tidak muncul di hasil pencarian.
 
 ## Deploy lewat GitHub
 

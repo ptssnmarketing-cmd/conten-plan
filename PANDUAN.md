@@ -1,4 +1,4 @@
-# Panduan Pemakaian — Content Plan Hub
+# Panduan Pemakaian — Marketing SSN
 
 Panduan untuk tim (bukan panduan teknis). Bisa dibuka dari HP maupun laptop.
 
@@ -842,7 +842,7 @@ Panel **Pulihkan dari Backup JSON** tepat di bawahnya.
 - Dokumen dengan ID yang sama akan **ditimpa** oleh isi berkas. Jadi kalau ada data yang sudah diperbarui setelah backup dibuat, perubahan itu akan kembali ke versi lama.
 - **Buat backup baru dulu** sebelum memulihkan. Selalu.
 - Password tidak ikut dibackup. Akun login tetap dikelola Firebase Auth — pemulihan hanya mengembalikan nama, role, dan preferensi user.
-- Berkas yang bukan backup Content Plan Hub akan ditolak dengan pesan jelas.
+- Berkas yang bukan backup Marketing SSN akan ditolak dengan pesan jelas.
 
 Kalau yang hilang cuma satu dua data, lebih aman diketik ulang manual daripada memulihkan seluruh backup.
 
@@ -1210,3 +1210,61 @@ Baris atas disembunyikan — layarnya tidak cukup. Yang dipakai:
 Tema bawaan sekarang **Mint**: hijau untuk tombol dan capaian, biru untuk Storypie, kuning untuk Gumik. Ketiganya sengaja dibedakan supaya di grafik tidak tertukar.
 
 Kalau lebih suka tampilan lama, klik ikon palet di kanan atas lalu pilih **Biru**. Pilihan tema tersimpan di akun kalian, jadi ikut saat login di perangkat lain.
+
+---
+
+## 43. Sumber Info — tanya konsumen dari mana mereka tahu
+
+Menu **Sumber Info** (kelompok **Performa**) menjawab satu pertanyaan yang selama ini cuma bisa dikira-kira: **konsumen baru itu datang dari mana?** Instagram, TikTok, teman, atau kebetulan lewat depan outlet.
+
+Yang mengisi bukan tim, tapi **konsumennya sendiri**, lewat halaman terpisah yang bisa dibuka siapa saja tanpa login.
+
+### Cara memakainya di store
+
+1. Buka menu **Sumber Info**.
+2. Di panel **Pengaturan Form**, cari store kamu, klik **Salin tautan**.
+3. Ubah tautan itu jadi QR lewat pembuat QR gratis mana pun.
+4. Cetak, tempel di meja kasir atau di struk.
+
+Pakai **tautan per store**, bukan tautan umum. Dengan tautan per store, konsumen tidak perlu memilih store dan datanya tidak mungkin tercatat di store yang salah.
+
+### Mengubah pertanyaannya
+
+Semua di panel **Pengaturan Form**, dan hanya Admin yang bisa. Setelah **Simpan Pengaturan**, perubahannya langsung berlaku di halaman konsumen — tidak perlu menunggu siapa pun men-deploy apa pun.
+
+| Yang bisa diubah | Keterangan |
+|---|---|
+| Status form | Dimatikan = form ditutup total, jawaban baru ditolak |
+| Judul & kalimat pembuka | Yang pertama dibaca konsumen |
+| Pesan setelah terkirim | Muncul setelah tombol Kirim |
+| Store | Centang yang aktif; yang tidak dicentang hilang dari pilihan |
+| Pertanyaan | Tambah, hapus, ubah urutannya |
+| Pilihan jawaban | Satu per baris di kotak teksnya |
+| Wajib diisi | Konsumen tidak bisa kirim sebelum menjawab |
+
+### Dua jenis pertanyaan
+
+- **Pilih salah satu** — masuk ke grafik rekap. Ini yang dipakai untuk "dari mana tahu".
+- **Isian bebas** — tidak masuk grafik, tapi muncul di kartu **Masukan konsumen**. Bagus untuk saran.
+
+### Soal pilihan "Lainnya"
+
+Tulis **Lainnya** sebagai salah satu pilihan, dan konsumen akan mendapat kotak isian bebas begitu memilihnya.
+
+Yang masuk ke rekap adalah **apa yang mereka ketik**, bukan kata "Lainnya". Jadi kalau lima orang menulis "spanduk di jalan", di rekap muncul baris "spanduk di jalan: 5" — bukan tenggelam jadi "Lainnya: 5" yang tidak bisa ditindaklanjuti.
+
+Dari situlah kamu tahu kapan harus menambah pilihan baru: begitu ada jawaban bebas yang sering berulang, masukkan ke daftar pilihan supaya ke depannya lebih rapi.
+
+### Membaca hasilnya
+
+Saring per store dan per bulan. Tiap pertanyaan tampil sebagai batang berurut dari yang terbanyak, lengkap dengan jumlah dan persennya. Tombol **Excel** mengekspor dua sheet: jawaban mentah satu baris per konsumen, dan rekap per pilihan.
+
+### Tiga hal yang perlu diketahui
+
+**Jawaban tidak bisa diedit siapa pun**, termasuk Admin. Ini disengaja — angka yang bisa diubah berhenti jadi bukti. Yang bisa dilakukan Admin hanya menghapus.
+
+**Jawabannya anonim.** Tidak ada nama, nomor telepon, email, atau pelacak apa pun. Kalau nanti kamu ingin mengumpulkan nomor WA untuk program loyalitas, itu perubahan yang perlu dipikirkan terpisah — termasuk izin dari konsumennya.
+
+**Form publik bisa diisi berulang kali oleh orang yang sama.** Tidak ada cara mencegahnya tanpa meminta identitas, dan itu akan membuat orang enggan mengisi. Untuk survei di meja kasir risikonya kecil. Kalau tautannya kamu sebar luas lalu angkanya terlihat janggal, matikan form lewat **Status form** dan hapus jawaban yang mencurigakan.
+
+---

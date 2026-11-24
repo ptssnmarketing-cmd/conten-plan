@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5">
 <meta name="theme-color" content="#152C6B">
-<title>Content Plan — Storypie &amp; Gumik</title>
+<title>Marketing SSN — Storypie &amp; Gumik</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -399,6 +399,16 @@ td .clip{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;ov
 /* ===== Report Ads ===== */
 .dot.meta{background:linear-gradient(135deg,#0866FF,#7B4BFF)}
 
+/* ===== rekap survei ===== */
+.srv-baris{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:13px}
+.srv-baris .nm{flex:0 0 200px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srv-baris .bar{flex:1;min-width:40px;height:9px;border-radius:999px;background:var(--track);overflow:hidden}
+.srv-baris .bar i{display:block;height:100%;border-radius:999px;background:var(--brand)}
+.srv-baris .num{flex:none;min-width:44px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700}
+.srv-baris .pct{flex:none;min-width:40px;text-align:right;font-size:11.5px;color:var(--muted)}
+.srv-komen{padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px;line-height:1.55}
+.srv-komen:last-child{border-bottom:none}
+@media (max-width:640px){ .srv-baris .nm{flex:0 0 120px} }
 /* ===== tautan kecil di dalam baris kabar ===== */
 .lnk-kecil{background:none;border:none;color:var(--muted);font-size:10.5px;font-weight:600;text-decoration:underline;padding:0 0 0 5px}
 .lnk-kecil:hover{color:var(--brand)}
@@ -696,7 +706,7 @@ details.fold .sum-note{font-weight:600;text-transform:none;letter-spacing:0;colo
 <div id="loginScreen">
   <div class="login-brand">
     <span class="mono" style="opacity:.7;font-size:12px">PT SYIRKAH SINERGI NUSANTARA</span>
-    <h1>Content Plan Hub</h1>
+    <h1>Marketing SSN</h1>
     <p>Satu pintu untuk perencanaan, produksi, approval, sampai laporan engagement konten dua brand.</p>
     <div class="brand-chips">
       <span class="chip sp">Storypie</span>
@@ -734,7 +744,7 @@ details.fold .sum-note{font-weight:600;text-transform:none;letter-spacing:0;colo
     <div class="tb-brand">
       <span class="tb-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18.5 9 12l4 4 7-10"/><path d="M4 21h17"/></svg></span>
       <span>
-        <span class="t" style="display:block">Content Plan Hub</span>
+        <span class="t" style="display:block">Marketing SSN</span>
         <span class="s" style="display:block">Storypie × Gumik</span>
       </span>
     </div>
@@ -986,7 +996,7 @@ auth.onAuthStateChanged(async user => {
   if(!user){
     profile = null;
     if(unsubPlans){unsubPlans();unsubPlans=null;}
-    plansCache=[]; campaignsCache=[]; usersCache=[]; invitesCache=[]; kpiCustomCache=[]; ugcCache=[]; waSetting={}; aiSetting={}; ugcBudget={}; adsCache=[]; trxArsip={}; prgCache=[]; kontakCache=[];
+    plansCache=[]; campaignsCache=[]; usersCache=[]; invitesCache=[]; kpiCustomCache=[]; ugcCache=[]; waSetting={}; aiSetting={}; ugcBudget={}; adsCache=[]; trxArsip={}; surveiSetting={}; surveiCache=[]; surveiDraf=null; prgCache=[]; kontakCache=[];
     closeDrawer(); closeSidebar();
     $('appScreen').classList.remove('on');
     $('loginScreen').style.display='flex';
@@ -1029,6 +1039,16 @@ function subscribeData(){
   db.collection('transaksiHarian').get()
     .then(snap=>{ trxArsip = {}; snap.docs.forEach(d=>{ trxArsip[d.id] = d.data(); }); })
     .catch(err=>console.error(err));
+  db.collection('pengaturan').doc('survei').onSnapshot(d=>{
+    surveiSetting = d.exists ? d.data() : {};
+    if(['survei','dashboard'].includes(activePage)) renderPage();
+  }, err=>console.error(err));
+  // Dibatasi 2000 terbaru: koleksi ini diisi publik, jadi tidak boleh tumbuh
+  // tanpa batas di memori browser. Rekap lengkap tetap bisa lewat Excel.
+  db.collection('surveiJawaban').orderBy('at','desc').limit(2000).onSnapshot(snap=>{
+    surveiCache = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    if(['survei','dashboard'].includes(activePage)) renderPage();
+  }, err=>console.error(err));
   db.collection('programTimeline').onSnapshot(snap=>{
     prgCache = snap.docs.map(d=>({id:d.id, ...d.data()}));
     if(['program','dashboard'].includes(activePage)) renderPage();
@@ -1073,6 +1093,7 @@ const IKON = {
   kpi:        '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
   rekomendasi:'<path d="M9.5 18h5M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9V15h7v-1.1A6 6 0 0 0 12 3Z"/>',
   laporan:    '<path d="M5 3.5h9l5 5v12H5z"/><path d="M14 3.5v5h5"/><path d="M8.5 13h7M8.5 16.5h5"/>',
+  survei:     '<rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8.5 8.5h7M8.5 12.5h7M8.5 16.5h4"/>',
   approval:   '<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.3l2.5 2.4 4.5-5"/>',
   admin:      '<circle cx="12" cy="12" r="3"/><path d="M4.2 14.6a8.3 8.3 0 0 1 0-5.2M19.8 9.4a8.3 8.3 0 0 1 0 5.2M9.4 4.2a8.3 8.3 0 0 1 5.2 0M14.6 19.8a8.3 8.3 0 0 1-5.2 0"/><path d="m6.4 6.4 2 2M17.6 6.4l-2 2M17.6 17.6l-2-2M6.4 17.6l2-2"/>'
 };
@@ -1099,6 +1120,7 @@ function navItems(){
     {id:'kpi',       ic:'🎯', label:'KPI', short:'KPI'},
     {id:'rekomendasi',ic:'💡', label:'Rekomendasi', short:'Saran'},
     {id:'laporan',   ic:'🗒️', label:'Report Harian', short:'Report'},
+    {id:'survei',    ic:'📝', label:'Sumber Info', short:'Survei'},
   ];
   if(can.approveSpv() || can.approveMgr()) items.push({id:'approval', ic:'✅', label:'Approval', short:'Approve'});
   if(can.manageAdmin()) items.push({id:'admin', ic:'⚙️', label:'Admin', short:'Admin'});
@@ -1109,7 +1131,7 @@ function navItems(){
 const GRUP_NAV = [
   {key:'dash',   label:'Dashboard', isi:['dashboard']},
   {key:'konten', label:'Konten',    isi:['plan','ugc','approval']},
-  {key:'perf',   label:'Performa',  isi:['engagement','ads']},
+  {key:'perf',   label:'Performa',  isi:['engagement','ads','survei']},
   {key:'prog',   label:'Program',   isi:['program','budget','kontak']},
   {key:'lap',    label:'Laporan',   isi:['kpi','rekomendasi','laporan']},
   {key:'admin',  label:'Admin',     isi:['admin']}
@@ -1208,6 +1230,7 @@ function renderPage(){
   else if(activePage==='rekomendasi') m.innerHTML = viewRekomendasi();
   else if(activePage==='laporan') m.innerHTML = viewLaporan();
   else if(activePage==='approval') m.innerHTML = viewApproval();
+  else if(activePage==='survei') m.innerHTML = viewSurvei();
   else if(activePage==='admin') m.innerHTML = viewAdmin();
 
   m.scrollTop = scroll;
@@ -2287,7 +2310,7 @@ function pendingInvites(){
                      .sort((a,b)=>a.email.localeCompare(b.email));
 }
 function inviteText(inv){
-  return `Halo! Kamu sudah didaftarkan di *Content Plan Hub* sebagai *${ROLES[inv.role]||inv.role}*.\n\n`
+  return `Halo! Kamu sudah didaftarkan di *Marketing SSN* sebagai *${ROLES[inv.role]||inv.role}*.\n\n`
        + `Cara masuk pertama kali:\n`
        + `1. Buka ${appUrl()}\n`
        + `2. Klik *Daftar* (di bawah tombol Masuk)\n`
@@ -3191,6 +3214,10 @@ let adsCache = [];
    di mana pun — hanya dibaca sekali saat login supaya tetap ikut terbawa
    kalau tim membuat Backup, dan bisa dipulihkan kalau modulnya dikembalikan. */
 let trxArsip = {};
+let surveiSetting = {};
+let surveiCache = [];
+let surveiOutlet = 'semua';
+let surveiBulan = 'semua';
 let adsBrand = 'storypie';
 let adsBulan = bulanLokal(new Date());
 const adsFilter = {platform:'', status:'', q:''};
@@ -4234,13 +4261,362 @@ function exportKontakExcel(){
   toast('Daftar kontak diunduh.');
 }
 
+/* ================= SUMBER INFO (survei konsumen) =================
+   Konsumen mengisi sendiri lewat halaman publik form.html — tanpa login,
+   cukup buka tautannya atau pindai QR di meja kasir. Pertanyaan, pilihan
+   jawaban, dan daftar store semuanya diatur dari halaman ini, bukan
+   ditulis di kode, supaya tim bisa mengubahnya tanpa deploy ulang. */
+
+const SURVEI_BAWAAN = {
+  aktif: true,
+  judul: 'Terima kasih sudah mampir!',
+  sapaan: 'Satu pertanyaan singkat, ya. Jawabanmu membantu kami tahu cara terbaik menyapa pelanggan baru.',
+  terimaKasih: 'Terima kasih! Sampai jumpa lagi.',
+  outlets: [
+    {nama:'Storypie Pekanbaru', aktif:true},
+    {nama:'Storypie Medan',     aktif:true},
+    {nama:'Gumik Pekanbaru',    aktif:true}
+  ],
+  pertanyaan: [
+    {teks:'Dari mana kamu tahu tentang kami?', tipe:'pilihan', wajib:true,
+     opsi:['Instagram','TikTok','Teman atau keluarga','Lewat depan outlet','Google Maps','GoFood / GrabFood','Acara atau bazar','Lainnya']},
+    {teks:'Ada masukan buat kami?', tipe:'teks', wajib:false, opsi:[]}
+  ]
+};
+
+/** Pengaturan tersimpan, dilengkapi nilai bawaan untuk field yang kosong. */
+function surveiCfg(){
+  const s = surveiSetting || {};
+  return {
+    aktif:      s.aktif !== false,
+    judul:      s.judul || SURVEI_BAWAAN.judul,
+    sapaan:     s.sapaan || SURVEI_BAWAAN.sapaan,
+    terimaKasih:s.terimaKasih || SURVEI_BAWAAN.terimaKasih,
+    outlets:    Array.isArray(s.outlets) && s.outlets.length ? s.outlets : SURVEI_BAWAAN.outlets,
+    pertanyaan: Array.isArray(s.pertanyaan) && s.pertanyaan.length ? s.pertanyaan : SURVEI_BAWAAN.pertanyaan
+  };
+}
+function surveiOutletAktif(){ return surveiCfg().outlets.filter(o=>o && o.nama && o.aktif !== false); }
+function tautanForm(outlet){
+  const dasar = location.origin + '/form.html';
+  return outlet ? dasar + '?o=' + encodeURIComponent(outlet) : dasar;
+}
+async function salinTautan(teks){
+  try{ await navigator.clipboard.writeText(teks); toast('Tautan disalin.'); }
+  catch(e){ toast('Gagal menyalin. Salin manual: ' + teks); }
+}
+
+/* ---------- rekap ---------- */
+
+/** Bulan-bulan yang punya jawaban, terbaru di atas. */
+function surveiBulanAda(){
+  const b = [...new Set(surveiCache.map(j=>String(j.at||'').slice(0,7)).filter(Boolean))];
+  b.sort().reverse();
+  const ini = bulanLokal(new Date());
+  if(!b.includes(ini)) b.unshift(ini);
+  return b;
+}
+function surveiTersaring(){
+  return surveiCache.filter(j=>{
+    if(surveiBulan !== 'semua' && String(j.at||'').slice(0,7) !== surveiBulan) return false;
+    if(surveiOutlet !== 'semua' && j.outlet !== surveiOutlet) return false;
+    return true;
+  });
+}
+/**
+ * Hitung jawaban per pertanyaan.
+ * Pertanyaan dikenali lewat teksnya, bukan nomor urut: kalau tim menambah
+ * atau memindahkan pertanyaan, jawaban lama tetap menempel pada pertanyaan
+ * yang benar, bukan bergeser ke tetangganya.
+ */
+function surveiHitung(){
+  const cfg = surveiCfg(), data = surveiTersaring();
+  return cfg.pertanyaan.filter(q=>q.tipe !== 'teks').map(q=>{
+    const hit = {};
+    (q.opsi||[]).forEach(o=>{ hit[o] = 0; });
+    let total = 0;
+    data.forEach(j=>{
+      const v = (j.jawaban||{})[q.teks];
+      if(!v) return;
+      hit[v] = (hit[v]||0) + 1;     // jawaban "Lainnya" yang diketik ikut muncul
+      total++;
+    });
+    const baris = Object.entries(hit).sort((a,b)=>b[1]-a[1]);
+    return {teks:q.teks, total, baris};
+  });
+}
+function surveiKomentar(){
+  const cfg = surveiCfg();
+  const qTeks = cfg.pertanyaan.filter(q=>q.tipe === 'teks').map(q=>q.teks);
+  const out = [];
+  surveiTersaring().forEach(j=>{
+    qTeks.forEach(t=>{
+      const v = ((j.jawaban||{})[t]||'').trim();
+      if(v) out.push({teks:v, outlet:j.outletNama || j.outlet || '—', at:j.at});
+    });
+  });
+  return out.sort((a,b)=>String(b.at).localeCompare(String(a.at)));
+}
+
+/* ---------- halaman ---------- */
+
+function viewSurvei(){
+  const cfg = surveiCfg();
+  const data = surveiTersaring();
+  const hitung = surveiHitung();
+  const komentar = surveiKomentar();
+  const link = tautanForm();
+
+  return `
+  <div class="page-head">
+    <div><h2>Sumber Info</h2>
+      <div class="desc">Dari mana konsumen tahu tentang kita — diisi sendiri oleh mereka lewat tautan publik.</div></div>
+    <div class="head-act">
+      ${data.length ? `<button class="btn btn-ghost" onclick="exportSurveiExcel()">Excel</button>` : ''}
+      <button class="btn btn-primary" onclick="salinTautan('${esc(link)}')">Salin tautan form</button>
+    </div>
+  </div>
+
+  <div class="kabar ${cfg.aktif?'ok':'bad'}" style="margin-bottom:14px">
+    ${cfg.aktif
+      ? `Form aktif. Konsumen bisa mengisi di <b>${esc(link)}</b>`
+      : `<b>Form sedang dimatikan.</b> Pengunjung yang membuka tautannya akan melihat pesan bahwa form sedang ditutup.`}
+  </div>
+
+  <div class="card" style="padding:0;margin-bottom:14px">
+  <div class="filters" style="border-bottom:none">
+    <select onchange="surveiOutlet=this.value;renderPage()">
+      <option value="semua" ${surveiOutlet==='semua'?'selected':''}>Semua store</option>
+      ${cfg.outlets.filter(o=>o&&o.nama).map(o=>
+        `<option value="${esc(o.nama)}" ${surveiOutlet===o.nama?'selected':''}>${esc(o.nama)}</option>`).join('')}
+    </select>
+    <select onchange="surveiBulan=this.value;renderPage()">
+      <option value="semua" ${surveiBulan==='semua'?'selected':''}>Semua waktu</option>
+      ${surveiBulanAda().map(b=>`<option value="${b}" ${surveiBulan===b?'selected':''}>${labelBulan(b)}</option>`).join('')}
+    </select>
+    <span class="hint">${fmtNum(data.length)} jawaban masuk</span>
+  </div></div>
+
+  ${!data.length ? `<div class="card"><div class="empty">Belum ada jawaban untuk saringan ini.
+      Sebarkan tautan formnya, atau cetak QR-nya dan taruh di meja kasir.</div></div>` : ''}
+
+  ${hitung.map(h=>`
+    <div class="card" style="margin-bottom:14px">
+      <div class="ins-head"><h3>${esc(h.teks)}</h3><span class="pill">${fmtNum(h.total)} jawaban</span></div>
+      ${!h.total ? `<div class="empty">Belum ada jawaban.</div>` : `
+      <div style="margin-top:10px">
+        ${h.baris.map(([opsi,n])=>{
+          const pct = h.total ? Math.round(n/h.total*100) : 0;
+          return `<div class="srv-baris">
+            <span class="nm">${esc(opsi)}</span>
+            <span class="bar"><i style="width:${pct}%"></i></span>
+            <span class="num">${fmtNum(n)}</span>
+            <span class="pct">${pct}%</span>
+          </div>`;
+        }).join('')}
+      </div>`}
+    </div>`).join('')}
+
+  ${komentar.length ? `
+    <div class="card" style="margin-bottom:14px">
+      <div class="ins-head"><h3>Masukan konsumen</h3><span class="pill">${fmtNum(komentar.length)}</span></div>
+      <div style="margin-top:8px">
+        ${komentar.slice(0,40).map(k=>`<div class="srv-komen">
+          <div>${esc(k.teks)}</div>
+          <div class="hint">${esc(k.outlet)} · ${esc(fmtDate(String(k.at).slice(0,10)))}</div>
+        </div>`).join('')}
+      </div>
+      ${komentar.length>40?`<p class="hint" style="margin-top:8px">Menampilkan 40 terbaru. Sisanya ada di ekspor Excel.</p>`:''}
+    </div>` : ''}
+
+  ${can.manageAdmin() ? panelSurveiSetting() : `
+    <div class="card"><p class="hint">Pertanyaan, pilihan jawaban, dan daftar store diatur oleh Admin.</p></div>`}
+  `;
+}
+
+/* ---------- pengaturan (admin) ---------- */
+
+/* Draf dipegang terpisah supaya menambah atau menghapus baris tidak
+   menghilangkan ketikan yang belum sempat disimpan. */
+let surveiDraf = null;
+function drafSurvei(){
+  if(!surveiDraf) surveiDraf = JSON.parse(JSON.stringify(surveiCfg()));
+  return surveiDraf;
+}
+/** Serap isi kotak isian ke draf sebelum halaman digambar ulang. */
+function serapDrafSurvei(){
+  const d = drafSurvei();
+  const v = id => { const el = $(id); return el ? el.value : undefined; };
+  if(v('srv_judul') !== undefined) d.judul = v('srv_judul');
+  if(v('srv_sapaan') !== undefined) d.sapaan = v('srv_sapaan');
+  if(v('srv_terima') !== undefined) d.terimaKasih = v('srv_terima');
+  if($('srv_aktif')) d.aktif = $('srv_aktif').value === '1';
+  d.outlets.forEach((o,i)=>{
+    if($('srv_out_'+i)) o.nama = $('srv_out_'+i).value.trim();
+    if($('srv_outa_'+i)) o.aktif = $('srv_outa_'+i).checked;
+  });
+  d.pertanyaan.forEach((q,i)=>{
+    if($('srv_q_'+i)) q.teks = $('srv_q_'+i).value.trim();
+    if($('srv_qt_'+i)) q.tipe = $('srv_qt_'+i).value;
+    if($('srv_qw_'+i)) q.wajib = $('srv_qw_'+i).checked;
+    if($('srv_qo_'+i)) q.opsi = $('srv_qo_'+i).value.split('\n').map(s=>s.trim()).filter(Boolean);
+  });
+  return d;
+}
+function tambahPertanyaanSurvei(){
+  const d = serapDrafSurvei();
+  d.pertanyaan.push({teks:'', tipe:'pilihan', wajib:false, opsi:[]});
+  renderPage();
+}
+function hapusPertanyaanSurvei(i){
+  const d = serapDrafSurvei();
+  d.pertanyaan.splice(i,1);
+  renderPage();
+}
+function tambahOutletSurvei(){
+  const d = serapDrafSurvei();
+  d.outlets.push({nama:'', aktif:true});
+  renderPage();
+}
+function hapusOutletSurvei(i){
+  const d = serapDrafSurvei();
+  d.outlets.splice(i,1);
+  renderPage();
+}
+function batalDrafSurvei(){ surveiDraf = null; renderPage(); toast('Perubahan dibatalkan.'); }
+
+function panelSurveiSetting(){
+  const d = drafSurvei();
+  const inp = 'padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius-ctl);background:var(--paper);color:var(--ink);width:100%;font-size:13px';
+  return `
+  <div class="card">
+    <div class="ins-head"><h3>Pengaturan Form</h3>
+      <span class="pill ${d.aktif?'ok':'nt'}">${d.aktif?'Aktif':'Dimatikan'}</span></div>
+    <p class="hint" style="margin:6px 0 14px">Semua yang diubah di sini langsung berlaku di halaman publik begitu disimpan. Tidak perlu deploy ulang.</p>
+
+    <div class="two-col">
+      <div class="field"><label>Status form</label>
+        <select id="srv_aktif" style="${inp}">
+          <option value="1" ${d.aktif?'selected':''}>Aktif — konsumen bisa mengisi</option>
+          <option value="0" ${!d.aktif?'selected':''}>Dimatikan — form ditutup</option>
+        </select></div>
+      <div class="field"><label>Judul di halaman form</label>
+        <input id="srv_judul" value="${esc(d.judul)}" style="${inp}"></div>
+    </div>
+    <div class="field"><label>Kalimat pembuka</label>
+      <textarea id="srv_sapaan" rows="2" style="${inp}">${esc(d.sapaan)}</textarea></div>
+    <div class="field"><label>Pesan setelah terkirim</label>
+      <input id="srv_terima" value="${esc(d.terimaKasih)}" style="${inp}"></div>
+
+    <h3 style="margin-top:22px">Store</h3>
+    <p class="hint" style="margin:0 0 10px">Yang dicentang muncul sebagai pilihan di form. Tiap store punya tautannya sendiri — pakai itu untuk QR di meja kasir supaya konsumen tidak perlu memilih store.</p>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${d.outlets.map((o,i)=>`
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <input type="checkbox" id="srv_outa_${i}" ${o.aktif!==false?'checked':''} title="Tampilkan di form">
+          <input id="srv_out_${i}" value="${esc(o.nama||'')}" placeholder="Nama store" style="${inp};flex:1;min-width:170px;width:auto">
+          ${o.nama ? `<button class="btn btn-ghost" style="min-height:34px;padding:6px 11px;font-size:12px"
+             onclick="salinTautan('${esc(tautanForm(o.nama))}')">Salin tautan</button>` : ''}
+          <button class="btn btn-ghost" style="min-height:34px;padding:6px 11px;font-size:12px"
+            onclick="hapusOutletSurvei(${i})">Hapus</button>
+        </div>`).join('')}
+    </div>
+    <button class="btn btn-ghost" style="margin-top:10px" onclick="tambahOutletSurvei()">+ Tambah store</button>
+
+    <h3 style="margin-top:22px">Pertanyaan</h3>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      ${d.pertanyaan.map((q,i)=>`
+        <div style="border:1px solid var(--line);border-radius:var(--radius);padding:13px">
+          <div class="field" style="margin-bottom:9px"><label>Pertanyaan ${i+1}</label>
+            <input id="srv_q_${i}" value="${esc(q.teks||'')}" placeholder="Tulis pertanyaannya" style="${inp}"></div>
+          <div class="two-col">
+            <div class="field"><label>Jenis jawaban</label>
+              <select id="srv_qt_${i}" style="${inp}" onchange="serapDrafSurvei();renderPage()">
+                <option value="pilihan" ${q.tipe!=='teks'?'selected':''}>Pilih salah satu</option>
+                <option value="teks" ${q.tipe==='teks'?'selected':''}>Isian bebas</option>
+              </select></div>
+            <div class="field"><label>Wajib diisi</label>
+              <div style="padding:9px 0"><input type="checkbox" id="srv_qw_${i}" ${q.wajib?'checked':''}>
+                <span class="hint">Konsumen tidak bisa kirim sebelum menjawab ini</span></div></div>
+          </div>
+          ${q.tipe !== 'teks' ? `
+            <div class="field"><label>Pilihan jawaban — satu per baris</label>
+              <textarea id="srv_qo_${i}" rows="${Math.max(4,(q.opsi||[]).length+1)}" style="${inp};font-family:inherit"
+                placeholder="Instagram&#10;TikTok&#10;Teman atau keluarga">${esc((q.opsi||[]).join('\n'))}</textarea>
+              <div class="hint">Tulis <b>Lainnya</b> sebagai salah satu pilihan kalau mau ada kotak isian bebas.</div></div>` : ''}
+          <button class="btn btn-ghost" style="min-height:32px;padding:6px 11px;font-size:12px"
+            onclick="hapusPertanyaanSurvei(${i})">Hapus pertanyaan</button>
+        </div>`).join('')}
+    </div>
+    <button class="btn btn-ghost" style="margin-top:10px" onclick="tambahPertanyaanSurvei()">+ Tambah pertanyaan</button>
+
+    <div class="head-act" style="margin-top:20px">
+      <button class="btn btn-primary" onclick="simpanSurveiSetting()">Simpan Pengaturan</button>
+      <button class="btn btn-ghost" onclick="batalDrafSurvei()">Batalkan perubahan</button>
+    </div>
+  </div>`;
+}
+
+async function simpanSurveiSetting(){
+  if(!can.manageAdmin()) return toast('Hanya Admin yang boleh mengubah form.');
+  const d = serapDrafSurvei();
+  const outlets = d.outlets.filter(o=>o.nama && o.nama.trim())
+    .map(o=>({nama:o.nama.trim(), aktif:o.aktif !== false}));
+  const pertanyaan = d.pertanyaan.filter(q=>q.teks && q.teks.trim()).map(q=>({
+    teks:q.teks.trim(), tipe:q.tipe === 'teks' ? 'teks' : 'pilihan',
+    wajib: !!q.wajib, opsi: q.tipe === 'teks' ? [] : (q.opsi||[]).filter(Boolean)
+  }));
+  if(!outlets.length) return toast('Isi minimal satu store.');
+  if(!pertanyaan.length) return toast('Isi minimal satu pertanyaan.');
+  const kosong = pertanyaan.find(q=>q.tipe === 'pilihan' && !q.opsi.length);
+  if(kosong) return toast(`Pertanyaan "${kosong.teks}" belum punya pilihan jawaban.`);
+
+  try{
+    await db.collection('pengaturan').doc('survei').set({
+      aktif: !!d.aktif, judul:(d.judul||'').trim(), sapaan:(d.sapaan||'').trim(),
+      terimaKasih:(d.terimaKasih||'').trim(), outlets, pertanyaan,
+      diubahOleh: profile.nama, diubahAt: new Date().toISOString()
+    }, {merge:true});
+    surveiDraf = null;
+    toast('Pengaturan form disimpan.');
+    renderPage();
+  }catch(e){ toast('Gagal menyimpan: ' + (e.message||e)); }
+}
+
+/* ---------- ekspor ---------- */
+function surveiSheetRows(){
+  const cfg = surveiCfg();
+  return surveiTersaring().map(j=>{
+    const b = {'Tanggal': String(j.at||'').slice(0,10), 'Jam': String(j.at||'').slice(11,16),
+               'Store': j.outletNama || j.outlet || ''};
+    cfg.pertanyaan.forEach(q=>{ b[q.teks] = (j.jawaban||{})[q.teks] || ''; });
+    return b;
+  });
+}
+function exportSurveiExcel(){
+  const baris = surveiSheetRows();
+  if(!baris.length) return toast('Belum ada jawaban untuk diekspor.');
+  const wb = XLSX.utils.book_new();
+  addSheet(wb, 'Jawaban', baris);
+  const rek = [];
+  surveiHitung().forEach(h=>{
+    h.baris.forEach(([opsi,n])=>rek.push({
+      'Pertanyaan':h.teks, 'Jawaban':opsi, 'Jumlah':n,
+      'Persen': h.total ? Math.round(n/h.total*100) + '%' : '0%'
+    }));
+  });
+  if(rek.length) addSheet(wb, 'Rekap', rek);
+  XLSX.writeFile(wb, `sumber-info-${surveiOutlet==='semua'?'semua-store':slugFile(surveiOutlet)}-${surveiBulan}.xlsx`);
+}
+function slugFile(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''); }
+
 /* ================= BACKUP & PEMULIHAN DATA ================= */
 const BACKUP_VERSI = 1;
 const KOLEKSI_BACKUP = ['contentPlans','ugcKol','ads','programTimeline','kontakEvent','campaigns','users','userRoles','kpiCustom'];
 
 function kumpulkanBackup(){
   return {
-    aplikasi: 'Content Plan Hub',
+    aplikasi: 'Marketing SSN',
     versi: BACKUP_VERSI,
     dibuat: new Date().toISOString(),
     oleh: profile ? profile.nama : '-',
@@ -4248,7 +4624,8 @@ function kumpulkanBackup(){
       contentPlans: plansCache.length, ugcKol: ugcCache.length, ads: adsCache.length,
       programTimeline: prgCache.length, kontakEvent: kontakCache.length,
       campaigns: campaignsCache.length, users: usersCache.length,
-      kpiCustom: kpiCustomCache.length, transaksiHarian: Object.keys(trxArsip).length
+      kpiCustom: kpiCustomCache.length, transaksiHarian: Object.keys(trxArsip).length,
+    surveiJawaban: surveiCache.length
     },
     data: {
       contentPlans: plansCache,
@@ -4261,6 +4638,7 @@ function kumpulkanBackup(){
       userRoles: invitesCache.map(i=>({id:i.email, role:i.role, addedBy:i.addedBy||''})),
       kpiCustom: kpiCustomCache,
       transaksiHarian: trxArsip,
+      surveiJawaban: surveiCache,
       pengaturan: { wa: waSetting, budgetUgc: {budget: ugcBudget} }
     }
   };
@@ -4287,7 +4665,7 @@ function backupExcel(){
   const wb = XLSX.utils.book_new();
 
   addSheet(wb, 'Ringkasan Backup', [
-    {'Keterangan':'Aplikasi','Nilai':'Content Plan Hub — Storypie × Gumik'},
+    {'Keterangan':'Aplikasi','Nilai':'Marketing SSN — Storypie × Gumik'},
     {'Keterangan':'Waktu backup','Nilai':new Date().toLocaleString('id-ID')},
     {'Keterangan':'Dibuat oleh','Nilai':b.oleh},
     {'Keterangan':'Konten (content plan)','Nilai':b.jumlah.contentPlans},
@@ -4406,7 +4784,9 @@ function bacaBackup(input){
   r.onload = () => {
     try{
       const j = JSON.parse(r.result);
-      if(!j || !j.data || j.aplikasi !== 'Content Plan Hub') throw new Error('Berkas ini bukan backup Content Plan Hub.');
+      // nama aplikasi pernah berganti; backup lama tetap harus bisa dipulihkan
+      const NAMA_BACKUP = ['Marketing SSN', 'Content Plan Hub'];
+      if(!j || !j.data || !NAMA_BACKUP.includes(j.aplikasi)) throw new Error('Berkas ini bukan backup Marketing SSN.');
       bkPulih = j;
       const d = j.data;
       const baris = KOLEKSI_BACKUP.map(k=>({k, n: Array.isArray(d[k]) ? d[k].length : 0}))

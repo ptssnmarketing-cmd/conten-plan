@@ -11,6 +11,20 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys();
     }
 
+    // Satu-satunya tulisan tanpa login di seluruh basis data ini. Bentuknya
+    // diperiksa ketat supaya pintu itu sesempit mungkin: hanya empat field,
+    // panjangnya dibatasi, dan hanya berlaku selama form memang diaktifkan —
+    // mematikan form di menu Sumber Info langsung menutup pintunya.
+    function jawabanSurveiSah() {
+      let d = request.resource.data;
+      return get(/databases/$(database)/documents/pengaturan/survei).data.aktif == true
+        && d.keys().hasOnly(['outlet','outletNama','jawaban','at'])
+        && d.outlet is string && d.outlet.size() <= 120
+        && d.outletNama is string && d.outletNama.size() <= 120
+        && d.jawaban is map && d.jawaban.size() >= 1 && d.jawaban.size() <= 12
+        && d.at is string && d.at.size() <= 40;
+    }
+
     // ---------- users ----------
     match /users/{uid} {
       allow read: if isSignedIn();
@@ -88,9 +102,26 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }
+    // Pengaturan form Sumber Info. Dibaca PUBLIK karena halaman form.html
+    // dibuka konsumen tanpa login dan perlu tahu pertanyaan serta daftar
+    // store-nya. Isinya memang untuk dibaca umum; tidak ada kredensial di
+    // sini. Menulisnya tetap lewat aturan pengaturan/{id} di bawah.
+    match /pengaturan/survei {
+      allow read: if true;
+    }
     match /pengaturan/{id} {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && myRole() in ['admin','manager'];
+    }
+
+    // ---------- surveiJawaban (diisi konsumen lewat form.html) ----------
+    match /surveiJawaban/{id} {
+      allow read: if isSignedIn();
+      allow create: if jawabanSurveiSah();
+      // jawaban yang sudah masuk tidak boleh diubah siapa pun — kalau bisa
+      // diedit, angkanya berhenti menjadi bukti
+      allow update: if false;
+      allow delete: if isSignedIn() && myRole() in ['admin','manager'];
     }
 
     // ---------- ugcKol (UGC / Influencer / KOL) ----------

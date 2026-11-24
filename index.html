@@ -2394,6 +2394,18 @@ function panelWaOtomatis(){
         <input type="time" id="wa_jam" value="${esc(s.jamKirim||'08:00')}">
       </div>
     </div>
+    <div class="field"><label>Hari kirim</label>
+      <div id="wa_hari_box" style="display:flex;gap:6px;flex-wrap:wrap;padding:4px 0">
+        ${['Min','Sen','Sel','Rab','Kam','Jum','Sab'].map((h,i)=>{
+          const pilih = (s.hari===undefined||s.hari===null||s.hari==='') ? true : String(s.hari).split(',').includes(String(i));
+          return `<label style="display:flex;align-items:center;gap:5px;padding:7px 11px;border:1px solid var(--line);
+            border-radius:999px;font-size:12.5px;cursor:pointer;background:${pilih?'var(--brand-soft)':'var(--paper)'};
+            color:${pilih?'var(--brand)':'var(--ink-2)'};font-weight:${pilih?'700':'500'}">
+            <input type="checkbox" class="wa-hari" value="${i}" ${pilih?'checked':''} style="margin:0">${h}</label>`;
+        }).join('')}
+      </div>
+      <div class="hint">Hari yang tidak dicentang dilewati. Semua tercentang = kirim tiap hari.</div>
+    </div>
     <div class="field"><label>Nomor / ID grup WhatsApp tujuan</label>
       <input id="wa_target" value="${esc(s.targetWa||'')}" placeholder="62812xxxxxxx atau ID grup Fonnte" inputmode="tel">
       <div class="hint">Diisi kalau kamu ingin ringkasan seluruh tim dikirim ke satu grup. Kosongkan kalau cukup dikirim ke masing-masing orang.</div>
@@ -2432,15 +2444,25 @@ async function simpanWaSetting(){
     return;
   }
   try{
+    const hari = [...document.querySelectorAll('.wa-hari:checked')].map(c=>c.value).join(',');
+    if(!hari){ msg.textContent = 'Centang minimal satu hari kirim.'; return; }
     await db.collection('pengaturan').doc('wa').set({
       webAppUrl: url, jamKirim: v('jam')||'08:00', targetWa: v('target'),
-      token: v('token'), aktif: v('aktif')!=='tidak',
+      token: v('token'), aktif: v('aktif')!=='tidak', hari,
       updatedBy: profile.nama, updatedAt: new Date().toISOString()
     }, {merge:true});
     toast('Pengaturan tersimpan.');
     msg.style.color='var(--ok)';
-    msg.textContent = url ? 'Tersimpan. Klik "Terapkan jadwal" supaya Apps Script memakai jam baru.' : 'Tersimpan.';
-  }catch(e){ msg.textContent = 'Gagal menyimpan: ' + (e.message||e); }
+    // Jam baru tidak berlaku sampai trigger Apps Script dipasang ulang. Dulu
+    // itu tombol terpisah yang gampang terlupakan — jam di layar berubah,
+    // pengiriman tetap di jam lama, dan tidak ada yang memberi tahu.
+    if(url){
+      msg.textContent = 'Tersimpan. Menerapkan jadwal ke Apps Script…';
+      await tesKirimWa('jadwal');
+    } else {
+      msg.textContent = 'Tersimpan.';
+    }
+  }catch(e){ msg.style.color='var(--bad)'; msg.textContent = 'Gagal menyimpan: ' + (e.message||e); }
 }
 async function tesKirimWa(aksi){
   const msg = $('waMsg'); msg.style.color='var(--ink-2)';
@@ -6039,7 +6061,7 @@ async function panggilAppsScript(aksi, data){
    berarti satu hal: Code.gs sudah ditempel dan disimpan, tapi deployment
    web app-nya belum diperbarui — jadi aplikasi masih memanggil kode lama.
    Daripada ditebak, versinya ditanyakan langsung. */
-const VERSI_APPS_SCRIPT = 'v28';
+const VERSI_APPS_SCRIPT = 'v29';
 let versiAppsScript = null;        // null = belum dicek
 
 async function cekVersiAppsScript(diam){

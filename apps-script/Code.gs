@@ -6,7 +6,7 @@
  * Cara pasang lengkap ada di PANDUAN-WA.md
  */
 
-var VERSI_KODE = 'v28';
+var VERSI_KODE = 'v29';
 
 // ====================== KONFIGURASI ======================
 // Semua nilai rahasia diisi lewat Project Settings -> Script Properties.
@@ -158,6 +158,22 @@ function kirimReportHarian() {
 
   var setting = bacaPengaturan_(cfg, token);
 
+  // Sakelar Nonaktif di menu Admin dulu tidak pernah dibaca di sini: trigger
+  // tetap berjalan dan pesan tetap terkirim, padahal aplikasi menampilkan
+  // "dinonaktifkan". Sekarang sakelar itu benar-benar menghentikannya.
+  if (setting.aktif === false) {
+    Logger.log('Dilewati: pengiriman otomatis sedang dinonaktifkan di menu Admin.');
+    return 'nonaktif';
+  }
+  // Hari kirim, kalau dibatasi di menu Admin. 0 = Minggu … 6 = Sabtu.
+  if (setting.hari && String(setting.hari).length) {
+    var hariIni = Number(Utilities.formatDate(new Date(), 'Asia/Jakarta', 'u')) % 7; // 1=Sen..7=Min -> 0=Min
+    if (String(setting.hari).split(',').indexOf(String(hariIni)) < 0) {
+      Logger.log('Dilewati: hari ini tidak termasuk hari kirim (%s).', setting.hari);
+      return 'bukan hari kirim';
+    }
+  }
+
   var terkirim = 0, dilewati = 0;
   users.forEach(function (u) {
     if (!u.wa) { dilewati++; Logger.log('Lewati %s — nomor WA kosong', u.nama); return; }
@@ -193,10 +209,46 @@ function bacaPengaturan_(cfg, token) {
   } catch (e) { return {}; }
 }
 
+/**
+ * Keadaan konten hari ini — bagian "report harian" dari pesan grup.
+ * Dipisah dari daftar tugas per orang supaya yang membaca grup langsung
+ * tahu kondisi hari ini tanpa harus menjumlahkan tugas semua orang.
+ */
+function reportHarian_(plans) {
+  var today = iso_(0), kemarin = iso_(-1);
+  var tayangIni = [], telat = [], tungguSpv = 0, tungguMgr = 0, posKemarin = 0;
+
+  plans.forEach(function (r) {
+    var st = r.status || 'Draft';
+    if (r.tanggalPosting === today && st !== 'Posted') tayangIni.push(r);
+    if (r.tanggalPosting && r.tanggalPosting < today && st !== 'Posted') telat.push(r);
+    if (st !== 'Draft' && r.apprSpv !== 'approved') tungguSpv++;
+    if (st !== 'Draft' && r.apprMgr !== 'approved') tungguMgr++;
+    if (st === 'Posted' && r.tanggalPosting === kemarin) posKemarin++;
+  });
+
+  var s = '*REPORT HARIAN*\n';
+  s += '• Tayang hari ini: *' + tayangIni.length + '*\n';
+  tayangIni.slice(0, 6).forEach(function (r) {
+    s += '   - ' + brand_(r) + ' • ' + judul_(r) + ' (' + (r.status || 'Draft') + ')\n';
+  });
+  if (tayangIni.length > 6) s += '   - …dan ' + (tayangIni.length - 6) + ' lainnya\n';
+  s += '• Lewat tanggal belum tayang: *' + telat.length + '*\n';
+  telat.slice(0, 5).forEach(function (r) {
+    s += '   - ' + judul_(r) + ' (' + tgl_(r.tanggalPosting) + ')\n';
+  });
+  if (telat.length > 5) s += '   - …dan ' + (telat.length - 5) + ' lainnya\n';
+  s += '• Menunggu approval: SPV *' + tungguSpv + '*, MGR *' + tungguMgr + '*\n';
+  s += '• Tayang kemarin: *' + posKemarin + '*\n';
+  return s;
+}
+
 /** Ringkasan seluruh tim untuk dikirim ke grup. */
 function buildPesanTim_(users, plans) {
   var tglTeks = Utilities.formatDate(new Date(), 'Asia/Jakarta', 'EEEE, d MMMM yyyy');
-  var s = '*RINGKASAN TIM — CONTENT PLAN HUB*\n_' + tglTeks + '_\n\n';
+  var s = '*MARKETING SSN*\n_' + tglTeks + '_\n\n';
+  s += reportHarian_(plans) + '\n';
+  s += '*PEKERJAAN HARIAN PER ORANG*\n';
   var totalBelum = 0;
   users.forEach(function (u) {
     var t = tasksFor_(plans, u.role);
@@ -438,7 +490,7 @@ function buildPesan_(u, t) {
   var pct = total ? Math.round(t.sudah.length / total * 100) : 100;
   var tglTeks = Utilities.formatDate(new Date(), 'Asia/Jakarta', 'EEEE, d MMMM yyyy');
 
-  var s = '*CONTENT PLAN HUB*\n_Report Harian ' + tglTeks + '_\n\n';
+  var s = '*MARKETING SSN*\n_Pekerjaan Harian ' + tglTeks + '_\n\n';
   s += 'Halo ' + u.nama + ' (' + (ROLES[u.role] || u.role) + ')\n';
   s += 'Progress: *' + t.sudah.length + '/' + total + '* selesai (' + pct + '%)\n\n';
 

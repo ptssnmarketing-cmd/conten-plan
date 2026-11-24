@@ -6,6 +6,8 @@ Web app perencanaan, approval, dan pelaporan konten dua brand. Firebase (Auth + 
 
 **Nama aplikasi menjadi Marketing SSN.** Restore tetap menerima berkas backup lama yang bertuliskan "Content Plan Hub".
 
+**WhatsApp otomatis diperbaiki.** Dua kegagalan diam-diam: sakelar Nonaktif di menu Admin tidak pernah dibaca Apps Script (pesan tetap terkirim), dan jam kirim yang diubah tidak berlaku sampai tombol "Terapkan jadwal" ditekan terpisah. Keduanya beres; Simpan sekarang sekalian menerapkan jadwal. Pesan grup juga mendapat bagian **Report Harian** — tayang hari ini, lewat tanggal, menunggu approval, tayang kemarin — di atas rekap per orang. Ada pilihan **hari kirim**.
+
 **Modul Sumber Info.** Konsumen mengisi sendiri dari mana mereka tahu tentang Storypie atau Gumik, lewat halaman publik `form.html` tanpa login. Pertanyaan, pilihan jawaban, dan daftar store diatur dari dalam aplikasi — tidak ada yang ditulis di kode, jadi tim bisa mengubahnya tanpa deploy ulang.
 
 ## Fitur lengkap

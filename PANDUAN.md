@@ -1268,3 +1268,59 @@ Saring per store dan per bulan. Tiap pertanyaan tampil sebagai batang berurut da
 **Form publik bisa diisi berulang kali oleh orang yang sama.** Tidak ada cara mencegahnya tanpa meminta identitas, dan itu akan membuat orang enggan mengisi. Untuk survei di meja kasir risikonya kecil. Kalau tautannya kamu sebar luas lalu angkanya terlihat janggal, matikan form lewat **Status form** dan hapus jawaban yang mencurigakan.
 
 ---
+
+---
+
+## 44. WhatsApp otomatis tiap pagi
+
+Tiap pagi jam 08.00 WIB, dua pesan dikirim sendiri:
+
+| Pesan | Ke siapa | Isinya |
+|---|---|---|
+| **Pekerjaan Harian** | tiap orang, ke nomor masing-masing | tugas dia sendiri sesuai role — yang belum dan yang sudah |
+| **Report Harian + rekap tim** | satu grup WhatsApp | kondisi konten hari ini, lalu progres tiap orang |
+
+Yang masuk Report Harian: tayang hari ini, konten lewat tanggal yang belum tayang, jumlah menunggu approval SPV dan MGR, serta berapa yang tayang kemarin.
+
+Orang yang nomornya kosong dilewati, begitu juga yang tidak punya tugas sama sekali — supaya tidak ada yang menerima pesan kosong.
+
+### Mengatur jadwalnya
+
+**Admin → Kirim Otomatis Setiap Pagi:**
+
+| Pengaturan | Keterangan |
+|---|---|
+| Jam kirim | bebas, bukan harus 08.00 |
+| **Hari kirim** | centang hari yang mau dikirimi. Hari yang tidak dicentang dilewati |
+| Nomor / ID grup | tujuan Report Harian. Kosongkan kalau cukup ke masing-masing orang |
+| Status | Nonaktif = berhenti total |
+
+Klik **Simpan pengaturan**. Jadwalnya langsung diterapkan ke Apps Script — tidak ada tombol terpisah yang perlu diingat.
+
+### Mengisi nomor WA tim
+
+Menu **Report Harian** → panel **Kirim Report ke Tim** → isi nomor tiap orang. Format `08…` atau `62…`, keduanya diterima.
+
+Orang yang nomornya kosong tidak akan menerima apa pun.
+
+### Menguji sebelum dipakai
+
+Di panel yang sama ada **Kirim tes sekarang**. Jalankan sekali dan periksa WhatsApp-mu.
+
+Kalau pesan tidak sampai, biasanya satu dari tiga ini:
+
+| Gejala | Penyebab |
+|---|---|
+| Log bilang "DRY RUN" | Script Property `DRY_RUN` masih `true`. Ubah jadi `false`, lalu deploy ulang Apps Script |
+| "terkirim 0, dilewati N" | semua nomor WA kosong, atau tidak ada tugas hari itu |
+| Terkirim tapi tidak sampai | saldo atau perangkat Fonnte bermasalah — periksa di dashboard Fonnte |
+
+Ingat: tiap kali `Code.gs` diperbarui, Apps Script perlu **Deploy → Manage deployments → pensil → New version → Deploy**. Panel Admin menampilkan versi yang benar-benar terpasang.
+
+### Dua hal yang baru diperbaiki
+
+**Sakelar Nonaktif dulu tidak berfungsi.** Aplikasi menampilkan "dinonaktifkan", tapi Apps Script tidak pernah membaca sakelar itu — pesan tetap terkirim tiap pagi. Sekarang benar-benar berhenti.
+
+**Jam kirim dulu tidak ikut berubah saat disimpan.** Mengubah jam lalu menyimpan tidak mengubah apa pun sampai tombol "Terapkan jadwal" ditekan — tombol terpisah yang gampang terlupakan. Sekarang menyimpan sudah sekalian menerapkan.
+
+---

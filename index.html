@@ -4269,6 +4269,7 @@ function exportKontakExcel(){
 
 const SURVEI_BAWAAN = {
   aktif: true,
+  tema: 'mint',
   judul: 'Terima kasih sudah mampir!',
   sapaan: 'Satu pertanyaan singkat, ya. Jawabanmu membantu kami tahu cara terbaik menyapa pelanggan baru.',
   terimaKasih: 'Terima kasih! Sampai jumpa lagi.',
@@ -4289,6 +4290,7 @@ function surveiCfg(){
   const s = surveiSetting || {};
   return {
     aktif:      s.aktif !== false,
+    tema:       s.tema || 'mint',
     judul:      s.judul || SURVEI_BAWAAN.judul,
     sapaan:     s.sapaan || SURVEI_BAWAAN.sapaan,
     terimaKasih:s.terimaKasih || SURVEI_BAWAAN.terimaKasih,
@@ -4451,6 +4453,7 @@ function serapDrafSurvei(){
   if(v('srv_sapaan') !== undefined) d.sapaan = v('srv_sapaan');
   if(v('srv_terima') !== undefined) d.terimaKasih = v('srv_terima');
   if($('srv_aktif')) d.aktif = $('srv_aktif').value === '1';
+  if($('srv_tema')) d.tema = $('srv_tema').value;
   d.outlets.forEach((o,i)=>{
     if($('srv_out_'+i)) o.nama = $('srv_out_'+i).value.trim();
     if($('srv_outa_'+i)) o.aktif = $('srv_outa_'+i).checked;
@@ -4503,6 +4506,13 @@ function panelSurveiSetting(){
       <div class="field"><label>Judul di halaman form</label>
         <input id="srv_judul" value="${esc(d.judul)}" style="${inp}"></div>
     </div>
+    <div class="field"><label>Warna halaman form</label>
+      <select id="srv_tema" style="${inp}">
+        ${Object.entries(THEMES).map(([k,v])=>
+          `<option value="${k}" ${d.tema===k?'selected':''}>${esc(v.nama)} — ${esc(v.sub)}</option>`).join('')}
+      </select>
+      <div class="hint">Halaman konsumen memakai warna yang sama dengan aplikasi. Ini pilihan tetap untuk form —
+        tema pribadi tiap user di aplikasi tidak memengaruhinya.</div></div>
     <div class="field"><label>Kalimat pembuka</label>
       <textarea id="srv_sapaan" rows="2" style="${inp}">${esc(d.sapaan)}</textarea></div>
     <div class="field"><label>Pesan setelah terkirim</label>
@@ -4573,7 +4583,8 @@ async function simpanSurveiSetting(){
 
   try{
     await db.collection('pengaturan').doc('survei').set({
-      aktif: !!d.aktif, judul:(d.judul||'').trim(), sapaan:(d.sapaan||'').trim(),
+      aktif: !!d.aktif, tema: d.tema || 'mint',
+      judul:(d.judul||'').trim(), sapaan:(d.sapaan||'').trim(),
       terimaKasih:(d.terimaKasih||'').trim(), outlets, pertanyaan,
       diubahOleh: profile.nama, diubahAt: new Date().toISOString()
     }, {merge:true});

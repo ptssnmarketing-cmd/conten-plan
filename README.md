@@ -484,7 +484,7 @@ Ini satu-satunya tulisan tanpa autentikasi di seluruh basis data, jadi pintunya 
 
 ### Tautan per store
 
-`form.html?o=<nama store>` melewati pertanyaan "kamu di store mana" dan langsung mengisinya. Ini yang dipakai untuk QR yang ditempel di satu store — konsumen tidak perlu memilih, dan datanya tidak bisa salah store. Tombol **Salin tautan** per store ada di panel pengaturan.
+`form.html?o=<nama store>` melewati pertanyaan "kamu di store mana" dan langsung mengisinya. Ini yang dipakai untuk QR yang ditempel di satu store — konsumen tidak perlu memilih, dan datanya tidak bisa salah store. Tombol **Salin tautan** dan **Download barcode A4** per store ada di panel pengaturan. Barcode A4 berupa PDF siap cetak: judul "Bantu kami untuk berkomunikasi lebih baik lagi", ajakan "Scan barcode di bawah ya", QR berisi tautan store, nama store, dan tautannya.
 
 ### Pilihan "Lainnya"
 

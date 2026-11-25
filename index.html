@@ -4330,6 +4330,61 @@ async function salinTautan(teks){
   catch(e){ toast('Gagal menyalin. Salin manual: ' + teks); }
 }
 
+/* ---------- barcode (QR) A4 per store ---------- */
+function muatSkrip(src){
+  return new Promise((ok,gagal)=>{
+    if(document.querySelector(`script[src="${src}"]`) && (src.includes('qrcode')? window.qrcode : window.jspdf)) return ok();
+    const el=document.createElement('script'); el.src=src; el.onload=()=>ok(); el.onerror=()=>gagal(new Error('Gagal memuat '+src));
+    document.head.appendChild(el);
+  });
+}
+/** Unduh PDF A4 berisi QR tautan form store (nama store diambil dari isian saat ini). */
+async function unduhQrA4(i){
+  const nama = (document.getElementById('srv_out_'+i)?.value || surveiCfg().outlets[i]?.nama || '').trim();
+  if(!nama){ toast('Isi nama store dulu.'); return; }
+  const link = tautanForm(nama);
+  try{
+    toast('Menyiapkan barcode…');
+    await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js');
+    await muatSkrip('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    // halaman A4 300 dpi
+    const W=2480, H=3508, c=document.createElement('canvas'); c.width=W; c.height=H;
+    const g=c.getContext('2d');
+    const cs=getComputedStyle(document.documentElement);
+    const warna=(cs.getPropertyValue('--primary')||cs.getPropertyValue('--accent')||'#2563EB').trim()||'#2563EB';
+    g.fillStyle='#ffffff'; g.fillRect(0,0,W,H);
+    g.fillStyle=warna; g.fillRect(0,0,W,60);
+    g.fillStyle='#0F172A'; g.textAlign='center'; g.textBaseline='alphabetic';
+    const font=(w,px)=>`${w} ${px}px "Plus Jakarta Sans", Arial, sans-serif`;
+    // judul (dibungkus bila panjang)
+    const bungkus=(teks,maxW)=>{ const kata=teks.split(' '), baris=[]; let b=''; for(const k of kata){ const t=b?b+' '+k:k; if(g.measureText(t).width>maxW && b){ baris.push(b); b=k; } else b=t; } if(b) baris.push(b); return baris; };
+    g.font=font(800,150);
+    let y=520;
+    for(const b of bungkus('Bantu kami untuk berkomunikasi lebih baik lagi', W-360)){ g.fillText(b,W/2,y); y+=185; }
+    g.font=font(500,96); g.fillStyle='#475569';
+    g.fillText('Scan barcode di bawah ya', W/2, y+70);
+    // QR
+    const qr=qrcode(0,'M'); qr.addData(link); qr.make();
+    const n=qr.getModuleCount(), size=1500, cell=Math.floor(size/(n+8)), real=cell*(n+8);
+    const x0=(W-real)/2, y0=y+250;
+    g.fillStyle='#ffffff'; g.fillRect(x0,y0,real,real);
+    g.strokeStyle=warna; g.lineWidth=14; g.strokeRect(x0-40,y0-40,real+80,real+80);
+    g.fillStyle='#0F172A';
+    for(let r=0;r<n;r++) for(let k=0;k<n;k++) if(qr.isDark(r,k)) g.fillRect(x0+(k+4)*cell, y0+(r+4)*cell, cell, cell);
+    // nama store & tautan
+    let y2=y0+real+250;
+    g.fillStyle='#0F172A'; g.font=font(800,120); g.fillText(nama,W/2,y2);
+    g.fillStyle='#64748B'; g.font=font(400,52);
+    for(const b of bungkus(link, W-300)){ y2+=110; g.fillText(b,W/2,y2); }
+    g.fillStyle=warna; g.fillRect(0,H-60,W,60);
+    const { jsPDF } = window.jspdf;
+    const pdf=new jsPDF({ unit:'mm', format:'a4', orientation:'portrait' });
+    pdf.addImage(c.toDataURL('image/png'),'PNG',0,0,210,297);
+    pdf.save('barcode-'+nama.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-A4.pdf');
+    toast('Barcode A4 diunduh.');
+  }catch(e){ toast('Gagal membuat barcode: '+(e.message||e)); }
+}
+
 /* ---------- rekap ---------- */
 
 /** Bulan-bulan yang punya jawaban, terbaru di atas. */
@@ -4548,7 +4603,9 @@ function panelSurveiSetting(){
           <input type="checkbox" id="srv_outa_${i}" ${o.aktif!==false?'checked':''} title="Tampilkan di form">
           <input id="srv_out_${i}" value="${esc(o.nama||'')}" placeholder="Nama store" style="${inp};flex:1;min-width:170px;width:auto">
           ${o.nama ? `<button class="btn btn-ghost" style="min-height:34px;padding:6px 11px;font-size:12px"
-             onclick="salinTautan('${esc(tautanForm(o.nama))}')">Salin tautan</button>` : ''}
+             onclick="salinTautan('${esc(tautanForm(o.nama))}')">Salin tautan</button>
+          <button class="btn btn-ghost" style="min-height:34px;padding:6px 11px;font-size:12px"
+             onclick="unduhQrA4(${i})">Download barcode A4</button>` : ''}
           <button class="btn btn-ghost" style="min-height:34px;padding:6px 11px;font-size:12px"
             onclick="hapusOutletSurvei(${i})">Hapus</button>
         </div>`).join('')}

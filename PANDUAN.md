@@ -1222,7 +1222,7 @@ Yang mengisi bukan tim, tapi **konsumennya sendiri**, lewat halaman terpisah yan
 ### Cara memakainya di store
 
 1. Buka menu **Sumber Info**.
-2. Di panel **Pengaturan Form**, cari store kamu, klik **Salin tautan**.
+2. Di panel **Pengaturan Form**, cari store kamu, klik **Salin tautan** — atau **Download barcode A4** untuk PDF siap cetak (QR + ajakan scan + nama store).
 3. Ubah tautan itu jadi QR lewat pembuat QR gratis mana pun.
 4. Cetak, tempel di meja kasir atau di struk.
 

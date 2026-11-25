@@ -174,15 +174,16 @@ function kirimReportHarian() {
     }
   }
 
-  var terkirim = 0, dilewati = 0;
+  var terkirim = 0, dilewati = 0, alasan = [];
+  function lewati(u, why) { dilewati++; alasan.push((u.nama || u.email || '?') + ': ' + why); Logger.log('Lewati %s — %s', u.nama, why); }
   users.forEach(function (u) {
-    if (!u.wa) { dilewati++; Logger.log('Lewati %s — nomor WA kosong', u.nama); return; }
+    if (!u.wa) { lewati(u, 'nomor WA kosong'); return; }
     var t = tasksFor_(plans, u.role);
-    if (t.sudah.length + t.belum.length === 0) { dilewati++; return; }
+    if (t.sudah.length + t.belum.length === 0) { lewati(u, 'tidak ada tugas hari ini (role ' + (u.role || '-') + ')'); return; }
     var pesan = buildPesan_(u, t);
     if (cfg.DRY_RUN) { Logger.log('[DRY RUN] ke %s (%s):\n%s', u.nama, u.wa, pesan); terkirim++; return; }
-    var ok = kirimFonnte_(cfg, u.wa, pesan);
-    if (ok) terkirim++; else dilewati++;
+    var r = kirimFonnte_(cfg, u.wa, pesan, true);
+    if (r.ok) terkirim++; else lewati(u, 'ditolak Fonnte (' + normalWa_(u.wa) + '): ' + r.pesan);
     Utilities.sleep(1200); // jeda supaya tidak kena rate limit gateway
   });
   // Ringkasan seluruh tim ke satu nomor / grup, kalau diisi di menu Admin
@@ -193,7 +194,7 @@ function kirimReportHarian() {
   }
 
   Logger.log('Selesai. Terkirim: %s, dilewati: %s', terkirim, dilewati);
-  return 'terkirim ' + terkirim + ', dilewati ' + dilewati;
+  return 'terkirim ' + terkirim + ', dilewati ' + dilewati + (alasan.length ? '\n- ' + alasan.join('\n- ') : '');
 }
 
 /** Baca dokumen pengaturan/wa dari Firestore (diisi lewat menu Admin aplikasi). */
@@ -519,9 +520,9 @@ function normalWa_(v) {
   return d;
 }
 
-function kirimFonnte_(cfg, nomor, pesan) {
+function kirimFonnte_(cfg, nomor, pesan, detail) {
   var no = normalWa_(nomor);
-  if (!no) return false;
+  if (!no) return detail ? { ok: false, pesan: 'format nomor salah' } : false;
   try {
     var res = UrlFetchApp.fetch('https://api.fonnte.com/send', {
       method: 'post',
@@ -531,10 +532,13 @@ function kirimFonnte_(cfg, nomor, pesan) {
     });
     var body = res.getContentText();
     Logger.log('Fonnte -> %s : %s', no, body);
-    return res.getResponseCode() === 200 && body.indexOf('"status":true') >= 0;
+    var ok = res.getResponseCode() === 200 && body.indexOf('"status":true') >= 0;
+    if (!detail) return ok;
+    var why = ''; try { var j = JSON.parse(body); why = j.reason || j.detail || ''; } catch (x) { why = body.slice(0, 120); }
+    return { ok: ok, pesan: why || ('HTTP ' + res.getResponseCode()) };
   } catch (e) {
     Logger.log('Gagal kirim ke %s: %s', no, e);
-    return false;
+    return detail ? { ok: false, pesan: String(e.message || e) } : false;
   }
 }
 

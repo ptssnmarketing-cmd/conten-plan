@@ -4350,33 +4350,32 @@ async function unduhQrA4(i){
     // halaman A4 300 dpi
     const W=2480, H=3508, c=document.createElement('canvas'); c.width=W; c.height=H;
     const g=c.getContext('2d');
-    const cs=getComputedStyle(document.documentElement);
-    const warna=(cs.getPropertyValue('--primary')||cs.getPropertyValue('--accent')||'#2563EB').trim()||'#2563EB';
-    g.fillStyle='#ffffff'; g.fillRect(0,0,W,H);
-    g.fillStyle=warna; g.fillRect(0,0,W,60);
-    g.fillStyle='#0F172A'; g.textAlign='center'; g.textBaseline='alphabetic';
+    // warna per brand: Gumik = merah, lainnya (Storypie) = cream
+    const gumik=/gumik/i.test(nama);
+    const T=gumik ? { bg:'#C8102E', judul:'#FFFFFF', sub:'#FFE8EC', nama:'#FFFFFF' }
+                  : { bg:'#F6ECDC', judul:'#3B2416', sub:'#6B4A33', nama:'#3B2416' };
+    g.fillStyle=T.bg; g.fillRect(0,0,W,H);
+    g.fillStyle=T.judul; g.textAlign='center'; g.textBaseline='alphabetic';
     const font=(w,px)=>`${w} ${px}px "Plus Jakarta Sans", Arial, sans-serif`;
     // judul (dibungkus bila panjang)
     const bungkus=(teks,maxW)=>{ const kata=teks.split(' '), baris=[]; let b=''; for(const k of kata){ const t=b?b+' '+k:k; if(g.measureText(t).width>maxW && b){ baris.push(b); b=k; } else b=t; } if(b) baris.push(b); return baris; };
     g.font=font(800,150);
     let y=520;
     for(const b of bungkus('Bantu kami untuk berkomunikasi lebih baik lagi', W-360)){ g.fillText(b,W/2,y); y+=185; }
-    g.font=font(500,96); g.fillStyle='#475569';
+    g.font=font(600,96); g.fillStyle=T.sub;
     g.fillText('Scan barcode di bawah ya', W/2, y+70);
     // QR
     const qr=qrcode(0,'M'); qr.addData(link); qr.make();
     const n=qr.getModuleCount(), size=1500, cell=Math.floor(size/(n+8)), real=cell*(n+8);
     const x0=(W-real)/2, y0=y+250;
-    g.fillStyle='#ffffff'; g.fillRect(x0,y0,real,real);
-    g.strokeStyle=warna; g.lineWidth=14; g.strokeRect(x0-40,y0-40,real+80,real+80);
-    g.fillStyle='#0F172A';
+    // kotak putih di belakang QR agar mudah dipindai
+    g.fillStyle='#ffffff'; g.beginPath(); (g.roundRect ? g.roundRect(x0-40,y0-40,real+80,real+80,60) : g.rect(x0-40,y0-40,real+80,real+80)); g.fill();
+    g.fillStyle='#111111';
     for(let r=0;r<n;r++) for(let k=0;k<n;k++) if(qr.isDark(r,k)) g.fillRect(x0+(k+4)*cell, y0+(r+4)*cell, cell, cell);
     // nama store & tautan
     let y2=y0+real+250;
-    g.fillStyle='#0F172A'; g.font=font(800,120); g.fillText(nama,W/2,y2);
-    g.fillStyle='#64748B'; g.font=font(400,52);
-    for(const b of bungkus(link, W-300)){ y2+=110; g.fillText(b,W/2,y2); }
-    g.fillStyle=warna; g.fillRect(0,H-60,W,60);
+    g.fillStyle=T.nama; g.font=font(800,130);
+    for(const b of bungkus(nama, W-300)){ g.fillText(b,W/2,y2); y2+=160; }
     const { jsPDF } = window.jspdf;
     const pdf=new jsPDF({ unit:'mm', format:'a4', orientation:'portrait' });
     pdf.addImage(c.toDataURL('image/png'),'PNG',0,0,210,297);

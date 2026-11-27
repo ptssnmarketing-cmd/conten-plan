@@ -1044,6 +1044,10 @@ function subscribeData(){
     igSetting = d.exists ? d.data() : {};
     if(activePage==='engagement') renderPage();
   }, err=>console.error(err));
+  db.collection('pengaturan').doc('tiktok').onSnapshot(d=>{
+    ttSetting = d.exists ? d.data() : {};
+    if(activePage==='engagement') renderPage();
+  }, err=>console.error(err));
   db.collection('pengaturan').doc('survei').onSnapshot(d=>{
     surveiSetting = d.exists ? d.data() : {};
     if(['survei','dashboard'].includes(activePage)) renderPage();
@@ -2495,6 +2499,452 @@ async function igTerapkan(){
   if($('igTerapkanBtn')){ $('igTerapkanBtn').disabled=false; $('igTerapkanBtn').textContent='Terapkan ke Terpilih'; }
 }
 
+/* ================= IMPOR CSV ANALYTICS TIKTOK =================
+   TikTok tidak membuka endpoint insight-nya tanpa persetujuan review, jadi
+   jalur yang dipakai di sini adalah ekspor CSV resmi dari halaman analytics
+   TikTok. Seluruhnya berjalan di browser: tidak lewat Apps Script, tidak ada
+   kredensial, tidak ada yang perlu di-deploy ulang.
+
+   Keputusan desain yang penting: nama kolom TikTok TIDAK dihafal. TikTok
+   menerjemahkan header per bahasa dan mengubahnya dari waktu ke waktu, jadi
+   parser yang menghafal satu format akan patah diam-diam dan diam-diam pula
+   mengisi angka yang salah. Yang dilakukan di sini: kolom ditebak, tebakannya
+   ditunjukkan, dan tim bisa membetulkannya lewat dropdown sebelum apa pun
+   ditulis. */
+
+let ttSetting = {};   // pengaturan/tiktok — jejak impor terakhir saja
+let ttImpor = null;   // {baris, kolom, peta, cocok, takCocok, ambigu}
+
+/* Pembaca CSV yang menghormati tanda kutip: caption TikTok hampir selalu
+   mengandung koma, dan pemisah yang naif akan menggeser seluruh kolom. */
+function csvParse(teks){
+  let s = String(teks||'').replace(/^﻿/, '');   // buang BOM dari Excel
+  // TikTok memakai koma, tapi ekspor di sebagian wilayah memakai titik koma.
+  const barisPertama = s.slice(0, s.indexOf('\n') < 0 ? s.length : s.indexOf('\n'));
+  const pemisah = (barisPertama.split(';').length > barisPertama.split(',').length) ? ';' : ',';
+
+  const out = []; let baris = []; let sel = ''; let dalamKutip = false;
+  for(let i=0; i<s.length; i++){
+    const c = s[i];
+    if(dalamKutip){
+      if(c === '"'){
+        if(s[i+1] === '"'){ sel += '"'; i++; }   // "" = satu tanda kutip
+        else dalamKutip = false;
+      } else sel += c;
+    } else if(c === '"'){ dalamKutip = true; }
+    else if(c === pemisah){ baris.push(sel); sel = ''; }
+    else if(c === '\n'){ baris.push(sel); out.push(baris); baris = []; sel = ''; }
+    else if(c === '\r'){ /* diabaikan */ }
+    else sel += c;
+  }
+  if(sel.length || baris.length){ baris.push(sel); out.push(baris); }
+  return out.filter(b => b.some(x => String(x).trim() !== ''));
+}
+
+/* Kata kunci per kolom, Inggris dan Indonesia, karena ekspor TikTok
+   mengikuti bahasa akun. Dicocokkan longgar: header dikecilkan dan
+   dibersihkan dulu, lalu dicari yang mengandung salah satu kata kunci. */
+const TT_KOLOM = [
+  {kunci:'link',     label:'Link video',  kata:['link','url','tautan','video link','post link','share link']},
+  {kunci:'tanggal',  label:'Tanggal',     kata:['date','tanggal','post time','waktu','publish','tayang','created']},
+  {kunci:'judul',    label:'Caption',     kata:['caption','title','judul','description','deskripsi','teks']},
+  {kunci:'views',    label:'Views',       kata:['video views','views','play','ditonton','tayangan','penonton','tampilan']},
+  {kunci:'likes',    label:'Likes',       kata:['like','suka','menyukai']},
+  {kunci:'comments', label:'Komentar',    kata:['comment','komentar','balasan']},
+  {kunci:'shares',   label:'Share',       kata:['share','bagikan','dibagikan','sebar']},
+  {kunci:'saves',    label:'Save',        kata:['save','favorit','favourite','favorite','simpan','disimpan','bookmark']}
+];
+
+function ttBersih(h){
+  return String(h||'').toLowerCase().replace(/[_\-.]/g,' ').replace(/\s+/g,' ').trim();
+}
+
+/* Menebak kolom mana untuk apa. Dua pagar yang sengaja dipasang:
+   "views" tidak boleh mencuri header "profile views", dan satu kolom
+   tidak dipakai untuk dua kunci sekaligus. */
+function ttTebakKolom(header){
+  const bersih = header.map(ttBersih);
+  const dipakai = new Set();
+  const peta = {};
+
+  TT_KOLOM.forEach(k=>{
+    let pilihan = -1, skorTerbaik = -1;
+    bersih.forEach((h, i)=>{
+      if(dipakai.has(i) || !h) return;
+      if(k.kunci === 'views' && /profil|profile|follower|pengikut/.test(h)) return;
+      k.kata.forEach(kata=>{
+        if(h.indexOf(kata) < 0) return;
+        // kecocokan persis menang atas kecocokan sebagian; header pendek
+        // lebih mungkin kolom yang dimaksud ("Likes" > "Likes per view")
+        const skor = (h === kata ? 100 : 50) - h.length;
+        if(skor > skorTerbaik){ skorTerbaik = skor; pilihan = i; }
+      });
+    });
+    if(pilihan >= 0){ peta[k.kunci] = pilihan; dipakai.add(pilihan); }
+  });
+  return peta;
+}
+
+/* "1.234", "1,234", "12.5K", "3,2 jt" -> angka. Ekspor TikTok kadang
+   memakai singkatan, dan membaca "12.5K" sebagai 12 akan merusak datanya
+   tanpa ada yang sadar. */
+function ttAngka(v){
+  let s = String(v==null?'':v).trim().toLowerCase();
+  if(!s || s === '-' || s === '—') return null;
+  let kali = 1;
+  const m = s.match(/([\d.,\s]+)\s*(k|rb|ribu|m|jt|juta|b|mi?l[iy]ar)?$/);
+  if(!m) return null;
+  const sat = m[2] || '';
+  if(/^(k|rb|ribu)$/.test(sat)) kali = 1e3;
+  else if(/^(m|jt|juta)$/.test(sat)) kali = 1e6;
+  else if(sat) kali = 1e9;
+  let n = m[1].replace(/\s/g,'');
+  // Pemisah desimal vs ribuan: yang muncul TERAKHIR dan menyisakan <3 digit
+  // di belakangnya adalah desimal; selain itu semua pemisah ribuan.
+  const titik = n.lastIndexOf('.'), koma = n.lastIndexOf(',');
+  const akhir = Math.max(titik, koma);
+  if(akhir >= 0 && n.length - akhir - 1 < 3 && kali > 1){
+    n = n.slice(0,akhir).replace(/[.,]/g,'') + '.' + n.slice(akhir+1);
+  } else {
+    n = n.replace(/[.,]/g,'');
+  }
+  const hasil = Number(n) * kali;
+  return isNaN(hasil) ? null : Math.round(hasil);
+}
+
+/* Tanggal dari ekspor TikTok bisa "2026-11-05", "05/11/2026",
+   "2026-11-05 14:30:00", atau "5 Nov 2026". Yang ambigu (05/11 vs 11/05)
+   dibaca hari-dulu, karena ekspor akun Indonesia memakai urutan itu. */
+function ttTanggal(v){
+  const s = String(v||'').trim();
+  if(!s) return '';
+  let m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+  if(m) return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
+  m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+  if(m) return `${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? '' : isoLokal(d);
+}
+
+function ttIdDariLink(link){
+  const m = String(link||'').match(/\/video\/(\d+)/);
+  return m ? m[1] : '';
+}
+function ttLinkBaris(r){
+  const e = eng(r);
+  return ttIdDariLink(e.ttLink) ? e.ttLink : (ttIdDariLink(r.link) ? r.link : '');
+}
+
+function openImporTt(){
+  ttImpor = null;
+  $('drawerTitle').textContent = 'Impor Analytics TikTok';
+  ttGambarPanel();
+  openDrawer();
+  $('drawerBody').scrollTop = 0;
+}
+
+function ttGambarPanel(){
+  const bisa = can.editEngagement();
+  $('drawerBody').innerHTML = `
+    <div class="plat-box">
+      <div class="ph"><span class="dot tt"></span> Ambil file dari TikTok</div>
+      <div class="hint">Buka <b>tiktok.com di komputer</b> (bukan aplikasi HP) dengan akun Business
+        Storypie atau Gumik → <b>View Analytics</b> → tab <b>Content</b> → pilih rentang tanggal →
+        tombol unduh. Simpan sebagai CSV, lalu pilih filenya di bawah.</div>
+      <div class="field" style="margin-top:10px">
+        <label>File CSV</label>
+        <input type="file" id="ttFile" accept=".csv,text/csv,text/plain" onchange="ttBacaFile(this)">
+      </div>
+      <div class="field">
+        <label>Brand</label>
+        <select id="ttBrand">
+          <option value="storypie">Storypie</option>
+          <option value="gumik">Gumik</option>
+        </select>
+        <div class="hint">Satu file berisi satu akun. Brand dipilih sendiri karena ekspor TikTok
+          tidak selalu menyebut nama akunnya di dalam file.</div>
+      </div>
+    </div>
+    <div id="ttPetaBox">${ttPetaHtml()}</div>
+    <div id="ttHasilBox">${ttHasilHtml()}</div>
+    <div class="hint" id="ttErr" style="color:var(--bad);font-weight:700"></div>
+  `;
+  $('drawerFoot').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeDrawer()">Tutup</button>
+    ${ttImpor && ttImpor.cocok && ttImpor.cocok.length && bisa
+      ? `<button class="btn btn-primary" id="ttTerapkanBtn" onclick="ttTerapkan()">Terapkan ke Terpilih</button>` : ''}
+  `;
+}
+
+function ttBacaFile(input){
+  const f = input.files && input.files[0];
+  if(!f) return;
+  const err = $('ttErr'); if(err) err.textContent = '';
+  const fr = new FileReader();
+  fr.onload = ()=>{
+    try{
+      const baris = csvParse(fr.result);
+      if(baris.length < 2) throw new Error('File ini tidak berisi baris data.');
+      const header = baris[0];
+      ttImpor = {
+        namaFile: f.name,
+        header,
+        data: baris.slice(1),
+        peta: ttTebakKolom(header),
+        brand: ($('ttBrand')||{}).value || 'storypie',
+        cocok: null
+      };
+      ttCocokkan();
+      ttGambarPanel();
+    }catch(e){
+      if($('ttErr')) $('ttErr').textContent = 'Gagal membaca file: ' + (e.message||e);
+    }
+  };
+  fr.onerror = ()=>{ if($('ttErr')) $('ttErr').textContent = 'File tidak bisa dibaca.'; };
+  fr.readAsText(f, 'utf-8');
+}
+
+function ttPetaHtml(){
+  if(!ttImpor) return '';
+  const h = ttImpor.header;
+  const opsi = (terpilih) =>
+    `<option value="-1"${terpilih===undefined||terpilih<0?' selected':''}>— tidak ada —</option>` +
+    h.map((nama,i)=>`<option value="${i}"${i===terpilih?' selected':''}>${esc(nama||('Kolom '+(i+1)))}</option>`).join('');
+
+  const wajibKurang = ttImpor.peta.tanggal === undefined && ttImpor.peta.link === undefined;
+
+  return `<div class="plat-box">
+    <div class="ph">Kolom yang terbaca — ${esc(ttImpor.namaFile)}</div>
+    <div class="hint" style="margin-bottom:8px">${ttImpor.data.length} baris data, ${h.length} kolom.
+      Tebakan di bawah dibuat dari nama kolomnya. Betulkan kalau ada yang salah — tidak ada yang
+      ditulis sebelum kamu menekan Terapkan.</div>
+    ${TT_KOLOM.map(k=>`<div class="field">
+      <label>${k.label}</label>
+      <select onchange="ttUbahPeta('${k.kunci}', this.value)">${opsi(ttImpor.peta[k.kunci])}</select>
+    </div>`).join('')}
+    ${wajibKurang ? `<div class="kabar bad">Minimal <b>Link video</b> atau <b>Tanggal</b> harus terisi —
+      tanpa salah satunya, baris CSV tidak bisa dipasangkan ke konten mana pun.</div>` : ''}
+  </div>`;
+}
+
+function ttUbahPeta(kunci, nilai){
+  if(!ttImpor) return;
+  const i = Number(nilai);
+  if(i < 0) delete ttImpor.peta[kunci]; else ttImpor.peta[kunci] = i;
+  ttCocokkan();
+  const pb = $('ttPetaBox'); if(pb) pb.innerHTML = ttPetaHtml();
+  const hb = $('ttHasilBox'); if(hb) hb.innerHTML = ttHasilHtml();
+  ttGambarFoot();
+}
+
+function ttGambarFoot(){
+  const bisa = can.editEngagement();
+  $('drawerFoot').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeDrawer()">Tutup</button>
+    ${ttImpor && ttImpor.cocok && ttImpor.cocok.length && bisa
+      ? `<button class="btn btn-primary" id="ttTerapkanBtn" onclick="ttTerapkan()">Terapkan ke Terpilih</button>` : ''}
+  `;
+}
+
+/* Pencocokan dua lapis: lewat ID video kalau ekspornya memuat link, dan
+   lewat tanggal kalau tidak. Tanggal sengaja TIDAK dipakai begitu saja —
+   kalau satu hari punya lebih dari satu konten TikTok, barisnya masuk
+   daftar "ambigu" dan tidak ikut ditulis, karena menebak di situ berarti
+   memasang angka ke konten yang salah. */
+function ttCocokkan(){
+  if(!ttImpor) return;
+  const p = ttImpor.peta;
+  const brand = ttImpor.brand;
+  const sel = (b, kunci) => (p[kunci] === undefined ? '' : (b[p[kunci]] || ''));
+
+  const perId = new Map(), perTanggal = new Map();
+  plansCache.forEach(r=>{
+    if(r.brand !== brand) return;
+    const id = ttIdDariLink(ttLinkBaris(r));
+    if(id && !perId.has(id)) perId.set(id, r);
+    const t = String(r.tanggalPosting||'').slice(0,10);
+    if(t){ if(!perTanggal.has(t)) perTanggal.set(t, []); perTanggal.get(t).push(r); }
+  });
+
+  const cocok = [], takCocok = [], ambigu = [];
+  let dilewati = 0;
+  ttImpor.data.forEach((b, n)=>{
+    const link = sel(b,'link');
+    const tgl = ttTanggal(sel(b,'tanggal'));
+    const info = {
+      no: n+1,
+      link, tanggal: tgl,
+      judul: String(sel(b,'judul')).replace(/\s+/g,' ').slice(0,120),
+      nilai: {
+        views:    ttAngka(sel(b,'views')),
+        likes:    ttAngka(sel(b,'likes')),
+        comments: ttAngka(sel(b,'comments')),
+        shares:   ttAngka(sel(b,'shares')),
+        saves:    ttAngka(sel(b,'saves'))
+      }
+    };
+    const adaAngka = Object.values(info.nilai).some(v=>v !== null);
+    if(!adaAngka) return;              // baris kosong
+    // Baris tanpa link DAN tanpa tanggal tidak mungkin dipasangkan ke apa
+    // pun — ini hampir selalu baris "Total" di kaki ekspor. Dilewati diam-
+    // diam supaya tidak mengotori daftar "tidak ketemu" yang justru perlu
+    // diperiksa tim.
+    // Diperiksa ID video-nya, bukan sekadar selnya terisi: baris "Total"
+    // di kaki ekspor menaruh kata "Total" di kolom pertama.
+    const idVideo = ttIdDariLink(link);
+    if(!idVideo && !tgl){ dilewati++; return; }
+
+    let r = null, cara = '';
+    if(idVideo && perId.has(idVideo)){ r = perId.get(idVideo); cara = 'link'; }
+    else if(tgl && perTanggal.has(tgl)){
+      const kandidat = perTanggal.get(tgl);
+      if(kandidat.length === 1){ r = kandidat[0]; cara = 'tanggal'; }
+      else { ambigu.push({...info, jumlah: kandidat.length}); return; }
+    }
+    if(!r){ takCocok.push(info); return; }
+
+    const lama = ttOf(r);
+    const berubah = ['views','likes','comments','shares','saves']
+      .some(k => info.nilai[k] !== null && n0(info.nilai[k]) !== n0(lama[k]));
+    cocok.push({info, row:r, lama, baru:info.nilai, cara, berubah, pilih:berubah});
+  });
+
+  ttImpor.cocok = cocok;
+  ttImpor.takCocok = takCocok;
+  ttImpor.ambigu = ambigu;
+  ttImpor.dilewati = dilewati;
+}
+
+function ttHasilHtml(){
+  if(!ttImpor || !ttImpor.cocok) return '';
+  const h = ttImpor;
+  const bisa = can.editEngagement();
+  const lewatTanggal = h.cocok.filter(c=>c.cara==='tanggal').length;
+
+  const daftar = h.cocok.length ? `
+    <label style="display:flex;gap:8px;align-items:center;margin:4px 0 10px;font-weight:700;cursor:pointer">
+      <input type="checkbox" onchange="ttPilihSemua(this.checked)"
+        ${h.cocok.some(c=>c.pilih)?'checked':''} ${bisa?'':'disabled'}> Pilih semua yang berubah
+    </label>
+    ${h.cocok.map((c,i)=>`
+      <label style="display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);cursor:pointer">
+        <input type="checkbox" class="tt-pilih" data-i="${i}" ${c.pilih?'checked':''} ${bisa?'':'disabled'} style="margin-top:3px">
+        <span style="flex:1;min-width:0">
+          <span style="display:block;font-weight:700">${esc(judulKonten(c.row))}</span>
+          <span style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:5px">
+            ${fmtDate(c.row.tanggalPosting)} • dipasangkan lewat ${c.cara === 'link' ? 'link video' : '<b>tanggal</b>'}${c.berubah?'':' • tidak ada perubahan'}</span>
+          <span style="display:flex;flex-wrap:wrap;gap:5px">
+            ${igChip('Views', c.lama.views, c.baru.views)}
+            ${igChip('Likes', c.lama.likes, c.baru.likes)}
+            ${igChip('Komen', c.lama.comments, c.baru.comments)}
+            ${igChip('Share', c.lama.shares, c.baru.shares)}
+            ${igChip('Save',  c.lama.saves, c.baru.saves)}
+          </span>
+        </span>
+      </label>`).join('')}
+    ${lewatTanggal ? `<div class="hint" style="margin-top:8px">${lewatTanggal} baris dipasangkan lewat
+      <b>tanggal</b>, bukan link — ini hanya aman kalau hari itu memang cuma ada satu konten TikTok.
+      Periksa sekilas sebelum menerapkan.</div>` : ''}
+    <div class="hint" style="margin-top:6px">Tanda — berarti kolomnya tidak ada di file ini;
+      isi lamanya dibiarkan utuh, tidak dinolkan.</div>`
+    : `<div class="empty">Tidak ada baris CSV yang cocok dengan konten TikTok di content plan.
+       Periksa pilihan Brand dan pemetaan kolom di atas.</div>`;
+
+  const ambigu = h.ambigu.length ? `
+    <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:700">
+      ${h.ambigu.length} baris tidak dipasang karena tanggalnya ganda</summary>
+    <div class="hint" style="margin-top:6px">Hari-hari ini punya lebih dari satu konten di content plan,
+      jadi mencocokkan lewat tanggal saja bisa memasang angka ke konten yang salah. Isi
+      <b>Link Post TikTok</b> di baris-baris itu, lalu impor ulang.</div>
+    ${h.ambigu.slice(0,30).map(a=>`<div class="file-info">
+      ${esc(a.tanggal||'(tanpa tanggal)')} • ${a.jumlah} konten di hari yang sama •
+      views ${a.nilai.views===null?'—':fmtNum(a.nilai.views)}
+      <div style="color:var(--muted)">${esc(a.judul||'(tanpa caption)')}</div></div>`).join('')}
+    </details>` : '';
+
+  const takCocok = h.takCocok.length ? `
+    <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">
+      ${h.takCocok.length} baris CSV tidak ada di content plan</summary>
+    <div class="hint" style="margin-top:6px">Video ini ada di TikTok tapi tidak ada baris content plan
+      yang cocok — entah belum dibuat barisnya, brand-nya beda, atau tanggalnya tidak sama.</div>
+    ${h.takCocok.slice(0,30).map(a=>`<div class="file-info">
+      ${esc(a.tanggal||'(tanpa tanggal)')} • views ${a.nilai.views===null?'—':fmtNum(a.nilai.views)}
+      <div style="color:var(--muted)">${esc(a.judul||'(tanpa caption)')}</div></div>`).join('')}
+    ${h.takCocok.length>30?`<div class="hint">…dan ${h.takCocok.length-30} lagi.</div>`:''}
+    </details>` : '';
+
+  return `<div class="plat-box">
+    <div class="ph">Hasil Pembacaan</div>
+    <div class="hint" style="margin-bottom:8px">${h.cocok.length} cocok •
+      ${h.cocok.filter(c=>c.berubah).length} ada perubahan angka •
+      ${h.ambigu.length} tanggal ganda • ${h.takCocok.length} tidak ketemu${
+      h.dilewati ? ` • ${h.dilewati} baris ringkasan dilewati` : ''}</div>
+    ${daftar}${ambigu}${takCocok}
+    ${bisa?'':'<div class="hint">Role kamu tidak bisa mengubah data engagement.</div>'}
+  </div>`;
+}
+
+function ttPilihSemua(on){
+  document.querySelectorAll('.tt-pilih').forEach(c=>{ c.checked = on; });
+}
+
+async function ttTerapkan(){
+  if(!ttImpor || !ttImpor.cocok || !can.editEngagement()) return;
+  const dipilih = [...document.querySelectorAll('.tt-pilih:checked')]
+    .map(c => ttImpor.cocok[Number(c.dataset.i)])
+    .filter(Boolean);
+  if(!dipilih.length){ toast('Belum ada baris yang dicentang.'); return; }
+
+  const btn = $('ttTerapkanBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Menyimpan…'; }
+  const err = $('ttErr'); if(err) err.textContent = '';
+
+  const sekarang = new Date().toISOString();
+  let simpan = 0;
+  try{
+    for(let mulai=0; mulai<dipilih.length; mulai+=400){
+      const batch = db.batch();
+      dipilih.slice(mulai, mulai+400).forEach(c=>{
+        const lamaEng = eng(c.row);
+        const tt = {...ttOf(c.row)};
+        ['views','likes','comments','shares','saves'].forEach(k=>{
+          const v = c.baru[k];
+          if(v !== null && v !== undefined) tt[k] = Math.max(0, Math.round(Number(v)||0));
+        });
+        // Sama seperti tarikan IG: objek engagement ditulis utuh supaya
+        // angka Instagram dan catatan tangan tidak ikut terhapus.
+        const payload = {
+          ...lamaEng,
+          ig: {...(lamaEng.ig||{})},
+          tiktok: tt,
+          igLink: lamaEng.igLink || '',
+          ttLink: lamaEng.ttLink || c.info.link || '',
+          tanggalUkur: todayISO(),
+          catatan: lamaEng.catatan || '',
+          sumberTt: 'csv',
+          ttDiimporAt: sekarang,
+          updatedBy: profile.nama + ' • TikTok CSV',
+          updatedAt: sekarang
+        };
+        batch.update(db.collection('contentPlans').doc(c.row.id), {engagement: payload});
+        c.row.engagement = payload;
+        simpan++;
+      });
+      await batch.commit();
+    }
+    toast(`${simpan} baris engagement TikTok diperbarui.`);
+    db.collection('pengaturan').doc('tiktok').set({
+      terakhirImpor: sekarang, terakhirOleh: profile.nama, terakhirJumlah: simpan
+    }, {merge:true}).catch(()=>{});
+    closeDrawer();
+    renderPage();
+  }catch(e){
+    console.error(e);
+    if(err) err.textContent = 'Gagal menyimpan: ' + (e.message||e);
+  }
+  if($('ttTerapkanBtn')){ $('ttTerapkanBtn').disabled=false; $('ttTerapkanBtn').textContent='Terapkan ke Terpilih'; }
+}
+
 function statPlat(rows, brand, plat){
   const r2 = rows.filter(r=>r.brand===brand && hasEng(r));
   const pakai = r2.filter(r=> plat==='ig' ? (n0(igOf(r).reach)+interaksi(igOf(r)))>0 : (n0(ttOf(r).views)+interaksi(ttOf(r)))>0);
@@ -2530,9 +2980,11 @@ function viewEngagement(){
   return `
   <div class="page-head">
     <div><h2>Engagement</h2><div class="desc">${rows.length} konten tayang • ${filled.length} sudah ada data • ${periodeLabel(engFilter)}${
-      igSetting.terakhirTarik ? ` • IG terakhir ditarik ${fmtDateTime(igSetting.terakhirTarik)}` : ''}</div></div>
+      igSetting.terakhirTarik ? ` • IG ditarik ${fmtDateTime(igSetting.terakhirTarik)}` : ''}${
+      ttSetting.terakhirImpor ? ` • TikTok diimpor ${fmtDateTime(ttSetting.terakhirImpor)}` : ''}</div></div>
     <div class="head-actions">
       <button class="btn btn-ghost" onclick="openTarikIg()">Tarik dari Instagram</button>
+      <button class="btn btn-ghost" onclick="openImporTt()">Impor CSV TikTok</button>
       <button class="btn btn-ghost" onclick="exportEngagementExcel()">Excel</button>
     </div>
   </div>

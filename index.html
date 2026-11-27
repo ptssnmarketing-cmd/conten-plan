@@ -876,6 +876,7 @@ const can = {
   deletePlan: () => ['copywriter','admin'].includes(profile?.role),
   manageAdmin:() => profile?.role === 'admin',
   manageCampaign:() => ['admin','manager'].includes(profile?.role),
+  kelolaIg:   () => ['admin','manager'].includes(profile?.role),
 };
 
 /* ================= AUTH ================= */
@@ -1039,6 +1040,10 @@ function subscribeData(){
   db.collection('transaksiHarian').get()
     .then(snap=>{ trxArsip = {}; snap.docs.forEach(d=>{ trxArsip[d.id] = d.data(); }); })
     .catch(err=>console.error(err));
+  db.collection('pengaturan').doc('ig').onSnapshot(d=>{
+    igSetting = d.exists ? d.data() : {};
+    if(activePage==='engagement') renderPage();
+  }, err=>console.error(err));
   db.collection('pengaturan').doc('survei').onSnapshot(d=>{
     surveiSetting = d.exists ? d.data() : {};
     if(['survei','dashboard'].includes(activePage)) renderPage();
@@ -2095,6 +2100,401 @@ async function saveEngagement(){
   if($('engSaveBtn')){ $('engSaveBtn').disabled=false; $('engSaveBtn').textContent='Simpan Engagement'; }
 }
 
+/* ================= TARIK ENGAGEMENT DARI INSTAGRAM =================
+   Angka IG ditarik lewat Apps Script, bukan dari browser: token Instagram
+   tidak boleh pernah sampai ke sisi aplikasi. Yang dikirim balik hanya
+   angkanya.
+
+   Dua aturan yang dipegang di sini, karena ini soal kepercayaan pada data:
+
+   1. TIDAK ADA tulisan tanpa pratinjau. Tim sudah mengisi banyak angka
+      dengan tangan; menimpanya diam-diam akan membuat tabel ini berhenti
+      bisa dipercaya. Jadi hasil tarikan selalu ditampilkan lama -> baru,
+      dan tim yang memutuskan baris mana yang dipakai.
+   2. Metrik yang TIDAK dilayani Instagram untuk jenis post tertentu pulang
+      sebagai null, dan null TIDAK menimpa apa pun. Angka hasil input
+      tangan tetap bertahan, bukan berubah jadi nol. */
+
+let igSetting = {};             // pengaturan/ig — pemetaan brand -> igId, tanpa kredensial
+let igAkunTerjangkau = null;    // hasil aksi ig_akun; null = belum pernah dicek
+let igTarikan = null;           // hasil tarikan terakhir yang sedang dipratinjau
+let igSibuk = false;
+
+/* Shortcode dari link IG apa pun: /p/, /reel/, /reels/, /tv/, dengan atau
+   tanpa www, dengan atau tanpa ekor ?igsh=… Dua link yang menunjuk
+   postingan yang sama harus menghasilkan kunci yang sama. */
+function igKodeDariLink(link){
+  const m = String(link||'').match(/\/(?:p|reel|reels|tv)\/([A-Za-z0-9_\-]+)/);
+  return m ? m[1] : '';
+}
+
+/* Link IG sebuah baris: kolom khusus IG dulu, baru kolom link umum —
+   urutan yang sama dipakai saat ekspor Excel, jadi tidak ada kejutan. */
+function igLinkBaris(r){
+  const e = eng(r);
+  return igKodeDariLink(e.igLink) ? e.igLink : (igKodeDariLink(r.link) ? r.link : '');
+}
+
+function igBrandTerpetakan(){
+  const a = igSetting.akun || {};
+  const out = {};
+  ['storypie','gumik'].forEach(b=>{ if(a[b]) out[b] = String(a[b]); });
+  return out;
+}
+
+function openTarikIg(){
+  igTarikan = null;
+  $('drawerTitle').textContent = 'Tarik Engagement dari Instagram';
+  igGambarPanel();
+  openDrawer();
+  $('drawerBody').scrollTop = 0;
+  // Panel ini butuh Apps Script v30. Versinya dicek saat panel dibuka
+  // supaya "kenapa tombolnya tidak jalan" terjawab di tempat, bukan nanti.
+  cekVersiAppsScript(true).then(()=>{ if($('drawer').classList.contains('open')) igGambarPanel(); });
+  if(igAkunTerjangkau === null && can.kelolaIg()) igCekAkun(true);
+}
+
+function igGambarPanel(){
+  const peta = igBrandTerpetakan();
+  const siap = Object.keys(peta).length > 0;
+  const kelola = can.kelolaIg();
+
+  $('drawerBody').innerHTML = `
+    ${kabarVersiHtml()}
+
+    <div class="plat-box">
+      <div class="ph"><span class="dot ig"></span> Akun Instagram</div>
+      <div id="igAkunBox">${igAkunBoxHtml()}</div>
+      ${kelola ? `<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="igCekAkun()">Cek Akun Terjangkau</button>
+        ${igAkunTerjangkau && igAkunTerjangkau.length ? `<button class="btn btn-primary btn-sm" onclick="igSimpanAkun()">Simpan Pemetaan</button>` : ''}
+      </div>` : `<div class="hint">Hanya admin atau manager yang bisa mengubah pemetaan akun.</div>`}
+    </div>
+
+    <div class="plat-box">
+      <div class="ph">Rentang Tanggal</div>
+      <div class="eng-grid">
+        <div class="field"><label>Dari</label><input type="date" id="ig_dari" value="${esc(igTglMundur(30))}"></div>
+        <div class="field"><label>Sampai</label><input type="date" id="ig_sampai" value="${esc(todayISO())}"></div>
+      </div>
+      <div class="hint">Instagram hanya melayani insight untuk postingan dari akun professional. Rentang panjang boleh, tapi makin banyak postingan makin lama tarikannya.</div>
+      <div style="margin-top:10px">
+        <button class="btn btn-primary" id="igTarikBtn" onclick="igTarik()" ${siap?'':'disabled'}>Tarik Sekarang</button>
+        ${siap ? '' : `<div class="hint" style="margin-top:7px">Petakan dulu minimal satu akun di atas.</div>`}
+      </div>
+    </div>
+
+    <div id="igHasilBox">${igHasilHtml()}</div>
+    <div class="hint" id="igErr" style="color:var(--bad);font-weight:700"></div>
+  `;
+  $('drawerFoot').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeDrawer()">Tutup</button>
+    ${igTarikan && igTarikan.cocok.length && can.editEngagement()
+      ? `<button class="btn btn-primary" id="igTerapkanBtn" onclick="igTerapkan()">Terapkan ke Terpilih</button>` : ''}
+  `;
+}
+
+function igTglMundur(hari){
+  const d = new Date();
+  d.setDate(d.getDate() - hari);
+  return d.toISOString().slice(0,10);
+}
+
+function igAkunBoxHtml(){
+  const peta = igSetting.akun || {};
+  const kelola = can.kelolaIg();
+
+  if(!kelola){
+    const baris = ['storypie','gumik'].map(b=>{
+      const nb = b==='storypie'?'Storypie':'Gumik';
+      return `<div class="file-info">${nb}: ${peta[b] ? 'sudah dipetakan' : '<b>belum dipetakan</b>'}</div>`;
+    }).join('');
+    return baris;
+  }
+
+  if(igAkunTerjangkau === null){
+    return `<div class="hint">Mengecek akun yang bisa dijangkau token Instagram…</div>`;
+  }
+  if(!igAkunTerjangkau.length){
+    return `<div class="kabar bad">Token Instagram belum bisa menjangkau akun professional mana pun.
+      Periksa tiga hal: akun IG Storypie &amp; Gumik sudah <b>Business</b> atau <b>Creator</b>;
+      masing-masing sudah tersambung ke <b>Facebook Page</b>; dan akun Facebook yang dipakai login
+      punya akses admin ke Page itu. Setelah itu klik Cek Akun Terjangkau lagi.</div>`;
+  }
+
+  return ['storypie','gumik'].map(b=>{
+    const nb = b==='storypie'?'Storypie':'Gumik';
+    const kini = peta[b] ? String(peta[b]) : '';
+    const opsi = igAkunTerjangkau.map(a =>
+      `<option value="${esc(a.igId)}"${String(a.igId)===kini?' selected':''}>@${esc(a.username||a.igId)} — ${fmtNum(a.jumlahPost)} post</option>`).join('');
+    return `<div class="field"><label>${nb}</label>
+      <select id="ig_akun_${b}">
+        <option value=""${kini?'':' selected'}>— belum dipetakan —</option>
+        ${opsi}
+      </select></div>`;
+  }).join('') + `<div class="hint">${igAkunTerjangkau.length} akun terjangkau. Pilih mana yang Storypie dan mana yang Gumik — nama akun tidak ditebak otomatis supaya tidak salah pasang.</div>`;
+}
+
+async function igCekAkun(diam){
+  if(!can.kelolaIg()) return;
+  const box = $('igAkunBox');
+  if(box) box.innerHTML = `<div class="hint">Mengecek akun yang bisa dijangkau token Instagram…</div>`;
+  try{
+    const j = await panggilAppsScript('ig_akun');
+    igAkunTerjangkau = (j && j.akun) ? j.akun : [];
+  }catch(e){
+    igAkunTerjangkau = [];
+    const el = $('igErr');
+    if(el) el.textContent = e.message || String(e);
+    if(!diam) console.error(e);
+  }
+  if($('drawer').classList.contains('open')) igGambarPanel();
+}
+
+async function igSimpanAkun(){
+  if(!can.kelolaIg()) return;
+  const akun = {};
+  ['storypie','gumik'].forEach(b=>{
+    const el = $('ig_akun_'+b);
+    if(el && el.value) akun[b] = el.value;
+  });
+  try{
+    await db.collection('pengaturan').doc('ig').set({
+      akun, diubahOleh: profile.nama, diubahAt: new Date().toISOString()
+    }, {merge:true});
+    igSetting = {...igSetting, akun};
+    toast('Pemetaan akun Instagram tersimpan.');
+    igGambarPanel();
+  }catch(e){
+    const el = $('igErr'); if(el) el.textContent = 'Gagal menyimpan pemetaan: ' + (e.message||e);
+  }
+}
+
+async function igTarik(){
+  if(igSibuk) return;
+  const peta = igBrandTerpetakan();
+  if(!Object.keys(peta).length) return;
+  const dari = ($('ig_dari')||{}).value || igTglMundur(30);
+  const sampai = ($('ig_sampai')||{}).value || todayISO();
+  if(dari > sampai){
+    const el=$('igErr'); if(el) el.textContent='Tanggal "Dari" melewati "Sampai".'; return;
+  }
+
+  igSibuk = true;
+  const btn = $('igTarikBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Menarik…'; }
+  const err = $('igErr'); if(err) err.textContent = '';
+  try{
+    const j = await panggilAppsScript('ig_rekap', {sejak: dari, sampai, akun: peta});
+    igTarikan = igCocokkan(j, dari, sampai);
+    igGambarPanel();
+    const n = igTarikan.cocok.length;
+    toast(n ? `${n} postingan cocok dengan content plan.` : 'Tidak ada postingan yang cocok dengan link di content plan.');
+  }catch(e){
+    if(err) err.textContent = e.message || String(e);
+  }
+  igSibuk = false;
+  if($('igTarikBtn')){ $('igTarikBtn').disabled=false; $('igTarikBtn').textContent='Tarik Sekarang'; }
+}
+
+/* Mencocokkan hasil tarikan ke baris content plan lewat shortcode link IG.
+   Dipakai shortcode, bukan link mentah, supaya ekor ?igsh=… atau beda
+   www tidak membuat postingan yang sama dianggap beda. */
+function igCocokkan(j, dari, sampai){
+  const hasil = { dari, sampai, cocok:[], takCocok:[], tanpaLink:[], galat:[] };
+
+  const indeks = new Map();
+  plansCache.forEach(r=>{
+    const kode = igKodeDariLink(igLinkBaris(r));
+    if(kode && !indeks.has(kode)) indeks.set(kode, r);
+  });
+
+  (j.akun||[]).forEach(a=>{
+    if(a.galat){ hasil.galat.push({brand:a.brand, pesan:a.galat}); return; }
+    (a.post||[]).forEach(p=>{
+      const r = p.kode ? indeks.get(p.kode) : null;
+      if(!r){ hasil.takCocok.push({...p, brand:a.brand}); return; }
+      const lama = igOf(r);
+      const baru = {
+        reach:    p.reach,
+        views:    p.views,
+        likes:    p.likes,
+        comments: p.comments,
+        shares:   p.shares,
+        saves:    p.saves
+      };
+      // null = Instagram tidak melayani metrik itu untuk jenis post ini.
+      // Nilai lama dipertahankan, tidak dinolkan.
+      const berubah = ['reach','views','likes','comments','shares','saves']
+        .some(k => baru[k] !== null && baru[k] !== undefined && n0(baru[k]) !== n0(lama[k]));
+      hasil.cocok.push({ post:p, row:r, lama, baru, berubah, pilih: berubah });
+    });
+  });
+
+  // Baris tayang dalam rentang yang belum punya link IG sama sekali:
+  // ini yang membuat tarikan otomatis tidak pernah bisa mengisinya.
+  plansCache.forEach(r=>{
+    if(r.status !== 'Posted') return;
+    const t = String(r.tanggalPosting||'').slice(0,10);
+    if(!t || t < dari || t > sampai) return;
+    if(!igKodeDariLink(igLinkBaris(r))) hasil.tanpaLink.push(r);
+  });
+
+  return hasil;
+}
+
+/* Satu metrik sebagai chip kecil. Tiga keadaan yang sengaja dibedakan:
+   tidak dilayani Instagram (—), tidak berubah (redup), dan berubah
+   (lama dicoret, baru ditebalkan). */
+function igChip(label, lama, baru){
+  const bung = (isi, gaya) =>
+    `<span style="display:inline-flex;gap:4px;align-items:baseline;padding:2px 7px;border-radius:999px;
+      background:var(--surface-2);font-size:11.5px;${gaya||''}">
+      <span style="color:var(--muted)">${label}</span>${isi}</span>`;
+  if(baru === null || baru === undefined) return bung(`<span style="color:var(--muted)">—</span>`);
+  const a = n0(lama), b = n0(baru);
+  if(a === b) return bung(`<span style="color:var(--ink-2)">${fmtNum(b)}</span>`);
+  return bung(`<span style="color:var(--muted);text-decoration:line-through">${fmtNum(a)}</span>
+    <b style="color:var(--brand)">${fmtNum(b)}</b>`, 'background:var(--brand-soft)');
+}
+
+function igHasilHtml(){
+  if(!igTarikan) return '';
+  const h = igTarikan;
+  const bisa = can.editEngagement();
+
+  const galat = h.galat.length ? `<div class="kabar bad">${h.galat.map(g=>
+    `<div><b>${g.brand==='storypie'?'Storypie':'Gumik'}</b>: ${esc(g.pesan)}</div>`).join('')}</div>` : '';
+
+  // Dibuat per-kartu, bukan tabel lebar: panel ini hidup di dalam drawer
+  // yang sempit, dan tabel 9 kolom akan memotong justru kolom yang paling
+  // ingin diperiksa (share & save).
+  const tabel = h.cocok.length ? `
+    <label style="display:flex;gap:8px;align-items:center;margin:4px 0 10px;font-weight:700;cursor:pointer">
+      <input type="checkbox" id="igPilihSemua" onchange="igPilihSemua(this.checked)"
+        ${h.cocok.some(c=>c.pilih)?'checked':''} ${bisa?'':'disabled'}> Pilih semua yang berubah
+    </label>
+    ${h.cocok.map((c,i)=>`
+      <label class="ig-baris" style="display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line);cursor:pointer">
+        <input type="checkbox" class="ig-pilih" data-i="${i}" ${c.pilih?'checked':''} ${bisa?'':'disabled'} style="margin-top:3px">
+        <span style="flex:1;min-width:0">
+          <span style="display:block;font-weight:700">${esc(judulKonten(c.row))}</span>
+          <span style="display:block;font-size:11.5px;color:var(--muted);margin-bottom:5px">
+            ${fmtDate(c.row.tanggalPosting)} • ${esc(c.post.jenis)}${c.berubah?'':' • tidak ada perubahan'}</span>
+          <span style="display:flex;flex-wrap:wrap;gap:5px">
+            ${igChip('Reach', c.lama.reach, c.baru.reach)}
+            ${igChip('Views', c.lama.views, c.baru.views)}
+            ${igChip('Likes', c.lama.likes, c.baru.likes)}
+            ${igChip('Komen', c.lama.comments, c.baru.comments)}
+            ${igChip('Share', c.lama.shares, c.baru.shares)}
+            ${igChip('Save',  c.lama.saves, c.baru.saves)}
+          </span>
+        </span>
+      </label>`).join('')}
+    <div class="hint" style="margin-top:8px">Angka tercoret adalah isi lama. Tanda — berarti Instagram tidak melayani
+      metrik itu untuk jenis post tersebut; isi lamanya dibiarkan utuh, tidak dinolkan.</div>`
+    : `<div class="empty">Tidak ada postingan Instagram yang cocok dengan link di content plan pada rentang ini.</div>`;
+
+  const takCocok = h.takCocok.length ? `
+    <details style="margin-top:12px"><summary style="cursor:pointer;font-weight:700">
+      ${h.takCocok.length} postingan IG tidak ada di content plan</summary>
+    <div class="hint" style="margin-top:6px">Postingan ini ada di Instagram tapi tidak ada baris content plan dengan link yang sama.
+      Entah belum dibuat barisnya, atau link-nya belum diisi.</div>
+    ${h.takCocok.slice(0,40).map(p=>`<div class="file-info">
+      ${String(p.waktu).slice(0,10)} • ${esc(p.jenis)} • reach ${p.reach===null?'—':fmtNum(p.reach)} •
+      <a href="${esc(p.permalink)}" target="_blank" rel="noopener">buka</a>
+      <div style="color:var(--muted)">${esc(p.judul||'(tanpa caption)')}</div></div>`).join('')}
+    ${h.takCocok.length>40?`<div class="hint">…dan ${h.takCocok.length-40} lagi.</div>`:''}
+    </details>` : '';
+
+  const tanpaLink = h.tanpaLink.length ? `
+    <details style="margin-top:10px"><summary style="cursor:pointer;font-weight:700">
+      ${h.tanpaLink.length} konten tayang belum punya link Instagram</summary>
+    <div class="hint" style="margin-top:6px">Selama link-nya kosong, baris ini tidak akan pernah terisi otomatis.
+      Isi "Link Post Instagram" di tombol Input/Edit masing-masing baris.</div>
+    ${h.tanpaLink.slice(0,40).map(r=>`<div class="file-info">
+      ${fmtDate(r.tanggalPosting)} • ${esc(r.brand==='storypie'?'Storypie':'Gumik')} • ${esc(judulKonten(r))}
+      <button class="lnk-kecil" onclick="closeDrawer();setTimeout(()=>openEngagement('${r.id}'),180)">isi link</button>
+      </div>`).join('')}
+    ${h.tanpaLink.length>40?`<div class="hint">…dan ${h.tanpaLink.length-40} lagi.</div>`:''}
+    </details>` : '';
+
+  return `<div class="plat-box">
+    <div class="ph">Hasil Tarikan — ${fmtDate(h.dari)} s/d ${fmtDate(h.sampai)}</div>
+    ${galat}
+    <div class="hint" style="margin-bottom:8px">${h.cocok.length} cocok •
+      ${h.cocok.filter(c=>c.berubah).length} ada perubahan angka •
+      ${h.takCocok.length} tidak ketemu • ${h.tanpaLink.length} tanpa link</div>
+    ${tabel}${takCocok}${tanpaLink}
+    ${bisa?'':'<div class="hint">Role kamu tidak bisa mengubah data engagement.</div>'}
+  </div>`;
+}
+
+function igPilihSemua(on){
+  document.querySelectorAll('.ig-pilih').forEach(c=>{ c.checked = on; });
+}
+
+async function igTerapkan(){
+  if(!igTarikan || !can.editEngagement()) return;
+  const dipilih = [...document.querySelectorAll('.ig-pilih:checked')]
+    .map(c => igTarikan.cocok[Number(c.dataset.i)])
+    .filter(Boolean);
+  if(!dipilih.length){ toast('Belum ada baris yang dicentang.'); return; }
+
+  const btn = $('igTerapkanBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Menyimpan…'; }
+  const err = $('igErr'); if(err) err.textContent = '';
+
+  const sekarang = new Date().toISOString();
+  let simpan = 0;
+  try{
+    // Ditulis per rombongan 400 supaya tidak menabrak batas 500 tulisan
+    // per batch Firestore kalau tim menarik rentang panjang.
+    for(let mulai=0; mulai<dipilih.length; mulai+=400){
+      const batch = db.batch();
+      const bagian = dipilih.slice(mulai, mulai+400);
+      bagian.forEach(c=>{
+        const lamaEng = eng(c.row);
+        const ig = {...igOf(c.row)};
+        ['reach','views','likes','comments','shares','saves'].forEach(k=>{
+          const v = c.baru[k];
+          if(v !== null && v !== undefined) ig[k] = Math.max(0, Math.round(Number(v)||0));
+        });
+        // Seluruh objek engagement ditulis ulang utuh — field TikTok dan
+        // catatan ikut dibawa apa adanya, jadi tarikan IG tidak pernah
+        // menghapus pekerjaan tangan di kolom lain.
+        const payload = {
+          ...lamaEng,
+          ig,
+          tiktok: {...(lamaEng.tiktok||{})},
+          igLink: lamaEng.igLink || c.post.permalink || '',
+          ttLink: lamaEng.ttLink || '',
+          tanggalUkur: todayISO(),
+          catatan: lamaEng.catatan || '',
+          sumberIg: 'otomatis',
+          igDitarikAt: sekarang,
+          updatedBy: profile.nama + ' • IG otomatis',
+          updatedAt: sekarang
+        };
+        batch.update(db.collection('contentPlans').doc(c.row.id), {engagement: payload});
+        c.row.engagement = payload;
+        simpan++;
+      });
+      await batch.commit();
+    }
+    toast(`${simpan} baris engagement diperbarui dari Instagram.`);
+    db.collection('pengaturan').doc('ig').set({
+      terakhirTarik: sekarang, terakhirOleh: profile.nama, terakhirJumlah: simpan
+    }, {merge:true}).catch(()=>{});
+    closeDrawer();
+    renderPage();
+  }catch(e){
+    console.error(e);
+    if(err) err.textContent = 'Gagal menyimpan: ' + (e.message||e);
+  }
+  if($('igTerapkanBtn')){ $('igTerapkanBtn').disabled=false; $('igTerapkanBtn').textContent='Terapkan ke Terpilih'; }
+}
+
 function statPlat(rows, brand, plat){
   const r2 = rows.filter(r=>r.brand===brand && hasEng(r));
   const pakai = r2.filter(r=> plat==='ig' ? (n0(igOf(r).reach)+interaksi(igOf(r)))>0 : (n0(ttOf(r).views)+interaksi(ttOf(r)))>0);
@@ -2129,8 +2529,12 @@ function viewEngagement(){
 
   return `
   <div class="page-head">
-    <div><h2>Engagement</h2><div class="desc">${rows.length} konten tayang • ${filled.length} sudah ada data • ${periodeLabel(engFilter)}</div></div>
-    <div class="head-actions"><button class="btn btn-ghost" onclick="exportEngagementExcel()">Excel</button></div>
+    <div><h2>Engagement</h2><div class="desc">${rows.length} konten tayang • ${filled.length} sudah ada data • ${periodeLabel(engFilter)}${
+      igSetting.terakhirTarik ? ` • IG terakhir ditarik ${fmtDateTime(igSetting.terakhirTarik)}` : ''}</div></div>
+    <div class="head-actions">
+      <button class="btn btn-ghost" onclick="openTarikIg()">Tarik dari Instagram</button>
+      <button class="btn btn-ghost" onclick="exportEngagementExcel()">Excel</button>
+    </div>
   </div>
 
   <div class="plat-grid">
@@ -6117,7 +6521,7 @@ async function panggilAppsScript(aksi, data){
    berarti satu hal: Code.gs sudah ditempel dan disimpan, tapi deployment
    web app-nya belum diperbarui — jadi aplikasi masih memanggil kode lama.
    Daripada ditebak, versinya ditanyakan langsung. */
-const VERSI_APPS_SCRIPT = 'v29';
+const VERSI_APPS_SCRIPT = 'v30';
 let versiAppsScript = null;        // null = belum dicek
 
 async function cekVersiAppsScript(diam){

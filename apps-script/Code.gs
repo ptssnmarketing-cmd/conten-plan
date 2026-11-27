@@ -6,7 +6,7 @@
  * Cara pasang lengkap ada di PANDUAN-WA.md
  */
 
-var VERSI_KODE = 'v29';
+var VERSI_KODE = 'v30';
 
 // ====================== KONFIGURASI ======================
 // Semua nilai rahasia diisi lewat Project Settings -> Script Properties.
@@ -578,7 +578,8 @@ function doPost(e) {
   try {
     var body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     var AKSI_DIKENAL = ['versi', 'ai', 'ai_models', 'esb_cabang', 'esb_live', 'esb_jam',
-                        'esb_produk', 'esb_jelajah'];
+                        'esb_produk', 'esb_jelajah',
+                        'ig_status', 'ig_akun', 'ig_rekap'];
     if (AKSI_DIKENAL.indexOf(body.aksi) < 0) {
       return keluarJson_({ galat: 'Aksi tidak dikenal.' });
     }
@@ -595,6 +596,28 @@ function doPost(e) {
     // deployment-nya masih memakai kode lama.
     if (body.aksi === 'versi') {
       return keluarJson_({ versi: VERSI_KODE, waktu: new Date().toISOString() });
+    }
+
+    // ---- Instagram ----
+    // Kredensial IG tidak pernah dikirim ke aplikasi; yang dikirim hanya
+    // angka hasil tarikan. Pemetaan brand -> igId datang dari Firestore
+    // lewat aplikasi, karena di sanalah pemetaan itu dikelola admin.
+    if (body.aksi === 'ig_status') {
+      try { return keluarJson_(igStatus_()); }
+      catch (e) { return keluarJson_({ galat: e.message || String(e) }); }
+    }
+    if (body.aksi === 'ig_akun') {
+      try { return keluarJson_(igDaftarAkun_()); }
+      catch (e) { return keluarJson_({ galat: e.message || String(e) }); }
+    }
+    if (body.aksi === 'ig_rekap') {
+      try {
+        return keluarJson_(igRekap(
+          String(body.sejak || '').slice(0, 10),
+          String(body.sampai || '').slice(0, 10),
+          (body.akun && typeof body.akun === 'object') ? body.akun : {}
+        ));
+      } catch (e) { return keluarJson_({ galat: e.message || String(e) }); }
     }
 
     // ---- sumber data ESB ----
@@ -1407,4 +1430,402 @@ function copotTriggerEsb() {
     if (t.getHandlerFunction() === 'esbTarikHarian') { ScriptApp.deleteTrigger(t); n++; }
   });
   Logger.log(n + ' trigger esbTarikHarian dicopot.');
+}
+
+/* =====================================================================
+ * INSTAGRAM — tarikan insight per postingan
+ * =====================================================================
+ * Dipakai halaman Engagement untuk mengisi angka IG otomatis, supaya tim
+ * tidak lagi menyalin reach/likes/save satu per satu dari aplikasi IG.
+ *
+ * Script Properties yang dibutuhkan:
+ *   IG_APP_ID     = ID aplikasi dari developers.facebook.com
+ *   IG_APP_SECRET = App Secret dari aplikasi yang sama
+ *   IG_TOKEN      = access token panjang (long-lived) hasil login sekali
+ *
+ * IG_TOKEN berlaku 60 hari. Fungsi igSegarkanToken_() memperpanjangnya dan
+ * dipasang sebagai trigger mingguan lewat pasangTriggerIg(), jadi dalam
+ * keadaan normal tidak ada kerjaan manual bulanan. Kalau trigger mati
+ * lebih dari 60 hari, tokennya mati dan harus login ulang sekali.
+ *
+ * Catatan penting soal angka: likes & komentar diambil dari field media
+ * (selalu ada). reach, views, shares, saves diambil dari endpoint insights
+ * yang hanya melayani akun professional — dan Meta tidak melayani metrik
+ * yang sama untuk semua jenis post. Metrik yang ditolak dicatat sebagai
+ * null, BUKAN nol, supaya "tidak dilayani" tidak tersamar jadi "nol".
+ */
+
+var IG_GRAPH = 'https://graph.facebook.com/v23.0';
+
+function igProps_() {
+  var P = PropertiesService.getScriptProperties();
+  return {
+    appId:     bersih_(P.getProperty('IG_APP_ID')),
+    appSecret: bersih_(P.getProperty('IG_APP_SECRET')),
+    token:     bersih_(P.getProperty('IG_TOKEN')),
+    disegar:   bersih_(P.getProperty('IG_TOKEN_DISEGARKAN'))
+  };
+}
+
+function igToken_() {
+  var t = igProps_().token;
+  if (!t) throw new Error('IG_TOKEN belum diisi di Script Properties Apps Script.');
+  return t;
+}
+
+/** Pesan galat Graph API dibuat enak dibaca, bukan JSON mentah. */
+function igPesan_(teks, kode) {
+  var p = teks;
+  try {
+    var j = JSON.parse(teks);
+    if (j && j.error) {
+      p = j.error.message || teks;
+      if (j.error.code === 190) {
+        p = 'Token Instagram sudah tidak berlaku (kedaluwarsa atau dicabut). ' +
+            'Login ulang sekali, lalu simpan token barunya ke IG_TOKEN.';
+      } else if (j.error.code === 10 || j.error.code === 200) {
+        p = 'Izin kurang: ' + p + ' Pastikan izin instagram_manage_insights ' +
+            'dan pages_read_engagement sudah disetujui, dan akun IG-nya ' +
+            'akun professional yang tersambung ke Facebook Page.';
+      }
+    }
+  } catch (e) {}
+  return '(' + kode + ') ' + String(p).slice(0, 400);
+}
+
+function igGet_(path, params) {
+  var q = ['access_token=' + encodeURIComponent(igToken_())];
+  Object.keys(params || {}).forEach(function (k) {
+    var v = params[k];
+    if (v !== '' && v !== null && v !== undefined) {
+      q.push(encodeURIComponent(k) + '=' + encodeURIComponent(v));
+    }
+  });
+  var url = (path.indexOf('http') === 0 ? path : IG_GRAPH + path) + '?' + q.join('&');
+  var res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+  var kode = res.getResponseCode(), teks = res.getContentText();
+  if (kode !== 200) throw new Error(igPesan_(teks, kode));
+  try { return JSON.parse(teks); }
+  catch (e) { throw new Error('Jawaban Instagram bukan JSON.'); }
+}
+
+/**
+ * Akun IG yang bisa dijangkau token ini, lewat Facebook Page yang
+ * terhubung. Dipakai aplikasi untuk memetakan mana Storypie, mana Gumik —
+ * pemetaan itu disimpan di Firestore, bukan ditebak dari nama.
+ */
+function igDaftarAkun_() {
+  var j = igGet_('/me/accounts', {
+    fields: 'name,instagram_business_account{id,username,name,followers_count,media_count}',
+    limit: 50
+  });
+  var out = [];
+  (j.data || []).forEach(function (page) {
+    var ig = page.instagram_business_account;
+    if (!ig || !ig.id) return;
+    out.push({
+      igId: String(ig.id),
+      username: ig.username || '',
+      namaIg: ig.name || '',
+      follower: Number(ig.followers_count) || 0,
+      jumlahPost: Number(ig.media_count) || 0,
+      page: page.name || ''
+    });
+  });
+  return { akun: out };
+}
+
+/**
+ * "yyyy-MM-dd" -> detik Unix. Perhatikan: tgl_() di file ini adalah
+ * PEMFORMAT tanggal ke bahasa Indonesia, bukan parser — jadi di sini
+ * tanggalnya dipecah sendiri. Jam dipatok ke WIB (UTC+7) supaya postingan
+ * tanggal batas tidak ikut terpotong gara-gara selisih zona waktu.
+ */
+function igTanggal_(s, akhirHari) {
+  var p = String(s || '').slice(0, 10).split('-');
+  if (p.length !== 3) return null;
+  var th = Number(p[0]), bl = Number(p[1]), hr = Number(p[2]);
+  if (!th || !bl || !hr) return null;
+  var ms = Date.UTC(th, bl - 1, hr, akhirHari ? 23 : 0, akhirHari ? 59 : 0, akhirHari ? 59 : 0);
+  return Math.floor(ms / 1000) - 7 * 3600;   // WIB -> UTC
+}
+
+/** Semua media satu akun dalam rentang tanggal, mengikuti paging Graph. */
+function igMedia_(igId, sejak, sampai) {
+  var fields = 'id,permalink,timestamp,media_type,media_product_type,caption,' +
+               'like_count,comments_count,thumbnail_url';
+  var params = { fields: fields, limit: 100 };
+  var a = igTanggal_(sejak, false), b = igTanggal_(sampai, true);
+  if (a) params.since = a;
+  if (b) params.until = b;
+  var out = [], url = '/' + igId + '/media', hal = 0;
+  while (url && hal < 20) {                       // pagar supaya tidak berputar selamanya
+    var j = hal === 0 ? igGet_(url, params) : igGet_(url, null);
+    (j.data || []).forEach(function (m) { out.push(m); });
+    url = (j.paging && j.paging.next) ? j.paging.next : null;
+    hal++;
+  }
+  return out;
+}
+
+/**
+ * Metrik insights yang diminta per jenis post. Meta tidak melayani daftar
+ * yang sama untuk semua jenis, jadi daftarnya dipilih per jenis dan kalau
+ * tetap ditolak, permintaannya diulang dengan daftar minimum.
+ */
+function igMetrik_(m) {
+  var produk = String(m.media_product_type || '').toUpperCase();
+  var tipe = String(m.media_type || '').toUpperCase();
+  if (produk === 'REELS' || tipe === 'VIDEO') {
+    return ['reach', 'views', 'likes', 'comments', 'shares', 'saved'];
+  }
+  if (tipe === 'CAROUSEL_ALBUM') return ['reach', 'views', 'shares', 'saved'];
+  return ['reach', 'views', 'shares', 'saved'];
+}
+
+function igBacaInsight_(json) {
+  var out = {};
+  ((json && json.data) || []).forEach(function (row) {
+    var nilai = null;
+    if (row.values && row.values.length) nilai = Number(row.values[0].value);
+    if (row.total_value && row.total_value.value !== undefined) nilai = Number(row.total_value.value);
+    if (nilai !== null && !isNaN(nilai)) out[row.name] = nilai;
+  });
+  return out;
+}
+
+/**
+ * Insight banyak media sekaligus. fetchAll dipakai supaya 50 postingan
+ * tidak jadi 50 permintaan berurutan — tarikan sebulan selesai dalam
+ * hitungan detik, bukan menit.
+ */
+function igInsightBanyak_(media) {
+  var hasil = new Array(media.length);
+  var token = igToken_();
+  var ROMBONGAN = 20;
+
+  var minta = function (indeks, minimum) {
+    var req = indeks.map(function (i) {
+      var daftar = minimum ? ['reach'] : igMetrik_(media[i]);
+      return {
+        url: IG_GRAPH + '/' + media[i].id + '/insights?metric=' +
+             encodeURIComponent(daftar.join(',')) +
+             '&access_token=' + encodeURIComponent(token),
+        muteHttpExceptions: true
+      };
+    });
+    return UrlFetchApp.fetchAll(req);
+  };
+
+  for (var mulai = 0; mulai < media.length; mulai += ROMBONGAN) {
+    var indeks = [];
+    for (var i = mulai; i < Math.min(mulai + ROMBONGAN, media.length); i++) indeks.push(i);
+    var res = minta(indeks, false);
+
+    // Metrik yang tidak dilayani untuk jenis post itu -> coba lagi dengan
+    // daftar minimum, supaya satu metrik rewel tidak menghanguskan reach.
+    var ulangi = [];
+    res.forEach(function (r, n) { if (r.getResponseCode() !== 200) ulangi.push(n); });
+    if (ulangi.length) {
+      var res2 = minta(ulangi.map(function (n) { return indeks[n]; }), true);
+      ulangi.forEach(function (n, k) { res[n] = res2[k]; });
+    }
+
+    res.forEach(function (r, n) {
+      var idx = indeks[n];
+      if (r.getResponseCode() !== 200) { hasil[idx] = {}; return; }
+      try { hasil[idx] = igBacaInsight_(JSON.parse(r.getContentText())); }
+      catch (e) { hasil[idx] = {}; }
+    });
+  }
+  return hasil;
+}
+
+function igKode_(permalink) {
+  var m = String(permalink || '').match(/\/(?:p|reel|reels|tv)\/([A-Za-z0-9_\-]+)/);
+  return m ? m[1] : '';
+}
+
+/**
+ * Aksi utama yang dipanggil aplikasi. Mengembalikan angka mentah per
+ * postingan; pencocokan ke baris content plan dilakukan di aplikasi,
+ * karena di sanalah link postingan tersimpan.
+ */
+function igRekap(sejak, sampai, akun) {
+  var daftarAkun = [];
+  if (akun && typeof akun === 'object') {
+    Object.keys(akun).forEach(function (brand) {
+      if (akun[brand]) daftarAkun.push({ brand: brand, igId: String(akun[brand]) });
+    });
+  }
+  if (!daftarAkun.length) {
+    throw new Error('Akun Instagram belum dipetakan. Buka Engagement → Tarik dari Instagram → Hubungkan Akun.');
+  }
+
+  var out = { sejak: sejak || '', sampai: sampai || '', akun: [] };
+  daftarAkun.forEach(function (a) {
+    var baris = { brand: a.brand, igId: a.igId, post: [], galat: '' };
+    try {
+      var media = igMedia_(a.igId, sejak, sampai);
+      var ins = igInsightBanyak_(media);
+      media.forEach(function (m, i) {
+        var s = ins[i] || {};
+        var ambil = function (nama) {
+          return (s[nama] === undefined || s[nama] === null) ? null : Number(s[nama]);
+        };
+        baris.post.push({
+          id: String(m.id),
+          kode: igKode_(m.permalink),
+          permalink: m.permalink || '',
+          waktu: m.timestamp || '',
+          jenis: m.media_product_type || m.media_type || '',
+          judul: String(m.caption || '').replace(/\s+/g, ' ').slice(0, 120),
+          gambar: m.thumbnail_url || '',
+          likes: Number(m.like_count) || 0,
+          comments: Number(m.comments_count) || 0,
+          reach: ambil('reach'),
+          views: ambil('views'),
+          shares: ambil('shares'),
+          saves: ambil('saved')
+        });
+      });
+    } catch (e) {
+      baris.galat = e.message || String(e);
+    }
+    out.akun.push(baris);
+  });
+  return out;
+}
+
+/* ---------- token: perpanjang sendiri ---------- */
+
+/**
+ * Menukar token panjang yang masih hidup dengan token panjang baru, jadi
+ * masa 60 harinya berulang terus. Dijalankan trigger mingguan.
+ */
+function igSegarkanToken_() {
+  var p = igProps_();
+  if (!p.appId || !p.appSecret || !p.token) {
+    throw new Error('IG_APP_ID, IG_APP_SECRET, dan IG_TOKEN harus terisi dulu.');
+  }
+  var url = IG_GRAPH + '/oauth/access_token' +
+    '?grant_type=fb_exchange_token' +
+    '&client_id=' + encodeURIComponent(p.appId) +
+    '&client_secret=' + encodeURIComponent(p.appSecret) +
+    '&fb_exchange_token=' + encodeURIComponent(p.token);
+  var res = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+  var kode = res.getResponseCode(), teks = res.getContentText();
+  if (kode !== 200) throw new Error(igPesan_(teks, kode));
+  var j = JSON.parse(teks);
+  if (!j.access_token) throw new Error('Facebook tidak mengirim token baru.');
+  var P = PropertiesService.getScriptProperties();
+  P.setProperty('IG_TOKEN', j.access_token);
+  P.setProperty('IG_TOKEN_DISEGARKAN', new Date().toISOString());
+  return j.access_token;
+}
+
+/** Dipanggil trigger mingguan; galat dicatat, tidak dilempar. */
+function igSegarkanTokenTerjadwal() {
+  try {
+    igSegarkanToken_();
+    Logger.log('Token Instagram diperpanjang.');
+  } catch (e) {
+    Logger.log('GAGAL memperpanjang token Instagram: ' + (e.message || e));
+  }
+}
+
+/** Jalankan SEKALI dari editor supaya token tidak pernah mati sendiri. */
+function pasangTriggerIg() {
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === 'igSegarkanTokenTerjadwal') ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger('igSegarkanTokenTerjadwal').timeBased().everyWeeks(1)
+    .onWeekDay(ScriptApp.WeekDay.MONDAY).atHour(3).create();
+  Logger.log('Trigger perpanjangan token Instagram dipasang: tiap Senin ~03:00.');
+}
+
+function igStatus_() {
+  var p = igProps_();
+  var hariSejakSegar = null;
+  if (p.disegar) {
+    var d = new Date(p.disegar);
+    if (!isNaN(d.getTime())) {
+      hariSejakSegar = Math.floor((new Date().getTime() - d.getTime()) / 86400000);
+    }
+  }
+  var adaTrigger = false;
+  try {
+    ScriptApp.getProjectTriggers().forEach(function (t) {
+      if (t.getHandlerFunction() === 'igSegarkanTokenTerjadwal') adaTrigger = true;
+    });
+  } catch (e) {}
+  return {
+    appIdAda: !!p.appId,
+    appSecretAda: !!p.appSecret,
+    tokenAda: !!p.token,
+    disegarkan: p.disegar || '',
+    hariSejakDisegarkan: hariSejakSegar,
+    triggerAktif: adaTrigger
+  };
+}
+
+/* ---------- tes dari editor Apps Script ---------- */
+
+/**
+ * Jalankan ini DULU setelah mengisi IG_APP_ID, IG_APP_SECRET, dan IG_TOKEN.
+ * Tidak pernah menampilkan isi token.
+ */
+function tesIg() {
+  var s = igStatus_();
+  Logger.log('IG_APP_ID      : ' + (s.appIdAda ? 'terisi' : 'KOSONG'));
+  Logger.log('IG_APP_SECRET  : ' + (s.appSecretAda ? 'terisi' : 'KOSONG'));
+  Logger.log('IG_TOKEN       : ' + (s.tokenAda ? 'terisi' : 'KOSONG'));
+  Logger.log('Trigger perpanjang token : ' + (s.triggerAktif ? 'aktif' : 'BELUM dipasang — jalankan pasangTriggerIg()'));
+  if (!s.tokenAda) { Logger.log('Berhenti: isi IG_TOKEN dulu.'); return; }
+
+  try {
+    var d = igDaftarAkun_();
+    if (!d.akun.length) {
+      Logger.log('Token jalan, TAPI tidak ada akun Instagram professional yang terjangkau.');
+      Logger.log('Periksa: akun IG sudah Business/Creator, dan sudah tersambung ke Facebook Page');
+      Logger.log('yang kamu kelola dengan akun yang dipakai login tadi.');
+      return;
+    }
+    Logger.log('BERHASIL. ' + d.akun.length + ' akun Instagram terjangkau:');
+    d.akun.forEach(function (a) {
+      Logger.log('  @' + a.username + '  (igId ' + a.igId + ', ' + a.jumlahPost +
+                 ' post, ' + a.follower + ' follower) via Page "' + a.page + '"');
+    });
+    Logger.log('Salin igId di atas ke aplikasi: Engagement -> Tarik dari Instagram -> Hubungkan Akun.');
+  } catch (e) {
+    Logger.log('GAGAL: ' + (e.message || e));
+  }
+}
+
+/** Tes tarikan sungguhan untuk satu akun, 30 hari terakhir. */
+function tesIgRekap() {
+  var d;
+  try { d = igDaftarAkun_(); } catch (e) { Logger.log('GAGAL: ' + (e.message || e)); return; }
+  if (!d.akun.length) { Logger.log('Tidak ada akun terjangkau. Jalankan tesIg() dulu.'); return; }
+  var igId = d.akun[0].igId;
+  var r = igRekap(iso_(-30), iso_(0), { uji: igId });
+  var a = r.akun[0];
+  if (a.galat) { Logger.log('GAGAL: ' + a.galat); return; }
+  Logger.log('@' + d.akun[0].username + ' — ' + a.post.length + ' postingan 30 hari terakhir:');
+  a.post.slice(0, 10).forEach(function (p) {
+    Logger.log('  ' + String(p.waktu).slice(0, 10) + ' ' + p.jenis +
+               ' reach=' + p.reach + ' views=' + p.views + ' likes=' + p.likes +
+               ' komen=' + p.comments + ' share=' + p.shares + ' save=' + p.saves +
+               '  ' + p.permalink);
+  });
+  if (a.post.length > 10) Logger.log('  …dan ' + (a.post.length - 10) + ' lagi.');
+  Logger.log('Metrik bernilai null = Instagram tidak melayani metrik itu untuk jenis post tersebut.');
+}
+
+/** Hapus token Instagram dari Script Properties. */
+function lupakanTokenIg() {
+  var P = PropertiesService.getScriptProperties();
+  P.deleteProperty('IG_TOKEN');
+  P.deleteProperty('IG_TOKEN_DISEGARKAN');
+  Logger.log('IG_TOKEN dihapus.');
 }
